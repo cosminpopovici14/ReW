@@ -2,11 +2,14 @@
 
 <html>
     <head>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
         <header>
-            <h1>Smart Inventory</h1>
+            <h1><a href ="./index.html">Smart Inventory</a></h1>
             <section class="header-section"> 
                 <ul >
                     <li class="refs"> <a href="./becuri.html">Becuri</a></li>
@@ -17,36 +20,29 @@
         </header>
 
         <main>
-
-            <h2>Welcome to Smart Inventory</h2>
-            <p>Your one-stop solution for managing your inventory efficiently.</p>
-            <div class="items">
-                <div class="item">
-                    <p class="item_text"> Bec  </p>
-                    <img src="https://www.luminam.ro/bec-industrial-e27-60w-230v-img-n337003-fd-2.webp" class="item_pic"  >
-                    <p class="item_text">Change quantity</p>
-                    <div class="qty-input">
-                        <input class="product-qty" type="number" name="product-qty" min="0" max="10" value="1">
+            <div id="main-page">
+                <div id="welcome-page">
+                    <h2>Welcome to Smart Inventory</h2>
+                    <p>Your one-stop solution for managing your inventory efficiently.</p>
+                    <div id="nu-stiu">
+                        <div id="welcome-button">
+                            <a href="./dashboard.html">View Dashboard </a>
+                        </div>
                     </div>
                 </div>
-                <div class="item">
-                    <p class="item_text"> Bec  </p>
-                    <img src="https://www.luminam.ro/bec-industrial-e27-60w-230v-img-n337003-fd-2.webp" class="item_pic"  >
-                    <p class="item_text">Change quantity</p>
-                    <div class="qty-input">
-                        <input class="product-qty" type="number" name="product-qty" min="0" max="10" value="1">
+                <div id="welcome-page-statistics-block">
+                    <div class="welcome-page-statistic">
+                         <div class = welcome-page-total-items> Total items: <b>124</b> </div>
                     </div>
-                </div>
-                <div class="item">
-                    <p class="item_text"> Bec  </p>
-                    <img src="https://www.luminam.ro/bec-industrial-e27-60w-230v-img-n337003-fd-2.webp" class="item_pic"  >
-                    <p class="item_text">Change quantity</p>
-                    <div class="qty-input">
-                        <input class="product-qty" type="number" name="product-qty" min="0" max="10" value="1">
-                    </div>
+                    <div class="welcome-page-statistic">
+                        <div class = welcome-page-categories> Categories: <b>6</b></div>
+                   </div>
+                   <div class="welcome-page-statistic">
+                    <div class = welcome-page-total-low-stock> Low Stock Items: <b>4</b></div>
+               </div>
                 </div>
             </div>
-            
+        
         </main>
 
         <footer>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <header>
+            <h1><a href ="./index.html">Smart Inventory</a></h1>
+            <section class="header-section"> 
+                <ul >
+                    <li class="refs"> <a href="./becuri.html">Becuri</a></li>
+                    <li class="refs"><a href="./tractoare.html">Tractoare</a></li>
+                    <li class="refs"><a href="./droguri.html">Droguri</a></li>
+                </ul>
+            </section>
+        </header>
+
+        <main>
+            
+            <div id="main-page">
+                <div class="popup-div">
+                    <div class="popup" id="popup"> 
+                        <h2>Add Category</h2>
+                        <div id="category-name-div">
+                            <p id="category-name-p">Category Name</p> <input id="category-name-input" required="required" type="text">
+                        </div>
+                        <div id="popup-buttons-div">
+                            <button id="cancel-popup-button" onclick="closePopup('popup')"> Cancel</button>
+                            <button id="add-popup-button" onclick="getCategory(); closePopup()"> Add</button>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                <div id="above-categories">
+                    <div id="categories-text">
+                        <h1>Categories</h1>
+                        
+                        
+                    </div>
+                </div>
+                <div class="js-categories-page" id="categories-page">
+                    
+                    
+                    
+                </div>
+                <div id="under-categories">
+                    <div id="add-category-button">
+                        <button id = "btn2" onclick="openPopup('popup')"> + Add Category </button>
+                        
+                    </div>
+                    
+
+                </div>
+                   
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Smart Inventory. All rights reserved.</p>
+        </footer>
+        <script src="altaltaltceva.js"></script>
+    </body>
+
+</html>

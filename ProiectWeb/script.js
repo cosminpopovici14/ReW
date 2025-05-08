@@ -1,7 +1,7 @@
 
 
 let categories = JSON.parse(localStorage.getItem("categories"));
-
+let renameCount=0;
 console.log(categories);
 
 
@@ -24,14 +24,12 @@ function deleteDivFromCategories(id)
     window.location.reload();
 }
 
-
-
-function openPopup(id){
+function openPopup(id ,count){
     let popup=document.getElementById(id);
     console.log(popup);
     popup.classList.add("open-popup");
+    renameCount=count;
 }
-
 function closePopup()
 {
     popup.classList.remove("open-popup");
@@ -88,8 +86,21 @@ function closeDeleteConfimation(nameID,countID,renameID,deleteID,itemsID,deleteT
     shownDeleteButtonsID.classList.remove("show-delete-confirmation");
     console.log(hiddenNameId);
  
- }
+ }  
 
+function closePopup(id)
+{
+    console.log(id);
+    let popup=document.getElementById(id);
+    popup.classList.remove("open-popup");
+}
+
+function renameCategory(){
+    var text = document.getElementById("category-rename-input").value;
+    categories[renameCount] = text;
+    localStorage.setItem("categories",JSON.stringify(categories));
+    window.location.reload();
+}
 function getCategory(){
     
     var text = document.getElementById("category-name-input").value;
@@ -115,7 +126,7 @@ categoriesHTML += `
                             <p>0 items</p>
                         </div>
                         <div class="category-rename" id="category-rename-${count-1}">
-                            <button id="rename-button"> Rename </button>
+                            <button id="rename-button" onclick="openPopup('rename-popup',${count-1})"> Rename </button>
                         </div>
                         <div class="category-delete" id="category-delete-${count-1}">
                             <button id="delete-button" onclick= "openDeleteConfimation('category-name-${count-1}','category-items-count-${count-1}','category-rename-${count-1}','category-delete-${count-1}','category-view-items-${count-1}','delete-text-${count-1}','delete-buttons-${count-1}')" > Delete </button>

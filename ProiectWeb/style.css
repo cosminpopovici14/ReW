@@ -77,7 +77,6 @@ main {
   transition: all .2s ease-in-out;
   
 }
-
 .delete-text{
   position: relative;
   visibility: hidden;
@@ -99,6 +98,7 @@ main {
 .show-delete-confirmation{
   visibility: visible;
 }
+
 .category:hover{
   transform: scale(1.1);
 }
@@ -133,7 +133,17 @@ button{
   justify-content:center;
   margin: 50px;
 }
+.popups{
+  
+  
+  
+}
 .popup-div{
+  display: flex;
+  justify-content: center;
+
+}
+.rename-popup-div{
   display: flex;
   justify-content: center;
 }
@@ -143,7 +153,6 @@ button{
   
   border-color: #545454;
   visibility:hidden;
-  position: absolute;
   background-color: #fff;
   padding: 20px;
   width: 400px;
@@ -153,13 +162,17 @@ button{
   text-align: center;
   transition: all 0.2s;
   transform: scale(0.1);
-
-  
 }
 .open-popup{
   visibility:visible;
   
   transform: scale(1);
+}
+#rename-popup{
+  position: absolute;
+}
+#add-popup{
+  position:absolute;
 }
 #category-name-p{
   margin: 10px;
@@ -167,6 +180,19 @@ button{
   font-weight: bold;
 }
 #category-name-input{
+  width: 91%;
+
+  border-style: solid;
+  border-color:#545454;
+  border-radius: 5px;
+  
+}
+#category-rename-p{
+  margin: 10px;
+  text-align: left;
+  font-weight: bold;
+}
+#category-rename-input{
   width: 91%;
 
   border-style: solid;

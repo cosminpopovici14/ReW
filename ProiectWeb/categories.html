@@ -22,18 +22,30 @@
         <main>
             
             <div id="main-page">
-                <div class="popup-div">
-                    <div class="popup" id="popup"> 
-                        <h2>Add Category</h2>
-                        <div id="category-name-div">
-                            <p id="category-name-p">Category Name</p> <input id="category-name-input" required="required" type="text">
+                <div class="popups">
+                    <div class = rename-popup-div>
+                        <div class="popup" id="rename-popup"> 
+                            <h2>Rename Category</h2>
+                            <div id="category-name-div">
+                                <p id="category-name-p">Category Name</p> <input id="category-rename-input" required="required" type="text">
+                            </div>
+                            <div id="popup-buttons-div">
+                                <button id="cancel-popup-button" onclick="closePopup('rename-popup')"> Cancel</button>
+                                <button id="add-popup-button" onclick="renameCategory(); closePopup('rename-popup')"> Rename</button>
+                            </div>
                         </div>
-                        <div id="popup-buttons-div">
-                            <button id="cancel-popup-button" onclick="closePopup('popup')"> Cancel</button>
-                            <button id="add-popup-button" onclick="getCategory(); closePopup()"> Add</button>
+                    </div>
+                    <div class="popup-div">
+                        <div class="popup" id="add-popup"> 
+                            <h2>Add Category</h2>
+                            <div id="category-name-div">
+                                <p id="category-name-p">Category Name</p> <input id="category-name-input" required="required" type="text">
+                            </div>
+                            <div id="popup-buttons-div">
+                                <button id="cancel-popup-button" onclick="closePopup('add-popup')"> Cancel</button>
+                                <button id="add-popup-button" onclick="getCategory(); closePopup('add-popup')"> Add</button>
+                            </div>
                         </div>
-                        
-                        
                     </div>
                 </div>
                 <div id="above-categories">
@@ -50,7 +62,7 @@
                 </div>
                 <div id="under-categories">
                     <div id="add-category-button">
-                        <button id = "btn2" onclick="openPopup('popup')"> + Add Category </button>
+                        <button id = "btn2" onclick="openPopup('add-popup')"> + Add Category </button>
                         
                     </div>
                     

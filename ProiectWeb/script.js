@@ -129,14 +129,24 @@ categoriesHTML += `
                             <button id="rename-button" onclick="openPopup('rename-popup',${count-1})"> Rename </button>
                         </div>
                         <div class="category-delete" id="category-delete-${count-1}">
-                            <button id="delete-button" onclick= "openDeleteConfimation('category-name-${count-1}','category-items-count-${count-1}','category-rename-${count-1}','category-delete-${count-1}','category-view-items-${count-1}','delete-text-${count-1}','delete-buttons-${count-1}')" > Delete </button>
+                            <button id="delete-button" onclick= 
+                            "openDeleteConfimation('category-name-${count-1}',
+                            'category-items-count-${count-1}',
+                            'category-rename-${count-1}',
+                            'category-delete-${count-1}',
+                            'category-view-items-${count-1}','delete-text-${count-1}',
+                            'delete-buttons-${count-1}')" > Delete </button>
                         </div>
                         <div class="category-view-items" id="category-view-items-${count-1}">
-                            <button id="view-items-button" > View Items </button>
+                            <a href="./items.html"><b> View Items </b></a>
                         </div>
                         <div class="delete-buttons" id="delete-buttons-${count-1}">
                            <button id="view-items-button-yes" onclick="deleteDivFromCategories('category-${count-1}')"> Yes </button>
-                           <button id="view-items-button-no" onclick= "closeDeleteConfimation('category-name-${count-1}','category-items-count-${count-1}','category-rename-${count-1}','category-delete-${count-1}','category-view-items-${count-1}','delete-text-${count-1}','delete-buttons-${count-1}')"> No </button>
+                           <button id="view-items-button-no" onclick= 
+                           "closeDeleteConfimation('category-name-${count-1}',
+                           'category-items-count-${count-1}','category-rename-${count-1}',
+                           'category-delete-${count-1}','category-view-items-${count-1}',
+                           'delete-text-${count-1}','delete-buttons-${count-1}')"> No </button>
                         </div>
                     </div>
                 `;

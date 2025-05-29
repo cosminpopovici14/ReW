@@ -30,13 +30,13 @@ async function init()
 // }
 
 
-async function deleteItem(id)
+async function deleteItem(idDeleted)
 {
     let res = await fetch(`/api/categories/${id}/items`,{
         method : 'DELETE',
         headers : {'ContentType' : 'application/json'},
         body : JSON.stringify({
-            "id" : id
+            "id" : idDeleted
         })
     });
     init();
@@ -184,5 +184,16 @@ function openItemsPopup(id ,count){
 function closeItemsPopup(id)
 {
     let popup=document.getElementById(id);
+    popup.classList.remove("open-popup");
+}
+
+function openPopup(id ,count){
+    let popup=document.getElementById(id);
+    console.log(popup);
+    popup.classList.add("open-popup");
+    renameCount=count;
+}
+function closePopup()
+{
     popup.classList.remove("open-popup");
 }

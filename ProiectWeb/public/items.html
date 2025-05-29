@@ -24,6 +24,21 @@
             
             <div id="main-page">
                 <div class="item-popup-div">
+                    <div class="add-item-popup" id="add-popup">
+                        <div class="add-item-popup-title">
+                            <h2>Add Item</h2>
+                        </div>
+                        
+                        <div id="item-name-div">
+                            <p class="item-inputs-titles" id="item-name-p">Item Name</p> <input class="item-inputs" id="item-name-input" required="required" type="text">
+                        </div>
+                        <div id="item-quantity">
+                            <p class="item-inputs-titles" id="item-quantity-p">Quantity</p> <input class="item-inputs" id="item-quantity-input" required="required" type="text">
+                        </div>
+                        <div id="item-date"> 
+                            <p id="item-date-title">Check Date</p> <input id="item-date-input" required="required" type="date">
+                        </div>
+                    </div>
                     <div class="items-popup" id="view-1">
                         <div class="item-view-title">
                             <h1>Light Bulb</h1>
@@ -91,6 +106,12 @@
                 </div>
                 <div class="items">
                     
+                </div>
+                <div id="under-categories">
+                    <div id="add-category-button">
+                        <button id = "btn2" onclick="openPopup('add-popup')"> + Add Item </button>
+                        
+                    </div>
                 </div>
             </div>
 

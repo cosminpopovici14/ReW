@@ -3,30 +3,7 @@
     {
       "id": 1,
       "name": "1",
-      "items": [
-        {
-          "id": 1,
-          "name" : 1,
-          "quantity": 123
-        },
-        {
-          "id": 2,
-          "name" : 2,
-          "quantity": 123
-        },
-        {
-          "id": 3,
-          "name" : 3,
-          "quantity": 123
-        },
-        {
-          "id": 4,
-          "name" : 4,
-          "quantity": 123
-        }
-        
-      ]
-      
+      "items": []
     },
     {
       "id": 2,
@@ -34,27 +11,20 @@
       "items": [
         {
           "id": 1,
-          "name" : "coaie",
+          "name": 2,
           "quantity": 123
         },
         {
           "id": 2,
-          "name" : 2,
+          "name": 3,
           "quantity": 123
         },
         {
           "id": 3,
-          "name" : 3,
-          "quantity": 123
-        },
-        {
-          "id": 4,
-          "name" : 1,
+          "name": 1,
           "quantity": 123
         }
-        
       ]
     }
-    
   ]
 }

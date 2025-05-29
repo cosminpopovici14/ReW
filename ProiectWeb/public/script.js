@@ -68,13 +68,6 @@ function addCategory(){
     
 }
 
-function deleteDivFromCategories(id)
-{
-    console.log("script:", id);
-    DeleteCategory(id);
-}
-
-
 function printCategory(){
 let categoriesHTML ='';
 let count = 0;
@@ -101,7 +94,7 @@ categoriesHTML += `
                             <a href="items.html?categoryID=${category.id}" > View Items </a>
                         </div>
                         <div class="delete-buttons" id="delete-buttons-${category.id}">
-                           <button id="view-items-button-yes" onclick="deleteDivFromCategories('${category.id}')"> Yes </button>
+                           <button id="view-items-button-yes" onclick="DeleteCategory('${category.id}')"> Yes </button>
                            <button id="view-items-button-no" onclick= "closeDeleteConfimation('category-name-${category.id}','category-items-count-${category.id}','category-rename-${category.id}','category-delete-${category.id}','category-view-items-${category.id}','delete-text-${category.id}','delete-buttons-${category.id}')"> No </button>
                         </div>
                     </div>

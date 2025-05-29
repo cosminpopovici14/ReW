@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <link rel="stylesheet" href="style.css">
+
     </head>
     <body>
         <header>
@@ -14,7 +15,7 @@
                 <ul >
                     <li class="refs"> <a href="./becuri.html">Becuri</a></li>
                     <li class="refs"><a href="./tractoare.html">Tractoare</a></li>
-                    <li class="refs"><a href="./droguri.html">Droguri</a></li>
+                    <li class="refs"><a href="./masini.html">Masini</a></li>
                 </ul>
             </section>
         </header>
@@ -22,26 +23,74 @@
         <main>
             
             <div id="main-page">
-                <div id="items">
-                    <div class="item" id="item-1">
-                        <div class="item-picture">
-                            <img src="Images/bec.png" alt="Light Bulb" class="item-image">
+                <div class="item-popup-div">
+                    <div class="items-popup" id="view-1">
+                        <div class="item-view-title">
+                            <h1>Light Bulb</h1>
+                            <div class="item-view-category">
+                                <div class="item-view-category-title">
+                                    Category
+                                </div>
+                                <div class="item-view-category-name">
+                                    Electrical
+                                </div>
+                            </div>
                         </div>
-                        <div class="item-name">
-                            <p id="item-name-name">Light Bulbs</p>
-                            <p id="item-name-category">Electrical</p>
+                        <div class="item-view-info">
+                            <div class="item-view-quantity">
+                                <div class="quantity-title">
+                                    Quantity
+                                </div>
+                                <div class="quantity-number">
+                                    15
+                                </div>
+                                <div class="quantity-date">
+                                    Sep 20, 2025
+                                </div>
+                            </div>
+                            <div class="item-view-added">
+                                <div class="quantity-title">
+                                    Added
+                                </div>
+                                <div class="added-date">
+                                    1 Sep 2025
+                                </div>
+                                <div class="added-alert">
+                                    Alert
+                                </div>
+                            </div>
                         </div>
-                        <div class="item-stock">
-                            <span class="item-number">12</span> in stock
+                        <div class="item-view-graph">
+                            <div class="graph-title">
+                                <h3>Stock Levels</h3>
+                            </div>
+                            <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
                         </div>
-                        <div class="item-alert">
-                            <img src="Images/check.png" alt="Check" class="item-alert-image"> Alert
+                        <div class="item-view-buttons">
+                            <div class="upper-buttons">
+                                <div class="view-button" id="view-edit-button">
+                                    <button>Edit Item</button>
+                                </div>
+                                <div class="view-button" id="view-schedule">
+                                    <button>Schedule Check</button>
+                                </div>
+                            </div>
+                            <div class="lower-buttons">
+                                <div class="view-button" id="view-disable-alerts">
+                                    <button>Disable Alerts</button>
+                                </div>
+                                <div class="view-button" id="view-export">
+                                    <button>Export to PDF</button>
+                                </div>
+                            </div>
                         </div>
-                        
+                        <div class="item-view-close">
+                            <button onclick="closeItemsPopup('view-1')">Close</button>
+                        </div>
                     </div>
-                    <div class="item">
-                        Light Bulbs
-                    </div>
+                </div>
+                <div class="items">
+                    
                 </div>
             </div>
 
@@ -51,7 +100,8 @@
         <footer>
             <p>&copy; 2025 Smart Inventory. All rights reserved.</p>
         </footer>
-        <script src="script.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+        <script src="items.js"></script>
     </body>
 
 </html>

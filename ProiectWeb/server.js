@@ -28,7 +28,7 @@ const server = http.createServer((req, res) => {
         });
     return;
     }
-    if(req.method === 'GET' && req.url.startsWith('/api/categories/')){
+    if(req.method === 'GET' && /^\/api\/categories\/\d+$/.test(req.url)){
         let id = parseInt(req.url.split('/',4)[3]);
          fs.readFile('./data/categories.json', 'utf-8', (err, content) => {
             if (err) {
@@ -136,7 +136,35 @@ const server = http.createServer((req, res) => {
         });
         return;
     }
- 
+    
+
+
+    //FOR ITEMS:
+    if(req.method === 'GET' && /^\/api\/categories\/\d+\/items$/.test(req.url))
+    {
+        let id = parseInt(req.url.split('/',5)[3]);
+        fs.readFile('./data/categories.json', 'utf-8', (err, content) => {
+            if (err) {
+                res.writeHead(500);
+                res.end('Server Error');
+                return;
+            }
+            let parsed = JSON.parse(content);
+            let myCategory = parsed.categories.find(c => c.id === id);
+            if(!myCategory)
+            {
+                res.writeHead(404);
+                res.end('Category Not Found');
+                return;
+            }
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(myCategory.items)); 
+        });
+        return;
+    }
+
+
+
     switch (ext) {
         case '.css':
             contentType = 'text/css';
@@ -196,6 +224,9 @@ function deleteCategory(obj,objId){
     return true;
     
 }
+
+
+
 //POST - CREATE
 
 //GET -READ

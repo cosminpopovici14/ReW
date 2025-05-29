@@ -98,7 +98,7 @@ categoriesHTML += `
                             <button id="delete-button" onclick= "openDeleteConfimation('category-name-${category.id}','category-items-count-${category.id}','category-rename-${category.id}','category-delete-${category.id}','category-view-items-${category.id}','delete-text-${category.id}','delete-buttons-${category.id}')" > Delete </button>
                         </div>
                         <div class="category-view-items" id="category-view-items-${category.id}">
-                            <button id="view-items-button" > View Items </button>
+                            <a href="items.html" > View Items </a>
                         </div>
                         <div class="delete-buttons" id="delete-buttons-${category.id}">
                            <button id="view-items-button-yes" onclick="deleteDivFromCategories('${category.id}')"> Yes </button>

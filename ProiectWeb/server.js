@@ -10,7 +10,7 @@ const server = http.createServer((req, res) => {
     if(req.url ==='/') {
         file = 'index.html';
     } else{
-        file = req.url;
+        file =req.url.split('?')[0];
     }
     let filePath = path.join(__dirname, 'public', file);
     let ext = path.extname(filePath); 
@@ -163,6 +163,100 @@ const server = http.createServer((req, res) => {
         return;
     }
 
+
+    if (req.method === 'POST' && req.url === /^\/api\/categories\/\d+\/items$/.test(req.url)) {
+        let id = parseInt(req.url.split('/',5)[3]);
+        let body = '';
+        req.on('data', chunk => (body += chunk));
+        req.on('end', () => {
+            const newItem = JSON.parse(body);
+
+            fs.readFile('./data/categories.json', 'utf-8', (err, data) => {
+            if (err) {
+                res.writeHead(500);
+                res.end('Server Error');
+                return;
+            }    
+            const parsed = JSON.parse(data || '{"categories": []}');
+            let myCategory = parsed.categories.find(c => c.id === id);
+           
+            let newId=0;
+            if(myCategory.items.length === 0){
+                newId = 1;
+            } else{
+                newId = myCategory.items.length + 1;
+            }
+            myCategory.items.push({ id: newId, name: newItem.name , quantity: newItem.quantity});
+
+            fs.writeFile('./data/categories.json', JSON.stringify(parsed,null,2), () => {
+                res.writeHead(201);
+                res.end();
+            });
+            });
+        });
+        return;
+    }
+
+
+    // if(req.method === 'PUT' && /^\/api\/categories\/\d+\/items$/.test(req.url)){
+    //     let id = ParseInt(req.url.split('/',5)[3]);
+    //     let body = '';
+    //     req.on('data', chunk => (body+=chunk));
+    //     req.on('end', ()=>{
+    //         const renamedItem = JSON.parse(body);
+            
+    //         fs.readFile('./data/categories.json', 'utf-8', (err,data)=>{
+    //             if (err) {
+    //                 res.writeHead(500);
+    //                 res.end('Server Error');
+    //                 return;
+    //             }
+    //             const parsed = JSON.parse(data || '{categories: []}');
+    //             let myCategory = parsed.categories.find(c => c.id === id);
+                
+    //             if(changeName(myCategory.items,renamedCategory.id,renamedCategory.name)=== false){
+    //                 res.writeHead(404);
+    //                 res.end('ID Not Found');
+    //                 return;
+    //             }
+    //             fs.writeFile('./data/categories.json', JSON.stringify(parsed,null,2), () => {
+    //             res.writeHead(201);
+    //             res.end();
+    //             });     
+    //         });
+    //     });
+    //     return;
+    // }
+
+     if(req.method === 'DELETE' && /^\/api\/categories\/\d+\/items$/.test(req.url))
+    {
+        let id = parseInt(req.url.split('/',5)[3]);
+        let body='';
+        req.on('data', chunk =>{body+=chunk});
+        req.on('end', ()=>{
+            const deletedItem = JSON.parse(body);
+            fs.readFile('./data/categories.json','utf-8', (err,data)=>{
+                if(err){
+                    res.writeHead(500);
+                    res.end('Server Error');
+                    return;
+                }
+                
+                let parsed = JSON.parse(data || '{categories:[]}');
+                let myCategory = parsed.categories.find(c => c.id === id);
+                if(deleteCategory(myCategory.items,deletedItem.id) == false){
+                    res.writeHead(404);
+                    res.end('ID not Found');
+                }
+                fs.writeFile('./data/categories.json', JSON.stringify(parsed,null,2), () => {
+                res.writeHead(201);
+                res.end();
+                }); 
+            });
+        });
+        return;
+    }
+    
 
 
     switch (ext) {

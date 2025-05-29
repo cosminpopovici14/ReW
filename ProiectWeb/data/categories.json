@@ -21,7 +21,7 @@
         },
         {
           "id": 4,
-          "name" : 1,
+          "name" : 4,
           "quantity": 123
         }
         
@@ -34,7 +34,7 @@
       "items": [
         {
           "id": 1,
-          "name" : 1,
+          "name" : "coaie",
           "quantity": 123
         },
         {

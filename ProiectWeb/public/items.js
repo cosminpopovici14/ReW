@@ -10,13 +10,37 @@ let items = [];
 
 async function init()
 {
-    let res = await fetch('/api/categories/1/items');
-    let items = await res.json();
+    let res = await fetch(`/api/categories/${id}/items`);
+    items = await res.json();
     console.log(items);
     printItems();
     
 }
 
+
+// async function postItem(body)
+// {
+//     let res = await fetch(`/api/categories/${id}/items`,{
+//         method : 'POST',
+//         header : {'ContentType' : 'application/json'},
+//         body : JSON.stringify{
+            
+//         }
+//     })
+// }
+
+
+async function deleteItem(id)
+{
+    let res = await fetch(`/api/categories/${id}/items`,{
+        method : 'DELETE',
+        headers : {'ContentType' : 'application/json'},
+        body : JSON.stringify({
+            "id" : id
+        })
+    });
+    init();
+}
 
 init();
 
@@ -26,49 +50,48 @@ function printItems(){
     console.log("ITEMS:::",items);
     items.forEach(item =>{
         itemsHTML+= `
-        <div class="item" id="item-1">
+        <div class="item" id="item-${item.id}">
                         <div class="above-buttons">
                             <div class="item-picture">
-                                <img src="Images/bec.png" alt="Light Bulb" class="item-image" id="item-image-1">
+                                <img src="Images/bec.png" alt="Light Bulb" class="item-image" id="item-image-${item.id}">
                             </div>
-                            <div class="item-name" id="item-name-1">
-                                <p id="item-name-name">Light Bulbs</p>
+                            <div class="item-name" id="item-name-${item.id}">
+                                <p id="item-name-name">${item.name}</p>
                                 <p id="item-name-category">Electrical</p>
                             </div>
-                            <div class="item-stock" id="item-stock-1">
-                                <span class="item-number">12</span> in stock
+                            <div class="item-stock" id="item-stock-${item.id}">
+                                <span class="item-number">${item.quantity}</span> in stock
                             </div>
-                            <div class="item-alert" id="item-alert-1">
+                            <div class="item-alert" id="item-alert-${item.id}">
                                 <img src="Images/check.png" alt="Check" class="item-alert-image"> Alert
                             </div>
                         </div>
-                        <div class="item-delete-text" id="delete-text-1">
+                        <div class="item-delete-text" id="delete-text-${item.id}">
                                 <h2> Are you sure you want to delete? </h2>
                         </div>
                         <div class="item-buttons">
                             <div class="item-buttons-position">
                                 <div class="item-delete">
                                     <button id="delete-button" 
-                                    onclick="openItemDeleteConfirmation('item-image-1','item-name-1', 
-                                    'item-stock-1','item-alert-1','delete-text-1','delete-buttons-1')">Delete</button>
+                                    onclick="openItemDeleteConfirmation('item-image-${item.id}','item-name-${item.id}', 
+                                    'item-stock-${item.id}','item-alert-${item.id}','delete-text-${item.id}','delete-buttons-${item.id}')">Delete</button>
                                 </div>
                                 <div class="item-view">
                                     <button id="view-button"
-                                    onclick="openItemsPopup('view-1')">View</button>
+                                    onclick="openItemsPopup('view-${item.id}')">View</button>
                                 </div>
                             </div>
                         </div>
-                        <div class="item-delete-buttons" id = "delete-buttons-1">
+                        <div class="item-delete-buttons" id = "delete-buttons-${item.id}">
                             <div class="delete-buttons-position">   
                                 <div class="delete-buttons-yes">
                                     <button id="delete-button-yes" 
-                                    onclick="deleteItem('item-image-1','item-name-1', 
-                                    'item-stock-1','item-alert-1','delete-text-1', 'delete-buttons-1')">Yes</button>
+                                    onclick="deleteItem('${item.id}')">Yes</button>
                                 </div>
                                 <div class="delete-buttons-no">
                                     <button id="delete-button-no" 
-                                    onclick="closeItemDeleteConfirmation('item-image-1','item-name-1', 
-                                    'item-stock-1','item-alert-1','delete-text-1','delete-buttons-1')">No</button>
+                                    onclick="closeItemDeleteConfirmation('item-image-${item.id}','item-name-${item.id}', 
+                                    'item-stock-${item.id}','item-alert-${item.id}','delete-text-${item.id}','delete-buttons-${item.id}')">No</button>
                                 </div>
                             </div>
                         </div>

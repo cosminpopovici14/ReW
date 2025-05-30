@@ -193,10 +193,8 @@ function openPopup(id ,count){
     popup.classList.add("open-popup");
     renameCount=count;
 }
-function closePopup()
-{
-    popup.classList.remove("open-popup");
-}
+
+
 
 
 function openInputs() {

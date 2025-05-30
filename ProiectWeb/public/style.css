@@ -527,10 +527,7 @@ footer {
   margin: 15px;
 
 }
-.open-popup{
-  visibility:visible;
-  transform: scale(1);
-}
+
 
 .add-item-popup{
   visibility: hidden;
@@ -651,4 +648,9 @@ input[type="checkbox"] {
 }
 #item-consumable-p{
   margin-top: 3px;
+}
+
+.open-popup{
+  visibility:visible;
+  transform: scale(1);
 }

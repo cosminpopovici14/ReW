@@ -1,33 +1,58 @@
 
 const params = new URLSearchParams(window.location.search);
+new Chart("myChart", {
+  type: "bar",
+  data: {
+    labels: xValues,
+    datasets: [{
+      backgroundColor: barColors,
+      data: yValues
+    }]
+  },
+  options: {legend: {display: false},
+    title: {
+      display: true,
+      text: "Stock 2025"
+    }}
+});
 
 const id = params.get('categoryID');
 
 console.log(id);
 
 let items = [];
-
+let category=[];
 
 async function init()
 {
     let res = await fetch(`/api/categories/${id}/items`);
     items = await res.json();
+    let res2 = await fetch(`/api/categories/${id}`);
+    category= await res2.json();
+    console.log(category);
     console.log(items);
     printItems();
     
 }
 
 
-// async function postItem(body)
-// {
-//     let res = await fetch(`/api/categories/${id}/items`,{
-//         method : 'POST',
-//         header : {'ContentType' : 'application/json'},
-//         body : JSON.stringify{
-            
-//         }
-//     })
-// }
+async function postItem(name,isConsumable,quantity,autodeq,alert)
+{
+    
+        let res = await fetch(`/api/categories/${id}/items`,{
+        method : 'POST',
+        header : {'ContentType' : 'application/json'},
+        body : JSON.stringify({
+            "name" : name,
+            "quantity": quantity,
+            "consumable": isConsumable,
+            "alertDeqTime": autodeq,
+            "alert":alert
+        })
+    })
+    init();  
+}
+
 
 
 async function deleteItem(idDeleted)
@@ -44,11 +69,97 @@ async function deleteItem(idDeleted)
 
 init();
 
+
+
+function addItem(){
+    var name = document.getElementById("item-name-input").value;
+    var isConsumable = document.getElementById("item-consmable-input").checked;
+    if(isConsumable == true){
+        var quantity = parseInt(document.getElementById("item-quantity-input").value);
+        var autodeq = document.getElementById("item-dec-quantity-interval").value;
+        var alert = document.getElementById("item-alert-input").checked;
+        console.log(name,isConsumable,quantity,autodeq,alert)
+        postItem(name,isConsumable,quantity,autodeq,alert);
+    }
+    else{
+        var checkTime = document.getElementById("item-check-time-interval").value;
+        var alert = document.getElementById("item-alert-input").checked;
+        postItem(name,isConsumable,1,checkTime,alert)
+    }
+
+}
+
+
+
 function printItems(){
-    
+    viewHTML = '';
     let itemsHTML = '';
     console.log("ITEMS:::",items);
     items.forEach(item =>{
+        viewHTML+=`<div class="items-popup" id="view-${item.id}">
+                        <div class="item-view-title">
+                            <h1>${item.name}</h1>
+                            <div class="item-view-category">
+                                <div class="item-view-category-title">
+                                    Category
+                                </div>
+                                <div class="item-view-category-name">
+                                    ${category.name}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item-view-info">
+                            <div class="item-view-quantity">
+                                <div class="quantity-title">
+                                    Quantity
+                                </div>
+                                <div class="quantity-number">
+                                    ${item.quantity}
+                                </div>
+                                <div class="quantity-date">
+                                    Sep 20, 2025
+                                </div>
+                            </div>
+                            <div class="item-view-added">
+                                <div class="quantity-title">
+                                    Added
+                                </div>
+                                <div class="added-date">
+                                    1 Sep 2025
+                                </div>
+                                <div class="added-alert">
+                                    Alert
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item-view-graph">
+                            <div class="graph-title">
+                                <h3>Stock Levels</h3>
+                            </div>
+                            <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+                        </div>
+                        <div class="item-view-buttons">
+                            <div class="upper-buttons">
+                                <div class="view-button" id="view-edit-button">
+                                    <button>Edit Item</button>
+                                </div>
+                                <div class="view-button" id="view-schedule">
+                                    <button>Schedule Check</button>
+                                </div>
+                            </div>
+                            <div class="lower-buttons">
+                                <div class="view-button" id="view-disable-alerts">
+                                    <button>Disable Alerts</button>
+                                </div>
+                                <div class="view-button" id="view-export">
+                                    <button>Export to PDF</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item-view-close">
+                            <button onclick="closeItemsPopup('view-${item.id}')">Close</button>
+                        </div>
+                    </div>`
         itemsHTML+= `
         <div class="item" id="item-${item.id}">
                         <div class="above-buttons">
@@ -57,7 +168,7 @@ function printItems(){
                             </div>
                             <div class="item-name" id="item-name-${item.id}">
                                 <p id="item-name-name">${item.name}</p>
-                                <p id="item-name-category">Electrical</p>
+                                <p id="item-name-category">${checkConsumable(item.consumable)}</p>
                             </div>
                             <div class="item-stock" id="item-stock-${item.id}">
                                 <span class="item-number">${item.quantity}</span> in stock
@@ -99,11 +210,18 @@ function printItems(){
                     `;
     })
     console.log("HEEEEI");
+    document.querySelector('.items-info-popup-div').innerHTML = viewHTML;
     document.querySelector('.items').innerHTML = itemsHTML;
 }
 
 
+function checkConsumable(consumable){
+    if(consumable == true)
+        return "Consumable";
+    else
+        return "Device";
 
+}
 
 function openPopup(id){
     let popup=document.getElementById(id);
@@ -160,21 +278,7 @@ var xValues = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "O
 var yValues = [55, 49, 44, 24, 15, 13, 34, 64, 23, 15, 63, 13];
 var barColors = "blue";
 
-new Chart("myChart", {
-  type: "bar",
-  data: {
-    labels: xValues,
-    datasets: [{
-      backgroundColor: barColors,
-      data: yValues
-    }]
-  },
-  options: {legend: {display: false},
-    title: {
-      display: true,
-      text: "Stock 2025"
-    }}
-});
+
 function openItemsPopup(id ,count){
     let popup=document.getElementById(id);
     console.log(popup);

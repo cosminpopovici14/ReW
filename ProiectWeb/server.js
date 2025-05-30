@@ -164,7 +164,8 @@ const server = http.createServer((req, res) => {
     }
 
 
-    if (req.method === 'POST' && req.url === /^\/api\/categories\/\d+\/items$/.test(req.url)) {
+    if (req.method === 'POST' && /^\/api\/categories\/\d+\/items$/.test(req.url)) 
+    {
         let id = parseInt(req.url.split('/',5)[3]);
         let body = '';
         req.on('data', chunk => (body += chunk));
@@ -186,7 +187,14 @@ const server = http.createServer((req, res) => {
             } else{
                 newId = myCategory.items.length + 1;
             }
-            myCategory.items.push({ id: newId, name: newItem.name , quantity: newItem.quantity});
+            myCategory.items.push({ 
+                id: newId, 
+                name: newItem.name, 
+                quantity: newItem.quantity, 
+                consumable:newItem.consumable, 
+                alertDeqTime:newItem.alertDeqTime, 
+                alert:newItem.alert 
+            });
 
             fs.writeFile('./data/categories.json', JSON.stringify(parsed,null,2), () => {
                 res.writeHead(201);
@@ -196,6 +204,7 @@ const server = http.createServer((req, res) => {
         });
         return;
     }
+    
 
 
     // if(req.method === 'PUT' && /^\/api\/categories\/\d+\/items$/.test(req.url)){

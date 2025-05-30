@@ -13,45 +13,31 @@
           "id": 1,
           "name": 1,
           "quantity": 123,
-          "consumable" : {
-            "type": "boolean",
-            "default": false
-          },
-          "alert-deq-time": "7d",
-          "alert":{
-            "type": "boolean",
-            "default": false
-          }
+          "consumable": true,
+          "alertDeqTime": "7d",
+          "alert": false
         },
         {
           "id": 2,
-          "name": 2,
-          "quantity": 123,
-          "consumable" : {
-            "type": "boolean",
-            "default": false
-          },
-          "alert-deq-time": "7d",
-          "alert":{
-            "type": "boolean",
-            "default": false
-          }
+          "name": "coco",
+          "quantity": 1,
+          "consumable": false,
+          "alertDeqTime": "7d",
+          "alert": true
         },
         {
           "id": 3,
-          "name": 3,
-          "quantity": 123,
-          "consumable" : {
-            "type": "boolean",
-            "default": false
-          },
-          "alert-deq-time": "7d",
-          "alert":{
-            "type": "boolean",
-            "default": false
-          }
+          "name": "asd",
+          "quantity": 1,
+          "consumable": false,
+          "alertDeqTime": "off",
+          "alert": false
         }
       ]
+    },
+    {
+      "id": 3,
+      "name": "test"
     }
   ]
 }

@@ -21,9 +21,10 @@
         </header>
 
         <main>
-            
-            <div id="main-page">
-                <div class="item-popup-div">
+            <div class="items-category-text">
+                Category
+            </div>
+            <div class="item-popup-div">
                     <div class="add-item-popup" id="add-popup">
                         <div class="add-item-image">
                             <img src="Images/cube.png" alt="Cube" class="item-image-cube" >
@@ -59,7 +60,7 @@
                         <div id="item-date"> 
                             <p class="item-inputs-titles" id="item-check-time-title">Check Time</p> 
                             <select name="interval" class="item-interval" id="item-check-time-interval"  >
-                                <option value="noalert">Off</option>
+                                <option value="off">Off</option>
                                 <option value="7d">7 days</option>
                                 <option value="14d">14 days</option>
                                 <option value="30d">30 days</option>
@@ -73,75 +74,17 @@
                             <input  class="custom-checkbox" id="item-alert-input" required="required" type="checkbox"> <p class="item-inputs-titles" id="item-alert-p">Enable Alert</p> 
                         </div>
                         <div class="add-item-popup-buttons-div">
-                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text">Add Item</button></div>
+                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text" onclick="addItem();closeItemsPopup('add-popup')">Add Item</button></div>
                             <div class = "add-item-popup-button" id="add-item-cancel-button"> <button class = "add-item-button-text" onclick ="closeItemsPopup('add-popup')">Cancel</button></div>  
                         </div>
-                    </div>
-                    <div class="items-popup" id="view-1">
-                        <div class="item-view-title">
-                            <h1>Light Bulb</h1>
-                            <div class="item-view-category">
-                                <div class="item-view-category-title">
-                                    Category
-                                </div>
-                                <div class="item-view-category-name">
-                                    Electrical
-                                </div>
-                            </div>
-                        </div>
-                        <div class="item-view-info">
-                            <div class="item-view-quantity">
-                                <div class="quantity-title">
-                                    Quantity
-                                </div>
-                                <div class="quantity-number">
-                                    15
-                                </div>
-                                <div class="quantity-date">
-                                    Sep 20, 2025
-                                </div>
-                            </div>
-                            <div class="item-view-added">
-                                <div class="quantity-title">
-                                    Added
-                                </div>
-                                <div class="added-date">
-                                    1 Sep 2025
-                                </div>
-                                <div class="added-alert">
-                                    Alert
-                                </div>
-                            </div>
-                        </div>
-                        <div class="item-view-graph">
-                            <div class="graph-title">
-                                <h3>Stock Levels</h3>
-                            </div>
-                            <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
-                        </div>
-                        <div class="item-view-buttons">
-                            <div class="upper-buttons">
-                                <div class="view-button" id="view-edit-button">
-                                    <button>Edit Item</button>
-                                </div>
-                                <div class="view-button" id="view-schedule">
-                                    <button>Schedule Check</button>
-                                </div>
-                            </div>
-                            <div class="lower-buttons">
-                                <div class="view-button" id="view-disable-alerts">
-                                    <button>Disable Alerts</button>
-                                </div>
-                                <div class="view-button" id="view-export">
-                                    <button>Export to PDF</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="item-view-close">
-                            <button onclick="closeItemsPopup('view-1')">Close</button>
-                        </div>
-                    </div>
+                    </div> 
                 </div>
+                <div class="items-info-popup-div">
+
+                </div>
+            <div id="main-page">
+                
+                
                 <div class="items">
                     
                 </div>

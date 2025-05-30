@@ -529,12 +529,11 @@ footer {
 }
 .open-popup{
   visibility:visible;
-  
   transform: scale(1);
 }
 
 .add-item-popup{
-  /* visibility: hidden; */
+  visibility: hidden;
   z-index: 1;
   border: transparent;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
@@ -546,7 +545,8 @@ footer {
   width: 410px;
   padding: 20px;
   height: 500px;
-
+  transition: all 0.2s;
+  transform: scale(0.1);
 }
 
 
@@ -588,13 +588,14 @@ footer {
 }
 
 
-#item-interval{
+.item-interval{
   border-radius: 5px;
   padding: 5px;
   font-family: 'Inter', sans-serif;
   width: 95%;
   margin : 8px;
   font-size: 17px;
+  
 }
 
 
@@ -610,11 +611,12 @@ footer {
 }
 
 .add-item-popup-button{
+  display: flex;
   border: solid;
   width: 130px;
   margin-top:20px;
   border-radius: 5px;
-  justify-items:center;
+  justify-content:center;
   padding:8px;
   border-color: #b0b0b0;
   border-width: thin;
@@ -628,4 +630,25 @@ footer {
 
 #item-image-cube{
   height: 65px;
+}
+
+.checkbox-div{
+  display: flex;
+}
+
+.custom-checkbox{
+  margin-left:9px;
+  margin-bottom: 5px;  
+}
+input[type="checkbox"] {
+  width: 1.7em;
+  height: 1.7rem;
+  
+}
+
+#item-alert-p{
+  margin-top: 3px;
+}
+#item-consumable-p{
+  margin-top: 3px;
 }

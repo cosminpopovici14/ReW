@@ -197,3 +197,30 @@ function closePopup()
 {
     popup.classList.remove("open-popup");
 }
+
+
+function openInputs() {
+  var checkBox = document.getElementById("item-consmable-input");
+  var textQuantityP = document.getElementById("item-quantity-p");
+  var textQuantityI = document.getElementById("item-quantity-input");
+  var textDecQuantityT = document.getElementById("item-dec-quantity-title");
+  var textDecQuantityI = document.getElementById("item-dec-quantity-interval");
+  var textCheckTimeT = document.getElementById("item-check-time-title");
+  var textCheckTimei = document.getElementById("item-check-time-interval");
+  if (checkBox.checked == true){
+    textQuantityP.style.display = "block";
+    textQuantityI.style.display = "block";
+    textDecQuantityT.style.display = "block";
+    textDecQuantityI.style.display = "block";   
+    textCheckTimeT.style.display = "none";
+    textCheckTimei.style.display = "none";
+
+  } else {
+     textQuantityP.style.display = "none";
+    textQuantityI.style.display = "none";
+    textDecQuantityT.style.display = "none";
+    textDecQuantityI.style.display = "none";   
+    textCheckTimeT.style.display = "block";
+    textCheckTimei.style.display = "block";
+  }
+}

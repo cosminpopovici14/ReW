@@ -33,12 +33,16 @@
                         <div id="item-name-div">
                             <p class="item-inputs-titles" id="item-name-p">Item Name</p> <input class="item-inputs" id="item-name-input" required="required" type="text">
                         </div>
+                        <div class="checkbox-div" id="item-is-consumable">
+                            <input class="custom-checkbox"  id="item-consmable-input" required="required" type="checkbox" onclick="openInputs()"> <p class="item-inputs-titles" id="item-consumable-p">Consumable</p> 
+                        </div>
                         <div id="item-quantity">
-                            <p class="item-inputs-titles" id="item-quantity-p">Quantity</p> <input class="item-inputs" id="item-quantity-input" required="required" type="text">
+                            <p class="item-inputs-titles" id="item-quantity-p" style="display:none">Quantity</p> <input class="item-inputs" id="item-quantity-input" required="required" type="text" style="display:none">
                         </div>
                         <div id="item-date"> 
-                            <p class="item-inputs-titles" id="item-date-title">Alert Interval</p> 
-                            <select name="interval" id="item-interval">
+                            <p class="item-inputs-titles" id="item-dec-quantity-title"style="display:none">Auto-Decrease Quantity</p> 
+                            <select name="interval" class="item-interval" id="item-dec-quantity-interval" style="display:none" >
+                                <option value="noalert">Off</option>
                                 <option value="7d">7 days</option>
                                 <option value="14d">14 days</option>
                                 <option value="30d">30 days</option>
@@ -46,8 +50,24 @@
                                 <option value="90d">90 days</option>
                                 <option value="180d">180 days</option>
                                 <option value="1y">1 year</option>
-                                <option value="noalert">No Alert</option>
+                                
                             </select>
+                        </div>
+                        <div id="item-date"> 
+                            <p class="item-inputs-titles" id="item-check-time-title">Check Time</p> 
+                            <select name="interval" class="item-interval" id="item-check-time-interval"  >
+                                <option value="noalert">Off</option>
+                                <option value="7d">7 days</option>
+                                <option value="14d">14 days</option>
+                                <option value="30d">30 days</option>
+                                <option value="60d">60 days</option>
+                                <option value="90d">90 days</option>
+                                <option value="180d">180 days</option>
+                                <option value="1y">1 year</option>  
+                            </select>
+                        </div>
+                        <div class="checkbox-div" id="item-alert">
+                            <input  class="custom-checkbox" id="item-alert-input" required="required" type="checkbox"> <p class="item-inputs-titles" id="item-alert-p">Enable Alert</p> 
                         </div>
                         <div class="add-item-popup-buttons-div">
                             <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text">Add Item</button></div>

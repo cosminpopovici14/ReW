@@ -11,18 +11,45 @@
       "items": [
         {
           "id": 1,
-          "name": 2,
-          "quantity": 123
+          "name": 1,
+          "quantity": 123,
+          "consumable" : {
+            "type": "boolean",
+            "default": false
+          },
+          "alert-deq-time": "7d",
+          "alert":{
+            "type": "boolean",
+            "default": false
+          }
         },
         {
           "id": 2,
-          "name": 3,
-          "quantity": 123
+          "name": 2,
+          "quantity": 123,
+          "consumable" : {
+            "type": "boolean",
+            "default": false
+          },
+          "alert-deq-time": "7d",
+          "alert":{
+            "type": "boolean",
+            "default": false
+          }
         },
         {
           "id": 3,
-          "name": 1,
-          "quantity": 123
+          "name": 3,
+          "quantity": 123,
+          "consumable" : {
+            "type": "boolean",
+            "default": false
+          },
+          "alert-deq-time": "7d",
+          "alert":{
+            "type": "boolean",
+            "default": false
+          }
         }
       ]
     }

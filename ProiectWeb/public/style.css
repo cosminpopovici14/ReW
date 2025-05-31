@@ -672,10 +672,7 @@ input[type="checkbox"] {
   margin-top: 3px;
 }
 
-.open-popup{
-  visibility:visible;
-  transform: scale(1);
-}
+
 
 .items-title{
   position: relative;
@@ -748,3 +745,28 @@ input[type="checkbox"] {
 .dropdown-content a:hover {background-color: #ddd;}
 
 .dropdown:hover .dropdown-content {visibility: visible; transform: scale(1); }
+
+.edit-item-popup{
+  visibility: hidden;
+  z-index: 1;
+  border: transparent;
+  position: absolute;
+  left: 50%;
+  translate: -50% -50%;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 10px;
+  display: grid;
+  justify-content: center;
+  width: 410px;
+  padding: 20px;
+  height: 500px;
+  transition: all 0.2s;
+  transform: scale(0.1);
+}
+
+.open-popup{
+  visibility:visible;
+  transform: scale(1);
+}

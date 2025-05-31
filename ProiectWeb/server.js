@@ -213,35 +213,35 @@ const server = http.createServer((req, res) => {
     
 
 
-    // if(req.method === 'PUT' && /^\/api\/categories\/\d+\/items$/.test(req.url)){
-    //     let id = ParseInt(req.url.split('/',5)[3]);
-    //     let body = '';
-    //     req.on('data', chunk => (body+=chunk));
-    //     req.on('end', ()=>{
-    //         const renamedItem = JSON.parse(body);
+    if(req.method === 'PUT' && /^\/api\/categories\/\d+\/items$/.test(req.url)){
+        let id = ParseInt(req.url.split('/',5)[3]);
+        let body = '';
+        req.on('data', chunk => (body+=chunk));
+        req.on('end', ()=>{
+            const editedItem = JSON.parse(body);
             
-    //         fs.readFile('./data/categories.json', 'utf-8', (err,data)=>{
-    //             if (err) {
-    //                 res.writeHead(500);
-    //                 res.end('Server Error');
-    //                 return;
-    //             }
-    //             const parsed = JSON.parse(data || '{categories: []}');
-    //             let myCategory = parsed.categories.find(c => c.id === id);
+            fs.readFile('./data/categories.json', 'utf-8', (err,data)=>{
+                if (err) {
+                    res.writeHead(500);
+                    res.end('Server Error');
+                    return;
+                }
+                const parsed = JSON.parse(data || '{categories: []}');
+                let myCategory = parsed.categories.find(c => c.id === id);
                 
-    //             if(changeName(myCategory.items,renamedCategory.id,renamedCategory.name)=== false){
-    //                 res.writeHead(404);
-    //                 res.end('ID Not Found');
-    //                 return;
-    //             }
-    //             fs.writeFile('./data/categories.json', JSON.stringify(parsed,null,2), () => {
-    //             res.writeHead(201);
-    //             res.end();
-    //             });     
-    //         });
-    //     });
-    //     return;
-    // }
+                if(changeItem(myCategory.items,renamedCategory.id,renamedCategory.name)=== false){
+                    res.writeHead(404);
+                    res.end('ID Not Found');
+                    return;
+                }
+                fs.writeFile('./data/categories.json', JSON.stringify(parsed,null,2), () => {
+                res.writeHead(201);
+                res.end();
+                });     
+            });
+        });
+        return;
+    }
 
      if(req.method === 'DELETE' && /^\/api\/categories\/\d+\/items$/.test(req.url))
     {
@@ -332,6 +332,21 @@ function deleteCategory(obj,objId){
     }
     return true;
     
+}
+
+function changeItem(obj,objId,newName,newQuantity,newConsumable,newAlertDeqTime,newAlert){
+    let ok=0;
+    obj.forEach(obj=>{
+        if(obj.id===objId){
+            obj.name=newName;
+            obj.quantity=newQuantity;
+            obj.consumable=newConsumable;
+            obj.alertDeqTime=newAlertDeqTime;
+            obj.alert=newAlert;
+        }
+    });
+    if(ok===1) return true;
+    return false;
 }
 
 

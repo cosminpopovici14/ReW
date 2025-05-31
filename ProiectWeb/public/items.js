@@ -43,6 +43,7 @@ async function postItem(name,isConsumable,quantity,autodeq,alert)
         method : 'POST',
         header : {'ContentType' : 'application/json'},
         body : JSON.stringify({
+            "id" : id,
             "name" : name,
             "quantity": quantity,
             "consumable": isConsumable,
@@ -53,7 +54,20 @@ async function postItem(name,isConsumable,quantity,autodeq,alert)
     init();  
 }
 
-
+async function putItem(name,isConsumable,quantity,autodeq,alert){
+    let res = await fetch(`/api/categories/${id}/items`,{
+        method : 'PUT',
+        header : {'ContentType' : 'application/json'},
+        body : JSON.stringify({
+            "name" : name,
+            "quantity": quantity,
+            "consumable": isConsumable,
+            "alertDeqTime": autodeq,
+            "alert":alert
+        })
+    });
+    init();
+}
 
 async function deleteItem(idDeleted)
 {
@@ -66,6 +80,8 @@ async function deleteItem(idDeleted)
     });
     init();
 }
+
+
 
 init();
 
@@ -89,14 +105,85 @@ function addItem(){
 
 }
 
-
+function editItem(){
+    var name = document.getElementById("item-name-input").value;
+    var isConsumable = document.getElementById("item-consmable-input").checked;
+    if(isConsumable == true){
+        var quantity = parseInt(document.getElementById("item-quantity-input").value);
+        var autodeq = document.getElementById("item-dec-quantity-interval").value;
+        var alert = document.getElementById("item-alert-input").checked;
+        console.log(name,isConsumable,quantity,autodeq,alert)
+        putItem(name,isConsumable,quantity,autodeq,alert);
+    }
+    else{
+        var checkTime = document.getElementById("item-check-time-interval").value;
+        var alert = document.getElementById("item-alert-input").checked;
+        putItem(name,isConsumable,1,checkTime,alert)
+    }
+}
 
 function printItems(){
     categoryTitleHTML = `${category.name}`;
     viewHTML = '';
+    editHTML = '';
     let itemsHTML = '';
     console.log("ITEMS:::",items);
     items.forEach(item =>{
+        editHTML+=`
+            <div class="edit-item-popup" id="edit-popup-${item.id}">
+                        <div class="add-item-image">
+                            <img src="Images/cube.png" alt="Cube" class="item-image-cube" >
+                        </div>
+                        
+                        <div class="add-item-popup-title-div">
+                            <h2 id="add-item-popup-title">Edit Item</h2>
+                        </div>
+                        
+                        <div id="item-name-div">
+                            <p class="item-inputs-titles" id="item-name-p">Item Name</p> <input class="item-inputs" id="item-name-input" required="required" type="text" value="${item.name}">
+                        </div>
+                        <div class="checkbox-div" id="item-is-consumable">
+                            <input class="custom-checkbox"  id="item-consmable-input" required="required" type="checkbox" onclick="openInputs()"> <p class="item-inputs-titles" id="item-consumable-p">Consumable</p> 
+                        </div>
+                        <div id="item-quantity">
+                            <p class="item-inputs-titles" id="item-quantity-p" style="display:none">Quantity</p> <input class="item-inputs" id="item-quantity-input" required="required" type="text" style="display:none" value="${item.quantity}">
+                        </div>
+                        <div id="item-date"> 
+                            <p class="item-inputs-titles" id="item-dec-quantity-title"style="display:none">Auto-Decrease Quantity</p> 
+                            <select name="interval" class="item-interval" id="item-dec-quantity-interval" style="display:none" >
+                                <option value="noalert">Off</option>
+                                <option value="7d">7 days</option>
+                                <option value="14d">14 days</option>
+                                <option value="30d">30 days</option>
+                                <option value="60d">60 days</option>
+                                <option value="90d">90 days</option>
+                                <option value="180d">180 days</option>
+                                <option value="1y">1 year</option>
+                                
+                            </select>
+                        </div>
+                        <div id="item-date"> 
+                            <p class="item-inputs-titles" id="item-check-time-title">Check Time</p> 
+                            <select name="interval" class="item-interval" id="item-check-time-interval"  >
+                                <option value="off">Off</option>
+                                <option value="7d">7 days</option>
+                                <option value="14d">14 days</option>
+                                <option value="30d">30 days</option>
+                                <option value="60d">60 days</option>
+                                <option value="90d">90 days</option>
+                                <option value="180d">180 days</option>
+                                <option value="1y">1 year</option>  
+                            </select>
+                        </div>
+                        <div class="checkbox-div" id="item-alert">
+                            <input  class="custom-checkbox" id="item-alert-input" required="required" type="checkbox"> <p class="item-inputs-titles" id="item-alert-p">Enable Alert</p> 
+                        </div>
+                        <div class="add-item-popup-buttons-div">
+                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text" onclick="editItem(); closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
+                            <div class = "add-item-popup-button" id="add-item-cancel-button"> <button class = "add-item-button-text" onclick ="closeItemsPopup('edit-popup-${item.id}')">Cancel</button></div>  
+                        </div>
+                    </div> 
+        `
         viewHTML+=`<div class="items-popup" id="view-${item.id}">
                         <div class="item-view-title">
                             <h1>${item.name}</h1>
@@ -142,7 +229,7 @@ function printItems(){
                         <div class="item-view-buttons">
                             <div class="upper-buttons">
                                 <div class="view-button" id="view-edit-button">
-                                    <button>Edit Item</button>
+                                    <button onclick="openPopup('edit-popup-${item.id}')">Edit Item</button>
                                 </div>
                                 <div class="view-button" id="view-schedule">
                                     <button>Schedule Check</button>
@@ -214,6 +301,7 @@ function printItems(){
     })
     console.log("HEEEEI");
     document.querySelector('.items-title').innerHTML = categoryTitleHTML;
+    document.querySelector('.items-edit-popup-div').innerHTML = editHTML;
     document.querySelector('.items-info-popup-div').innerHTML = viewHTML;
     document.querySelector('.items').innerHTML = itemsHTML;
 }

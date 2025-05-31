@@ -70,7 +70,7 @@ const server = http.createServer((req, res) => {
             } else{
                 newId = parsed.categories.length + 1;
             }
-            parsed.categories.push({ id: newId, name: newCategory.name });
+            parsed.categories.push({ id: newId, name: newCategory.name, items: [] });
 
             fs.writeFile('./data/categories.json', JSON.stringify(parsed,null,2), () => {
                 res.writeHead(201);
@@ -180,6 +180,12 @@ const server = http.createServer((req, res) => {
             }    
             const parsed = JSON.parse(data || '{"categories": []}');
             let myCategory = parsed.categories.find(c => c.id === id);
+
+            if(!myCategory){
+                res.writeHead(404);
+                res.end('Category not found');
+                return;
+            }
            
             let newId=0;
             if(myCategory.items.length === 0){

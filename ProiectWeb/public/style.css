@@ -47,6 +47,7 @@ main {
   display: grid;
   
 }
+
 #categories-page{
   
   display: flex;
@@ -162,6 +163,7 @@ button{
   display:flex;
   justify-content:center;
   margin: 50px;
+  top: 50px;
 }
 .popups{
   
@@ -255,9 +257,7 @@ input[type="text"]
   padding: 5px;
   color: #fff;
 }
-#add-category-button{
- 
-  
+#add-category-button{  
   background-color: #fff;
   padding: 20px;
   width: 300px;
@@ -267,6 +267,18 @@ input[type="text"]
   text-align: center;
   transition: all 0.5s;
   
+}
+#add-item-button{
+  background-color: #fff;
+  padding: 20px;
+  width: 300px;
+  max-width: 500px;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  transition: all 0.5s;
+  position: relative;
+  margin-top: 80px;
 }
 
 #welcome-page {
@@ -663,4 +675,19 @@ input[type="checkbox"] {
 .open-popup{
   visibility:visible;
   transform: scale(1);
+}
+
+.items-title{
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  top: 120px;
+  left: 50%;
+  translate: -50% 0;
+  font-size: x-large;
+}
+
+.items{
+  position: relative;
+  top: 100px;
 }

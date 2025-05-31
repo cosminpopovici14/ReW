@@ -24,10 +24,16 @@
           "consumable": false,
           "alertDeqTime": "7d",
           "alert": true
-        },
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "3",
+      "items": [
         {
-          "id": 3,
-          "name": "asd",
+          "id": 1,
+          "name": "76",
           "quantity": 1,
           "consumable": false,
           "alertDeqTime": "off",
@@ -36,8 +42,18 @@
       ]
     },
     {
-      "id": 3,
-      "name": "test"
+      "id": 4,
+      "name": "4",
+      "items": [
+        {
+          "id": 1,
+          "name": "",
+          "quantity": 1,
+          "consumable": false,
+          "alertDeqTime": "off",
+          "alert": false
+        }
+      ]
     }
   ]
 }

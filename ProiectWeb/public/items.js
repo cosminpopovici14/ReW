@@ -182,12 +182,13 @@ function printItems(){
                         </div>
                         <div class="item-buttons">
                             <div class="item-buttons-position">
-                                <div class="item-delete">
+                                <div class="item-delete" id="item-delete-${item.id}">
                                     <button id="delete-button" 
                                     onclick="openItemDeleteConfirmation('item-image-${item.id}','item-name-${item.id}', 
-                                    'item-stock-${item.id}','item-alert-${item.id}','delete-text-${item.id}','delete-buttons-${item.id}')">Delete</button>
+                                    'item-stock-${item.id}','item-alert-${item.id}','delete-text-${item.id}',
+                                    'delete-buttons-${item.id}', 'item-delete-${item.id}', 'item-view-${item.id}')">Delete</button>
                                 </div>
-                                <div class="item-view">
+                                <div class="item-view" id="item-view-${item.id}">
                                     <button id="view-button"
                                     onclick="openItemsPopup('view-${item.id}')">View</button>
                                 </div>
@@ -202,7 +203,8 @@ function printItems(){
                                 <div class="delete-buttons-no">
                                     <button id="delete-button-no" 
                                     onclick="closeItemDeleteConfirmation('item-image-${item.id}','item-name-${item.id}', 
-                                    'item-stock-${item.id}','item-alert-${item.id}','delete-text-${item.id}','delete-buttons-${item.id}')">No</button>
+                                    'item-stock-${item.id}','item-alert-${item.id}','delete-text-${item.id}',
+                                    'delete-buttons-${item.id}','item-delete-${item.id}', 'item-view-${item.id}')">No</button>
                                 </div>
                             </div>
                         </div>
@@ -228,11 +230,13 @@ function openPopup(id){
     console.log(popup);
     popup.classList.add("open-popup");
 }
-function openItemDeleteConfirmation(imageID,nameID,stockID,alertID,deleteID,buttonsID){
+function openItemDeleteConfirmation(imageID,nameID,stockID,alertID,deleteID,buttonsID,deleteButtonID,viewButtonID){
     let hiddenImageID = document.getElementById(imageID);
     let hiddenNameID = document.getElementById(nameID);
     let hiddenStockID = document.getElementById(stockID);
     let hiddenAlertID = document.getElementById(alertID);
+    let hiddenDeleteButtonID = document.getElementById(deleteButtonID);
+    let hiddenViewButtonID = document.getElementById(viewButtonID);
 
     let shownDeleteID = document.getElementById(deleteID);
     let shownButtonsID = document.getElementById(buttonsID);
@@ -241,6 +245,8 @@ function openItemDeleteConfirmation(imageID,nameID,stockID,alertID,deleteID,butt
     hiddenNameID.classList.add("hide-category");
     hiddenStockID.classList.add("hide-category");
     hiddenAlertID.classList.add("hide-category");
+    hiddenDeleteButtonID.classList.add("hide-category");
+    hiddenViewButtonID.classList.add("hide-category");
 
     shownDeleteID.classList.add("show-delete-confirmation");
     shownButtonsID.classList.add("show-delete-confirmation");
@@ -249,11 +255,13 @@ function openItemDeleteConfirmation(imageID,nameID,stockID,alertID,deleteID,butt
     
 }
 
-function closeItemDeleteConfirmation(imageID,nameID,stockID,alertID,deleteID,buttonsID){
+function closeItemDeleteConfirmation(imageID,nameID,stockID,alertID,deleteID,buttonsID,deleteButtonID,viewButtonID){
     let hiddenImageID = document.getElementById(imageID);
     let hiddenNameID = document.getElementById(nameID);
     let hiddenStockID = document.getElementById(stockID);
     let hiddenAlertID = document.getElementById(alertID);
+    let hiddenDeleteButtonID = document.getElementById(deleteButtonID);
+    let hiddenViewButtonID = document.getElementById(viewButtonID);
 
     let shownDeleteID = document.getElementById(deleteID);
     let shownButtonsID = document.getElementById(buttonsID);
@@ -262,6 +270,8 @@ function closeItemDeleteConfirmation(imageID,nameID,stockID,alertID,deleteID,but
     hiddenNameID.classList.remove("hide-category");
     hiddenStockID.classList.remove("hide-category");
     hiddenAlertID.classList.remove("hide-category");
+    hiddenDeleteButtonID.classList.remove("hide-category");
+    hiddenViewButtonID.classList.remove("hide-category");
 
     shownDeleteID.classList.remove("show-delete-confirmation");
     shownButtonsID.classList.remove("show-delete-confirmation");

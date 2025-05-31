@@ -92,6 +92,7 @@ function addItem(){
 
 
 function printItems(){
+    categoryTitleHTML = `${category.name}`;
     viewHTML = '';
     let itemsHTML = '';
     console.log("ITEMS:::",items);
@@ -212,6 +213,7 @@ function printItems(){
                     `;
     })
     console.log("HEEEEI");
+    document.querySelector('.items-title').innerHTML = categoryTitleHTML;
     document.querySelector('.items-info-popup-div').innerHTML = viewHTML;
     document.querySelector('.items').innerHTML = itemsHTML;
 }

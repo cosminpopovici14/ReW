@@ -29,21 +29,21 @@
     },
     {
       "id": 3,
-      "name": "3",
+      "name": "abcdefg",
       "items": [
         {
           "id": 1,
-          "name": "76",
-          "quantity": 1,
-          "consumable": false,
-          "alertDeqTime": "off",
-          "alert": false
+          "name": "asd",
+          "quantity": 123,
+          "consumable": true,
+          "alertDeqTime": "7d",
+          "alert": true
         }
       ]
     },
     {
       "id": 4,
-      "name": "4",
+      "name": "Alimente",
       "items": [
         {
           "id": 1,

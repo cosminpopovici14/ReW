@@ -214,7 +214,8 @@ const server = http.createServer((req, res) => {
 
 
     if(req.method === 'PUT' && /^\/api\/categories\/\d+\/items$/.test(req.url)){
-        let id = ParseInt(req.url.split('/',5)[3]);
+        console.log("test");
+        let id = parseInt(req.url.split('/',5)[3]);
         let body = '';
         req.on('data', chunk => (body+=chunk));
         req.on('end', ()=>{
@@ -228,8 +229,15 @@ const server = http.createServer((req, res) => {
                 }
                 const parsed = JSON.parse(data || '{categories: []}');
                 let myCategory = parsed.categories.find(c => c.id === id);
-                
-                if(changeItem(myCategory.items,renamedCategory.id,renamedCategory.name)=== false){
+                if(changeItem(
+                    myCategory.items,
+                    editedItem.id,
+                    editedItem.name,
+                    editedItem.quantity,
+                    editedItem.consumable,
+                    editedItem.alertDeqTime,
+                    editedItem.alert)=== false)
+                {
                     res.writeHead(404);
                     res.end('ID Not Found');
                     return;
@@ -343,6 +351,7 @@ function changeItem(obj,objId,newName,newQuantity,newConsumable,newAlertDeqTime,
             obj.consumable=newConsumable;
             obj.alertDeqTime=newAlertDeqTime;
             obj.alert=newAlert;
+            ok=1;
         }
     });
     if(ok===1) return true;

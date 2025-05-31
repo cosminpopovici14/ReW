@@ -22,7 +22,7 @@ console.log(id);
 
 let items = [];
 let category=[];
-
+let editOpened = 0;
 async function init()
 {
     let res = await fetch(`/api/categories/${id}/items`);
@@ -54,11 +54,12 @@ async function postItem(name,isConsumable,quantity,autodeq,alert)
     init();  
 }
 
-async function putItem(name,isConsumable,quantity,autodeq,alert){
+async function putItem(itemID,name,isConsumable,quantity,autodeq,alert){
     let res = await fetch(`/api/categories/${id}/items`,{
         method : 'PUT',
         header : {'ContentType' : 'application/json'},
         body : JSON.stringify({
+            "id" : itemID,
             "name" : name,
             "quantity": quantity,
             "consumable": isConsumable,
@@ -105,20 +106,24 @@ function addItem(){
 
 }
 
-function editItem(){
-    var name = document.getElementById("item-name-input").value;
-    var isConsumable = document.getElementById("item-consmable-input").checked;
+function editItem(itemID){
+    var name = document.getElementById(`item-name-input-${itemID}`).value;
+    var isConsumable = document.getElementById(`item-consmable-input-${itemID}`).checked;
     if(isConsumable == true){
-        var quantity = parseInt(document.getElementById("item-quantity-input").value);
-        var autodeq = document.getElementById("item-dec-quantity-interval").value;
-        var alert = document.getElementById("item-alert-input").checked;
-        console.log(name,isConsumable,quantity,autodeq,alert)
-        putItem(name,isConsumable,quantity,autodeq,alert);
+        var quantity = parseInt(document.getElementById(`item-quantity-input-${itemID}`).value);
+        var autodeq = document.getElementById(`item-dec-quantity-interval-${itemID}`).value;
+        var alert = document.getElementById(`item-alert-input-${itemID}`).checked;
+        editOpened=0;
+        console.log("INTRI??",itemID,name,isConsumable,quantity,autodeq,alert);
+        putItem(itemID,name,isConsumable,quantity,autodeq,alert);
+        
     }
     else{
-        var checkTime = document.getElementById("item-check-time-interval").value;
-        var alert = document.getElementById("item-alert-input").checked;
-        putItem(name,isConsumable,1,checkTime,alert)
+        var checkTime = document.getElementById(`item-check-time-interval-${itemID}`).value;
+        var alert = document.getElementById(`item-alert-input-${itemID}`).checked;
+        console.log("INTRI??",itemID,name,isConsumable,1,checkTime,alert);
+        editOpened=0;
+        putItem(itemID,name,isConsumable,1,checkTime,alert)
     }
 }
 
@@ -140,17 +145,17 @@ function printItems(){
                         </div>
                         
                         <div id="item-name-div">
-                            <p class="item-inputs-titles" id="item-name-p">Item Name</p> <input class="item-inputs" id="item-name-input" required="required" type="text" value="${item.name}">
+                            <p class="item-inputs-titles" id="item-name-p">Item Name</p> <input class="item-inputs" id="item-name-input-${item.id}" required="required" type="text" value="${item.name}">
                         </div>
                         <div class="checkbox-div" id="item-is-consumable">
-                            <input class="custom-checkbox"  id="item-consmable-input" required="required" type="checkbox" onclick="openInputs()"> <p class="item-inputs-titles" id="item-consumable-p">Consumable</p> 
+                            <input class="custom-checkbox"  id="item-consmable-input-${item.id}" required="required" type="checkbox" ${checkConsumableChecked(item.consumable)} > <p class="item-inputs-titles" id="item-consumable-p">Consumable</p> 
                         </div>
                         <div id="item-quantity">
-                            <p class="item-inputs-titles" id="item-quantity-p" style="display:none">Quantity</p> <input class="item-inputs" id="item-quantity-input" required="required" type="text" style="display:none" value="${item.quantity}">
+                            <p class="item-inputs-titles" id="item-quantity-p-${item.id}" style="display:none">Quantity</p> <input class="item-inputs" id="item-quantity-input-${item.id}" required="required" type="text" style="display:none" value="${item.quantity}">
                         </div>
                         <div id="item-date"> 
-                            <p class="item-inputs-titles" id="item-dec-quantity-title"style="display:none">Auto-Decrease Quantity</p> 
-                            <select name="interval" class="item-interval" id="item-dec-quantity-interval" style="display:none" >
+                            <p class="item-inputs-titles" id="item-dec-quantity-title-${item.id}"style="display:none">Auto-Decrease Quantity</p> 
+                            <select name="interval" class="item-interval" id="item-dec-quantity-interval-${item.id}" style="display:none" >
                                 <option value="noalert">Off</option>
                                 <option value="7d">7 days</option>
                                 <option value="14d">14 days</option>
@@ -163,8 +168,8 @@ function printItems(){
                             </select>
                         </div>
                         <div id="item-date"> 
-                            <p class="item-inputs-titles" id="item-check-time-title">Check Time</p> 
-                            <select name="interval" class="item-interval" id="item-check-time-interval"  >
+                            <p class="item-inputs-titles" id="item-check-time-title-${item.id}">Check Time</p> 
+                            <select name="interval" class="item-interval" id="item-check-time-interval-${item.id}"  >
                                 <option value="off">Off</option>
                                 <option value="7d">7 days</option>
                                 <option value="14d">14 days</option>
@@ -176,11 +181,11 @@ function printItems(){
                             </select>
                         </div>
                         <div class="checkbox-div" id="item-alert">
-                            <input  class="custom-checkbox" id="item-alert-input" required="required" type="checkbox"> <p class="item-inputs-titles" id="item-alert-p">Enable Alert</p> 
+                            <input  class="custom-checkbox" id="item-alert-input-${item.id}" required="required" type="checkbox"> <p class="item-inputs-titles" id="item-alert-p">Enable Alert</p> 
                         </div>
                         <div class="add-item-popup-buttons-div">
-                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text" onclick="editItem(); closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
-                            <div class = "add-item-popup-button" id="add-item-cancel-button"> <button class = "add-item-button-text" onclick ="closeItemsPopup('edit-popup-${item.id}')">Cancel</button></div>  
+                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text" onclick="editItem(${item.id}); "; closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
+                            <div class = "add-item-popup-button" id="add-item-cancel-button"> <button class = "add-item-button-text" onclick ="closeItemsPopup('edit-popup-${item.id}'); ">Cancel</button></div>  
                         </div>
                     </div> 
         `
@@ -229,7 +234,7 @@ function printItems(){
                         <div class="item-view-buttons">
                             <div class="upper-buttons">
                                 <div class="view-button" id="view-edit-button">
-                                    <button onclick="openPopup('edit-popup-${item.id}')">Edit Item</button>
+                                    <button onclick="openEditPopup('edit-popup-${item.id}'); openInputsIfChecked(${item.id},${item.consumable})">Edit Item</button>
                                 </div>
                                 <div class="view-button" id="view-schedule">
                                     <button>Schedule Check</button>
@@ -314,11 +319,32 @@ function checkConsumable(consumable){
         return "Device";
 
 }
+function checkConsumableChecked(consumable){
+    if(consumable == true)
+    {
+        return "checked";
+    }
+        
+    return "";
+}
+
+function openInputsIfChecked(itemID,consumable)
+{
+    if(consumable == true && editOpened == 1)
+        openInputs(itemID);
+}
+
 
 function openPopup(id){
     let popup=document.getElementById(id);
     console.log(popup);
     popup.classList.add("open-popup");
+}
+function openEditPopup(id){
+    let popup=document.getElementById(id);
+    console.log(popup);
+    popup.classList.add("open-popup");
+    editOpened=1;
 }
 function openItemDeleteConfirmation(imageID,nameID,stockID,alertID,deleteID,buttonsID,deleteButtonID,viewButtonID){
     let hiddenImageID = document.getElementById(imageID);
@@ -389,6 +415,7 @@ function closeItemsPopup(id)
 {
     let popup=document.getElementById(id);
     popup.classList.remove("open-popup");
+    editOpened=0;
 }
 
 function openPopup(id ,count){
@@ -401,14 +428,15 @@ function openPopup(id ,count){
 
 
 
-function openInputs() {
-  var checkBox = document.getElementById("item-consmable-input");
-  var textQuantityP = document.getElementById("item-quantity-p");
-  var textQuantityI = document.getElementById("item-quantity-input");
-  var textDecQuantityT = document.getElementById("item-dec-quantity-title");
-  var textDecQuantityI = document.getElementById("item-dec-quantity-interval");
-  var textCheckTimeT = document.getElementById("item-check-time-title");
-  var textCheckTimei = document.getElementById("item-check-time-interval");
+function openInputs(itemID) {
+  console.log(editOpened);
+  var checkBox = document.getElementById(`item-consmable-input-${itemID}`);
+  var textQuantityP = document.getElementById(`item-quantity-p-${itemID}`);
+  var textQuantityI = document.getElementById(`item-quantity-input-${itemID}`);
+  var textDecQuantityT = document.getElementById(`item-dec-quantity-title-${itemID}`);
+  var textDecQuantityI = document.getElementById(`item-dec-quantity-interval-${itemID}`);
+  var textCheckTimeT = document.getElementById(`item-check-time-title-${itemID}`);
+  var textCheckTimei = document.getElementById(`item-check-time-interval-${itemID}`);
   if (checkBox.checked == true){
     textQuantityP.style.display = "block";
     textQuantityI.style.display = "block";

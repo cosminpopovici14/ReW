@@ -19,9 +19,9 @@
         },
         {
           "id": 2,
-          "name": "coco",
-          "quantity": 1,
-          "consumable": false,
+          "name": "test",
+          "quantity": 123,
+          "consumable": true,
           "alertDeqTime": "7d",
           "alert": true
         }
@@ -33,11 +33,27 @@
       "items": [
         {
           "id": 1,
-          "name": "asd",
-          "quantity": 123,
+          "name": "123",
+          "quantity": 1,
           "consumable": true,
-          "alertDeqTime": "7d",
-          "alert": true
+          "alertDeqTime": "noalert",
+          "alert": false
+        },
+        {
+          "id": 2,
+          "name": "123",
+          "quantity": 3,
+          "consumable": true,
+          "alertDeqTime": "noalert",
+          "alert": false
+        },
+        {
+          "id": 3,
+          "name": "asd",
+          "quantity": 1,
+          "consumable": false,
+          "alertDeqTime": "off",
+          "alert": false
         }
       ]
     },

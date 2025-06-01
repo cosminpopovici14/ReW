@@ -25,7 +25,7 @@
           "consumable": true,
           "alertDeqTime": "7d",
           "alert": true,
-          "favourite": false
+          "favourite": true
         }
       ]
     },
@@ -37,10 +37,10 @@
           "id": 1,
           "name": "12345",
           "quantity": 1,
-          "consumable": true,
+          "consumable": "null",
           "alertDeqTime": "30d",
-          "alert": true,
-          "favourite": false
+          "alert": "true",
+          "favourite": "true"
         },
         {
           "id": 2,
@@ -49,7 +49,7 @@
           "consumable": true,
           "alertDeqTime": "7d",
           "alert": false,
-          "favourite": false
+          "favourite": true
         },
         {
           "id": 3,
@@ -58,7 +58,7 @@
           "consumable": false,
           "alertDeqTime": "1y",
           "alert": true,
-          "favourite": false
+          "favourite": true
         }
       ]
     },

@@ -236,7 +236,8 @@ const server = http.createServer((req, res) => {
                     editedItem.quantity,
                     editedItem.consumable,
                     editedItem.alertDeqTime,
-                    editedItem.alert)=== false)
+                    editedItem.alert,
+                    editedItem.favourite)=== false)
                 {
                     res.writeHead(404);
                     res.end('ID Not Found');
@@ -342,7 +343,7 @@ function deleteCategory(obj,objId){
     
 }
 
-function changeItem(obj,objId,newName,newQuantity,newConsumable,newAlertDeqTime,newAlert){
+function changeItem(obj,objId,newName,newQuantity,newConsumable,newAlertDeqTime,newAlert,newFavourite){
     let ok=0;
     obj.forEach(obj=>{
         if(obj.id===objId){
@@ -351,6 +352,7 @@ function changeItem(obj,objId,newName,newQuantity,newConsumable,newAlertDeqTime,
             obj.consumable=newConsumable;
             obj.alertDeqTime=newAlertDeqTime;
             obj.alert=newAlert;
+            obj.favourite = newFavourite
             ok=1;
         }
     });

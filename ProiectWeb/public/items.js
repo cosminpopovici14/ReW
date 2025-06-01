@@ -54,7 +54,10 @@ async function postItem(name,isConsumable,quantity,autodeq,alert)
     init();  
 }
 
-async function putItem(itemID,name,isConsumable,quantity,autodeq,alert){
+async function putItem(itemID,name,isConsumable,quantity,autodeq,alert,favourite){
+    itemID = parseInt(itemID);
+    quantity = parseInt(quantity);
+    
     let res = await fetch(`/api/categories/${id}/items`,{
         method : 'PUT',
         header : {'ContentType' : 'application/json'},
@@ -64,7 +67,8 @@ async function putItem(itemID,name,isConsumable,quantity,autodeq,alert){
             "quantity": quantity,
             "consumable": isConsumable,
             "alertDeqTime": autodeq,
-            "alert":alert
+            "alert":alert,
+            "favourite":favourite
         })
     });
     init();
@@ -112,7 +116,7 @@ function editItemConsumable(itemID){
     var autodeq = document.getElementById(`item-dec-quantity-interval-${itemID}`).value;
     var alert = document.getElementById(`item-alert-input-${itemID}`).checked;
     console.log("INTRI??",itemID,name,true,quantity,autodeq,alert);
-    putItem(itemID,name,true,quantity,autodeq,alert);  
+    putItem(itemID,name,true,quantity,autodeq,alert,false);  
 
 }
 function editItemDevice(itemID){
@@ -120,7 +124,7 @@ function editItemDevice(itemID){
     var checkTime = document.getElementById(`item-check-time-interval-${itemID}`).value;
     var alert = document.getElementById(`item-alert-input-${itemID}`).checked;
     console.log("INTRI??",itemID,name,false,1,checkTime,alert);
-    putItem(itemID,name,false,1,checkTime,alert)
+    putItem(itemID,name,false,1,checkTime,alert,false)
 }
 
 function printItems(){
@@ -260,7 +264,7 @@ function printItems(){
                                     <button onclick="openEditPopup('edit-popup-${item.id}');">Edit Item</button>
                                 </div>
                                 <div class="view-button" id="view-schedule">
-                                    <button>Schedule Check</button>
+                                    <button onclick="putItem('${item.id}','${item.name}','${item.quantity}','${item.consumable}','${item.alertDeqTime}','${item.alert}','true')">Add to Favourites</button>
                                 </div>
                             </div>
                             <div class="lower-buttons">

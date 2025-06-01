@@ -193,7 +193,7 @@ function printItems(){
                             </select>
                         </div>
                         <div class="checkbox-div" id="item-alert">
-                            <input  class="custom-checkbox" id="item-alert-input-${item.id}" required="required" ${checkAlert(item.alert)} type="checkbox"> <p class="item-inputs-titles" id="item-alert-p">Enable Alert</p> 
+                            <input  class="custom-checkbox" id="item-alert-input-${item.id}" required="required" ${checkAlert(item.alert)} ${console.log("check alert: ",checkAlert(item.alert))} type="checkbox"> <p class="item-inputs-titles" id="item-alert-p">Enable Alert</p> 
                         </div>
                         <div class="add-item-popup-buttons-div">
                             <div class = "add-item-popup-button-edit" id="add-item-add-button"> <button class = "add-item-button-text-edit" onclick="editItemDevice(${item.id},'${item.favourite}'); "; closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
@@ -251,7 +251,7 @@ function printItems(){
                                     <button onclick="openEditPopup('edit-popup-${item.id}');">Edit Item</button>
                                 </div>
                                 <div class="view-button" id="view-schedule">
-                                    <button onclick="putItem('${item.id}','${item.name}','${item.consumable}','${item.quantity}','${item.alertDeqTime}','${item.alert}','true')">Add to Favourites</button>
+                                    <button onclick="putItem('${item.id}','${item.name}','${item.consumable}','${item.quantity}','${item.alertDeqTime}','${item.alert}','${checkFavouriteTrueFalse(item.favourite)}')">${checkFavourite(item.favourite)}</button>
                                 </div>
                             </div>
                             <div class="lower-buttons">
@@ -268,7 +268,7 @@ function printItems(){
         <div class="item" id="item-${item.id}">
                         <div class="above-buttons">
                             <div class="item-picture">
-                                <img src=${checkFavourite(item.favourite)} alt="Light Bulb" class="item-image" id="item-image-${item.id}">
+                                <img src=${checkFavouriteImage(item.favourite)} alt="Light Bulb" class="item-image" id="item-image-${item.id}">
                             </div>
                             <div class="item-name" id="item-name-${item.id}">
                                 <p id="item-name-name">${item.name}</p>
@@ -278,7 +278,12 @@ function printItems(){
                                 <span class="item-number">${item.quantity}</span> in stock
                             </div>
                             <div class="item-alert" id="item-alert-${item.id}">
-                                <img src="Images/check.png" alt="Check" class="item-alert-image"> Alert
+                                <div class="item-alert-image" id="item-alert-image-${item.id}">
+                                    <img src=${checkAlertImage(item.alert)} alt="Check" class="item-alert-image">
+                                </div> 
+                                <div class="item-alert-text" id="item-alert-text-${item.id}"> 
+                                    Alert
+                                </div>
                             </div>
                         </div>
                         <div class="item-delete-text" id="delete-text-${item.id}">
@@ -332,8 +337,14 @@ function checkConsumable(consumable){
 
 function checkAlert(alert){
     if(alert === true)
-        return `checked`;
+        return "checked";
     return "";
+}
+
+function checkAlertImage(alert){
+    if(alert)
+        return "Images/alertOn.png"
+    return "Images/alertOff.png"
 }
 
 
@@ -484,8 +495,20 @@ function createCanvas(ItemID){
         }
     });
 }
-function checkFavourite(favourite){
-    if(favourite==true)
+function checkFavouriteImage(favourite){
+    if(favourite)
         return "Images/fullStar.png";
     return "Images/emptyStar.png";
+}
+
+function checkFavourite(favourite){
+    if(favourite)
+        return "Remove Favourite";
+    return "Add Favourite";
+}
+
+function checkFavouriteTrueFalse(favourite){
+    if(favourite)
+        return "false";
+    return "true";
 }

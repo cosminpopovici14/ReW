@@ -38,7 +38,7 @@
           "name": "12345",
           "quantity": 1,
           "consumable": false,
-          "alertDeqTime": "30d",
+          "alertDeqTime": "14d",
           "alert": false,
           "favourite": true
         },
@@ -49,7 +49,7 @@
           "consumable": false,
           "alertDeqTime": "7d",
           "alert": false,
-          "favourite": true
+          "favourite": false
         },
         {
           "id": 3,
@@ -63,10 +63,19 @@
         {
           "id": 4,
           "name": "nv",
-          "quantity": 2,
-          "consumable": true,
+          "quantity": 1,
+          "consumable": false,
           "alertDeqTime": "noalert",
-          "alert": false
+          "alert": false,
+          "favourite": true
+        },
+        {
+          "id": 5,
+          "name": "",
+          "quantity": 1,
+          "consumable": false,
+          "alertDeqTime": "off",
+          "alert": true
         }
       ]
     },

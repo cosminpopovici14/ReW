@@ -243,7 +243,7 @@ function printItems(){
                             <div class="graph-title">
                                 <h3>Stock Levels</h3>
                             </div>
-                            <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+                            <canvas id="myChart-${item.id}" style="width:100%;max-width:700px"></canvas>
                         </div>
                         <div class="item-view-buttons">
                             <div class="upper-buttons">
@@ -268,7 +268,7 @@ function printItems(){
         <div class="item" id="item-${item.id}">
                         <div class="above-buttons">
                             <div class="item-picture">
-                                <img src="Images/bec.png" alt="Light Bulb" class="item-image" id="item-image-${item.id}">
+                                <img src=${checkFavourite(item.favourite)} alt="Light Bulb" class="item-image" id="item-image-${item.id}">
                             </div>
                             <div class="item-name" id="item-name-${item.id}">
                                 <p id="item-name-name">${item.name}</p>
@@ -294,7 +294,7 @@ function printItems(){
                                 </div>
                                 <div class="item-view" id="item-view-${item.id}">
                                     <button id="view-button"
-                                    onclick="openItemsPopup('view-${item.id}'); createCanvas()">View</button>
+                                    onclick="openItemsPopup('view-${item.id}'); createCanvas(${item.id})">View</button>
                                 </div>
                             </div>
                         </div>
@@ -461,24 +461,31 @@ function checkSelected(alertDeqTime, option){
 
 
 
-function createCanvas(){
+function createCanvas(ItemID){
     var xValues = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     var yValues = [55, 49, 44, 24, 15, 13, 34, 64, 23, 15, 63, 13];
     var barColors = "#5AC8FA";
-
-    new Chart("myChart", {
+    console.log("Creating canvas");
+    new Chart(`myChart-${ItemID}`, {
         type: "bar",
         data: {
-        labels: xValues,
-        datasets: [{
-        backgroundColor: barColors,
-        data: yValues
-    }]
-    },
-    options: {legend: {display: false},
-        title: {
-        display: true,
-        text: "Stock 2025"
-    }}
-});
+            labels: xValues,
+            datasets: [{
+                backgroundColor: barColors,
+                data: yValues
+            }]
+        },
+        options: {
+            legend: {display: false},
+            title: {
+                display: true,
+                text: "Stock 2025"
+            }
+        }
+    });
+}
+function checkFavourite(favourite){
+    if(favourite==true)
+        return "Images/fullStar.png";
+    return "Images/emptyStar.png";
 }

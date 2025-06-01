@@ -55,9 +55,13 @@ async function postItem(name,isConsumable,quantity,autodeq,alert)
 }
 
 async function putItem(itemID,name,isConsumable,quantity,autodeq,alert,favourite){
+
     itemID = parseInt(itemID);
     quantity = parseInt(quantity);
-    
+    isConsumable=(isConsumable=="true");
+    alert = (alert == "true");
+    favourite = (favourite == "true");
+
     let res = await fetch(`/api/categories/${id}/items`,{
         method : 'PUT',
         header : {'ContentType' : 'application/json'},
@@ -110,21 +114,21 @@ function addItem(){
 
 }
 
-function editItemConsumable(itemID){
+function editItemConsumable(itemID,itemFavourite){
     var name = document.getElementById(`item-name-input-${itemID}`).value;
     var quantity = parseInt(document.getElementById(`item-quantity-input-${itemID}`).value);
     var autodeq = document.getElementById(`item-dec-quantity-interval-${itemID}`).value;
     var alert = document.getElementById(`item-alert-input-${itemID}`).checked;
     console.log("INTRI??",itemID,name,true,quantity,autodeq,alert);
-    putItem(itemID,name,true,quantity,autodeq,alert,false);  
+    putItem(itemID,name,true,quantity,autodeq,alert,itemFavourite);  
 
 }
-function editItemDevice(itemID){
+function editItemDevice(itemID,itemFavourite){
     var name = document.getElementById(`item-name-input-${itemID}`).value;
     var checkTime = document.getElementById(`item-check-time-interval-${itemID}`).value;
     var alert = document.getElementById(`item-alert-input-${itemID}`).checked;
     console.log("INTRI??",itemID,name,false,1,checkTime,alert);
-    putItem(itemID,name,false,1,checkTime,alert,false)
+    putItem(itemID,name,false,1,checkTime,alert,itemFavourite)
 }
 
 function printItems(){
@@ -171,7 +175,7 @@ function printItems(){
                             <input  class="custom-checkbox" id="item-alert-input-${item.id}" required="required" ${checkAlert(item.alert)} type="checkbox"> <p class="item-inputs-titles" id="item-alert-p">Enable Alert</p> 
                         </div>
                         <div class="add-item-popup-buttons-div">
-                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text" onclick="editItemConsumable(${item.id}); "; closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
+                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text" onclick="editItemConsumable(${item.id},'${item.favourite}'); "; closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
                             <div class = "add-item-popup-button" id="add-item-cancel-button"> <button class = "add-item-button-text" onclick ="closeItemsPopup('edit-popup-${item.id}'); ">Cancel</button></div>  
                         </div>
                     </div> 
@@ -209,7 +213,7 @@ function printItems(){
                             <input  class="custom-checkbox" id="item-alert-input-${item.id}" required="required" ${checkAlert(item.alert)} type="checkbox"> <p class="item-inputs-titles" id="item-alert-p">Enable Alert</p> 
                         </div>
                         <div class="add-item-popup-buttons-div">
-                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text" onclick="editItemDevice(${item.id}); "; closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
+                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text" onclick="editItemDevice(${item.id},'${item.favourite}'); "; closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
                             <div class = "add-item-popup-button" id="add-item-cancel-button"> <button class = "add-item-button-text" onclick ="closeItemsPopup('edit-popup-${item.id}'); ">Cancel</button></div>  
                         </div>
                     </div>
@@ -264,7 +268,7 @@ function printItems(){
                                     <button onclick="openEditPopup('edit-popup-${item.id}');">Edit Item</button>
                                 </div>
                                 <div class="view-button" id="view-schedule">
-                                    <button onclick="putItem('${item.id}','${item.name}','${item.quantity}','${item.consumable}','${item.alertDeqTime}','${item.alert}','true')">Add to Favourites</button>
+                                    <button onclick="putItem('${item.id}','${item.name}','${item.consumable}','${item.quantity}','${item.alertDeqTime}','${item.alert}','true')">Add to Favourites</button>
                                 </div>
                             </div>
                             <div class="lower-buttons">

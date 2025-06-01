@@ -500,7 +500,7 @@ footer {
   justify-content: center;
   border-radius: 6px;
   width: 50px;
-  background-color: #b30000;
+  background-color: #ff3b30;
   color: white;
 
 }
@@ -527,6 +527,24 @@ footer {
   justify-content: center;
   border-radius: 7px;
   margin: 4px;
+}
+
+.export-button{
+  display: flex;
+  border-color:#dcdcdc;
+  border-style: solid;
+  border-width: 1px;
+  justify-content: center;
+  border-radius: 7px;
+  margin: 4px;
+  height: 35px;
+  width: 300px;
+  background-color: #4cd964;
+}
+
+#export-btn{
+  background-color: #4cd964;
+  color: white;
 }
 
 .item-view-close{
@@ -623,6 +641,22 @@ footer {
   align-items: center;
 }
 
+.add-item-popup-button-edit{
+  display: flex;
+  border: solid;
+  width: 130px;
+  margin-top:20px;
+  border-radius: 5px;
+  justify-content:center;
+  padding:8px;
+  border-color: #b0b0b0;
+  border-width: thin;
+  height: 60%;
+  background-color: #4cd964;
+}
+
+
+
 .add-item-popup-button{
   display: flex;
   border: solid;
@@ -634,8 +668,8 @@ footer {
   border-color: #b0b0b0;
   border-width: thin;
   height: 60%;
-  
 }
+
 .add-item-button-text{
   font-weight: bold;
   
@@ -769,4 +803,9 @@ input[type="checkbox"] {
 .open-popup{
   visibility:visible;
   transform: scale(1);
+}
+
+.add-item-button-text-edit{
+  background-color: #4cd964;
+  color: white;
 }

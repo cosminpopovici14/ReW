@@ -1,21 +1,4 @@
-
 const params = new URLSearchParams(window.location.search);
-new Chart("myChart", {
-  type: "bar",
-  data: {
-    labels: xValues,
-    datasets: [{
-      backgroundColor: barColors,
-      data: yValues
-    }]
-  },
-  options: {legend: {display: false},
-    title: {
-      display: true,
-      text: "Stock 2025"
-    }}
-});
-
 const id = params.get('categoryID');
 
 console.log(id);
@@ -213,7 +196,7 @@ function printItems(){
                             <input  class="custom-checkbox" id="item-alert-input-${item.id}" required="required" ${checkAlert(item.alert)} type="checkbox"> <p class="item-inputs-titles" id="item-alert-p">Enable Alert</p> 
                         </div>
                         <div class="add-item-popup-buttons-div">
-                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text" onclick="editItemDevice(${item.id},'${item.favourite}'); "; closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
+                            <div class = "add-item-popup-button-edit" id="add-item-add-button"> <button class = "add-item-button-text-edit" onclick="editItemDevice(${item.id},'${item.favourite}'); "; closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
                             <div class = "add-item-popup-button" id="add-item-cancel-button"> <button class = "add-item-button-text" onclick ="closeItemsPopup('edit-popup-${item.id}'); ">Cancel</button></div>  
                         </div>
                     </div>
@@ -272,11 +255,8 @@ function printItems(){
                                 </div>
                             </div>
                             <div class="lower-buttons">
-                                <div class="view-button" id="view-disable-alerts">
-                                    <button>Disable Alerts</button>
-                                </div>
-                                <div class="view-button" id="view-export">
-                                    <button>Export to PDF</button>
+                                <div class="export-button" id="view-export">
+                                    <button id="export-btn">Export to PDF</button>
                                 </div>
                             </div>
                         </div>
@@ -314,7 +294,7 @@ function printItems(){
                                 </div>
                                 <div class="item-view" id="item-view-${item.id}">
                                     <button id="view-button"
-                                    onclick="openItemsPopup('view-${item.id}')">View</button>
+                                    onclick="openItemsPopup('view-${item.id}'); createCanvas()">View</button>
                                 </div>
                             </div>
                         </div>
@@ -341,7 +321,6 @@ function printItems(){
     document.querySelector('.items-info-popup-div').innerHTML = viewHTML;
     document.querySelector('.items').innerHTML = itemsHTML;
 }
-
 
 function checkConsumable(consumable){
     if(consumable == true)
@@ -424,10 +403,6 @@ function openItemModal(id){
     popup.classList.add("open-popup")
 }
 
-var xValues = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-var yValues = [55, 49, 44, 24, 15, 13, 34, 64, 23, 15, 63, 13];
-var barColors = "blue";
-
 
 function openItemsPopup(id ,count){
     let popup=document.getElementById(id);
@@ -484,3 +459,26 @@ function checkSelected(alertDeqTime, option){
     return "";
 }
 
+
+
+function createCanvas(){
+    var xValues = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    var yValues = [55, 49, 44, 24, 15, 13, 34, 64, 23, 15, 63, 13];
+    var barColors = "#5AC8FA";
+
+    new Chart("myChart", {
+        type: "bar",
+        data: {
+        labels: xValues,
+        datasets: [{
+        backgroundColor: barColors,
+        data: yValues
+    }]
+    },
+    options: {legend: {display: false},
+        title: {
+        display: true,
+        text: "Stock 2025"
+    }}
+});
+}

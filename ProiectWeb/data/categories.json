@@ -59,6 +59,14 @@
           "alertDeqTime": "1y",
           "alert": false,
           "favourite": false
+        },
+        {
+          "id": 4,
+          "name": "nv",
+          "quantity": 2,
+          "consumable": true,
+          "alertDeqTime": "noalert",
+          "alert": false
         }
       ]
     },

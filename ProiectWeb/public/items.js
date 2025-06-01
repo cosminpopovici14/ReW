@@ -90,7 +90,7 @@ init();
 
 function addItem(){
     var name = document.getElementById("item-name-input").value;
-    var isConsumable = document.getElementById("item-consmable-input").checked;
+    var isConsumable = document.getElementById("item-consumable-input").checked;
     if(isConsumable == true){
         var quantity = parseInt(document.getElementById("item-quantity-input").value);
         var autodeq = document.getElementById("item-dec-quantity-interval").value;
@@ -106,25 +106,21 @@ function addItem(){
 
 }
 
-function editItem(itemID){
+function editItemConsumable(itemID){
     var name = document.getElementById(`item-name-input-${itemID}`).value;
-    var isConsumable = document.getElementById(`item-consmable-input-${itemID}`).checked;
-    if(isConsumable == true){
-        var quantity = parseInt(document.getElementById(`item-quantity-input-${itemID}`).value);
-        var autodeq = document.getElementById(`item-dec-quantity-interval-${itemID}`).value;
-        var alert = document.getElementById(`item-alert-input-${itemID}`).checked;
-        editOpened=0;
-        console.log("INTRI??",itemID,name,isConsumable,quantity,autodeq,alert);
-        putItem(itemID,name,isConsumable,quantity,autodeq,alert);
-        
-    }
-    else{
-        var checkTime = document.getElementById(`item-check-time-interval-${itemID}`).value;
-        var alert = document.getElementById(`item-alert-input-${itemID}`).checked;
-        console.log("INTRI??",itemID,name,isConsumable,1,checkTime,alert);
-        editOpened=0;
-        putItem(itemID,name,isConsumable,1,checkTime,alert)
-    }
+    var quantity = parseInt(document.getElementById(`item-quantity-input-${itemID}`).value);
+    var autodeq = document.getElementById(`item-dec-quantity-interval-${itemID}`).value;
+    var alert = document.getElementById(`item-alert-input-${itemID}`).checked;
+    console.log("INTRI??",itemID,name,true,quantity,autodeq,alert);
+    putItem(itemID,name,true,quantity,autodeq,alert);  
+
+}
+function editItemDevice(itemID){
+    var name = document.getElementById(`item-name-input-${itemID}`).value;
+    var checkTime = document.getElementById(`item-check-time-interval-${itemID}`).value;
+    var alert = document.getElementById(`item-alert-input-${itemID}`).checked;
+    console.log("INTRI??",itemID,name,false,1,checkTime,alert);
+    putItem(itemID,name,false,1,checkTime,alert)
 }
 
 function printItems(){
@@ -134,61 +130,88 @@ function printItems(){
     let itemsHTML = '';
     console.log("ITEMS:::",items);
     items.forEach(item =>{
-        editHTML+=`
+        if(item.consumable == true)
+        {
+            editHTML+=`
             <div class="edit-item-popup" id="edit-popup-${item.id}">
                         <div class="add-item-image">
                             <img src="Images/cube.png" alt="Cube" class="item-image-cube" >
                         </div>
                         
                         <div class="add-item-popup-title-div">
-                            <h2 id="add-item-popup-title">Edit Item</h2>
+                            <h2 id="add-item-popup-title">Edit Consumable</h2>
                         </div>
                         
                         <div id="item-name-div">
                             <p class="item-inputs-titles" id="item-name-p">Item Name</p> <input class="item-inputs" id="item-name-input-${item.id}" required="required" type="text" value="${item.name}">
                         </div>
-                        <div class="checkbox-div" id="item-is-consumable">
-                            <input class="custom-checkbox"  id="item-consmable-input-${item.id}" required="required" type="checkbox" ${checkConsumableChecked(item.consumable)} > <p class="item-inputs-titles" id="item-consumable-p">Consumable</p> 
-                        </div>
+                        
                         <div id="item-quantity">
-                            <p class="item-inputs-titles" id="item-quantity-p-${item.id}" style="display:none">Quantity</p> <input class="item-inputs" id="item-quantity-input-${item.id}" required="required" type="text" style="display:none" value="${item.quantity}">
+                            <p class="item-inputs-titles" id="item-quantity-p-${item.id}">Quantity</p> <input class="item-inputs" id="item-quantity-input-${item.id}" required="required" type="text"  value="${item.quantity}">
                         </div>
                         <div id="item-date"> 
-                            <p class="item-inputs-titles" id="item-dec-quantity-title-${item.id}"style="display:none">Auto-Decrease Quantity</p> 
-                            <select name="interval" class="item-interval" id="item-dec-quantity-interval-${item.id}" style="display:none" >
-                                <option value="noalert">Off</option>
-                                <option value="7d">7 days</option>
-                                <option value="14d">14 days</option>
-                                <option value="30d">30 days</option>
-                                <option value="60d">60 days</option>
-                                <option value="90d">90 days</option>
-                                <option value="180d">180 days</option>
-                                <option value="1y">1 year</option>
+                            <p class="item-inputs-titles" id="item-dec-quantity-title-${item.id}">Auto-Decrease Quantity</p> 
+                            <select name="interval" class="item-interval" id="item-dec-quantity-interval-${item.id}"  >
+                                <option value="noalert" ${checkSelected(item.alertDeqTime, "noalert")}>Off</option>
+                                <option value="7d" ${checkSelected(item.alertDeqTime, "7d")}>7 days</option>
+                                <option value="14d" ${checkSelected(item.alertDeqTime, "14d")}>14 days</option>
+                                <option value="30d" ${checkSelected(item.alertDeqTime, "30d")}>30 days</option>
+                                <option value="60d" ${checkSelected(item.alertDeqTime, "60d")}>60 days</option>
+                                <option value="90d" ${checkSelected(item.alertDeqTime, "90d")}>90 days</option>
+                                <option value="180d" ${checkSelected(item.alertDeqTime, "180d")}>180 days</option>
+                                <option value="1y" ${checkSelected(item.alertDeqTime, "1y")}>1 year</option>
                                 
                             </select>
                         </div>
-                        <div id="item-date"> 
-                            <p class="item-inputs-titles" id="item-check-time-title-${item.id}">Check Time</p> 
-                            <select name="interval" class="item-interval" id="item-check-time-interval-${item.id}"  >
-                                <option value="off">Off</option>
-                                <option value="7d">7 days</option>
-                                <option value="14d">14 days</option>
-                                <option value="30d">30 days</option>
-                                <option value="60d">60 days</option>
-                                <option value="90d">90 days</option>
-                                <option value="180d">180 days</option>
-                                <option value="1y">1 year</option>  
-                            </select>
-                        </div>
                         <div class="checkbox-div" id="item-alert">
-                            <input  class="custom-checkbox" id="item-alert-input-${item.id}" required="required" type="checkbox"> <p class="item-inputs-titles" id="item-alert-p">Enable Alert</p> 
+                            <input  class="custom-checkbox" id="item-alert-input-${item.id}" required="required" ${checkAlert(item.alert)} type="checkbox"> <p class="item-inputs-titles" id="item-alert-p">Enable Alert</p> 
                         </div>
                         <div class="add-item-popup-buttons-div">
-                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text" onclick="editItem(${item.id}); "; closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
+                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text" onclick="editItemConsumable(${item.id}); "; closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
                             <div class = "add-item-popup-button" id="add-item-cancel-button"> <button class = "add-item-button-text" onclick ="closeItemsPopup('edit-popup-${item.id}'); ">Cancel</button></div>  
                         </div>
                     </div> 
         `
+        }
+        else
+        {
+            editHTML+= `<div class="edit-item-popup" id="edit-popup-${item.id}">
+                        <div class="add-item-image">
+                            <img src="Images/cube.png" alt="Cube" class="item-image-cube" >
+                        </div>
+                        
+                        <div class="add-item-popup-title-div">
+                            <h2 id="add-item-popup-title">Edit Device</h2>
+                        </div>
+                        
+                        <div id="item-name-div">
+                            <p class="item-inputs-titles" id="item-name-p">Item Name</p> <input class="item-inputs" id="item-name-input-${item.id}" required="required" type="text" value="${item.name}">
+                        </div>
+                        
+                        <div id="item-date"> 
+                            <p class="item-inputs-titles" id="item-check-time-title-${item.id}">Check Time</p> 
+                            <select name="interval" class="item-interval" id="item-check-time-interval-${item.id}"  >
+                                <option value="noalert" ${checkSelected(item.alertDeqTime, "noalert")}>Off</option>
+                                <option value="7d" ${checkSelected(item.alertDeqTime, "7d")}>7 days</option>
+                                <option value="14d" ${checkSelected(item.alertDeqTime, "14d")}>14 days</option>
+                                <option value="30d" ${checkSelected(item.alertDeqTime, "30d")}>30 days</option>
+                                <option value="60d" ${checkSelected(item.alertDeqTime, "60d")}>60 days</option>
+                                <option value="90d" ${checkSelected(item.alertDeqTime, "90d")}>90 days</option>
+                                <option value="180d" ${checkSelected(item.alertDeqTime, "180d")}>180 days</option>
+                                <option value="1y" ${checkSelected(item.alertDeqTime, "1y")}>1 year</option>  
+                            </select>
+                        </div>
+                        <div class="checkbox-div" id="item-alert">
+                            <input  class="custom-checkbox" id="item-alert-input-${item.id}" required="required" ${checkAlert(item.alert)} type="checkbox"> <p class="item-inputs-titles" id="item-alert-p">Enable Alert</p> 
+                        </div>
+                        <div class="add-item-popup-buttons-div">
+                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text" onclick="editItemDevice(${item.id}); "; closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
+                            <div class = "add-item-popup-button" id="add-item-cancel-button"> <button class = "add-item-button-text" onclick ="closeItemsPopup('edit-popup-${item.id}'); ">Cancel</button></div>  
+                        </div>
+                    </div>
+                    `;
+        }
+        
         viewHTML+=`<div class="items-popup" id="view-${item.id}">
                         <div class="item-view-title">
                             <h1>${item.name}</h1>
@@ -234,7 +257,7 @@ function printItems(){
                         <div class="item-view-buttons">
                             <div class="upper-buttons">
                                 <div class="view-button" id="view-edit-button">
-                                    <button onclick="openEditPopup('edit-popup-${item.id}'); openInputsIfChecked(${item.id},${item.consumable})">Edit Item</button>
+                                    <button onclick="openEditPopup('edit-popup-${item.id}');">Edit Item</button>
                                 </div>
                                 <div class="view-button" id="view-schedule">
                                     <button>Schedule Check</button>
@@ -319,20 +342,13 @@ function checkConsumable(consumable){
         return "Device";
 
 }
-function checkConsumableChecked(consumable){
-    if(consumable == true)
-    {
-        return "checked";
-    }
-        
+
+function checkAlert(alert){
+    if(alert === true)
+        return `checked`;
     return "";
 }
 
-function openInputsIfChecked(itemID,consumable)
-{
-    if(consumable == true && editOpened == 1)
-        openInputs(itemID);
-}
 
 
 function openPopup(id){
@@ -428,15 +444,14 @@ function openPopup(id ,count){
 
 
 
-function openInputs(itemID) {
-  console.log(editOpened);
-  var checkBox = document.getElementById(`item-consmable-input-${itemID}`);
-  var textQuantityP = document.getElementById(`item-quantity-p-${itemID}`);
-  var textQuantityI = document.getElementById(`item-quantity-input-${itemID}`);
-  var textDecQuantityT = document.getElementById(`item-dec-quantity-title-${itemID}`);
-  var textDecQuantityI = document.getElementById(`item-dec-quantity-interval-${itemID}`);
-  var textCheckTimeT = document.getElementById(`item-check-time-title-${itemID}`);
-  var textCheckTimei = document.getElementById(`item-check-time-interval-${itemID}`);
+function openInputs() {
+  var checkBox = document.getElementById(`item-consumable-input`);
+  var textQuantityP = document.getElementById(`item-quantity-p`);
+  var textQuantityI = document.getElementById(`item-quantity-input`);
+  var textDecQuantityT = document.getElementById(`item-dec-quantity-title`);
+  var textDecQuantityI = document.getElementById(`item-dec-quantity-interval`);
+  var textCheckTimeT = document.getElementById(`item-check-time-title`);
+  var textCheckTimei = document.getElementById(`item-check-time-interval`);
   if (checkBox.checked == true){
     textQuantityP.style.display = "block";
     textQuantityI.style.display = "block";
@@ -454,3 +469,10 @@ function openInputs(itemID) {
     textCheckTimei.style.display = "block";
   }
 }
+
+function checkSelected(alertDeqTime, option){
+    if(alertDeqTime === option)
+        return `selected="selected"`;
+    return "";
+}
+

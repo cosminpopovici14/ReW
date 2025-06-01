@@ -15,7 +15,8 @@
           "quantity": 123,
           "consumable": true,
           "alertDeqTime": "7d",
-          "alert": false
+          "alert": false,
+          "favourite": false
         },
         {
           "id": 2,
@@ -23,7 +24,8 @@
           "quantity": 123,
           "consumable": true,
           "alertDeqTime": "7d",
-          "alert": true
+          "alert": true,
+          "favourite": false
         }
       ]
     },
@@ -33,27 +35,30 @@
       "items": [
         {
           "id": 1,
-          "name": "123",
+          "name": "12345",
           "quantity": 1,
           "consumable": true,
-          "alertDeqTime": "noalert",
-          "alert": false
+          "alertDeqTime": "30d",
+          "alert": true,
+          "favourite": false
         },
         {
           "id": 2,
           "name": "123",
           "quantity": 3,
           "consumable": true,
-          "alertDeqTime": "noalert",
-          "alert": false
+          "alertDeqTime": "7d",
+          "alert": false,
+          "favourite": false
         },
         {
           "id": 3,
           "name": "asd",
           "quantity": 1,
           "consumable": false,
-          "alertDeqTime": "off",
-          "alert": false
+          "alertDeqTime": "1y",
+          "alert": true,
+          "favourite": false
         }
       ]
     },
@@ -67,7 +72,8 @@
           "quantity": 1,
           "consumable": false,
           "alertDeqTime": "off",
-          "alert": false
+          "alert": false,
+          "favourite": false
         }
       ]
     }

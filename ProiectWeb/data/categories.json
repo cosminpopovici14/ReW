@@ -11,12 +11,12 @@
       "items": [
         {
           "id": 1,
-          "name": 1,
-          "quantity": 123,
-          "consumable": true,
+          "name": "1",
+          "quantity": 1,
+          "consumable": false,
           "alertDeqTime": "7d",
-          "alert": false,
-          "favourite": false
+          "alert": true,
+          "favourite": true
         },
         {
           "id": 2,
@@ -26,6 +26,14 @@
           "alertDeqTime": "7d",
           "alert": true,
           "favourite": true
+        },
+        {
+          "id": 3,
+          "name": "",
+          "quantity": 1,
+          "consumable": false,
+          "alertDeqTime": "off",
+          "alert": false
         }
       ]
     },
@@ -35,16 +43,16 @@
       "items": [
         {
           "id": 1,
-          "name": "12345",
+          "name": "coco",
           "quantity": 1,
-          "consumable": false,
-          "alertDeqTime": "14d",
-          "alert": false,
+          "consumable": "false",
+          "alertDeqTime": "7d",
+          "alert": "true",
           "favourite": true
         },
         {
           "id": 2,
-          "name": "123",
+          "name": "matei",
           "quantity": 1,
           "consumable": false,
           "alertDeqTime": "7d",
@@ -53,29 +61,12 @@
         },
         {
           "id": 3,
-          "name": "asd",
-          "quantity": 1,
-          "consumable": false,
-          "alertDeqTime": "1y",
-          "alert": false,
+          "name": "asd123",
+          "quantity": 123,
+          "consumable": true,
+          "alertDeqTime": "7d",
+          "alert": true,
           "favourite": false
-        },
-        {
-          "id": 4,
-          "name": "nv",
-          "quantity": 1,
-          "consumable": false,
-          "alertDeqTime": "noalert",
-          "alert": false,
-          "favourite": true
-        },
-        {
-          "id": 5,
-          "name": "",
-          "quantity": 1,
-          "consumable": false,
-          "alertDeqTime": "off",
-          "alert": true
         }
       ]
     },

@@ -41,8 +41,6 @@ async function putItem(itemID,name,isConsumable,quantity,autodeq,alert,favourite
 
     itemID = parseInt(itemID);
     quantity = parseInt(quantity);
-    isConsumable=(isConsumable=="true");
-    alert = (alert == "true");
     favourite = (favourite == "true");
 
     let res = await fetch(`/api/categories/${id}/items`,{

@@ -222,7 +222,7 @@ function printItems(){
                                     ${item.quantity}
                                 </div>
                                 <div class="quantity-date">
-                                    Sep 20, 2025
+                                    ${getCurrentDate()}
                                 </div>
                             </div>
                             <div class="item-view-added">
@@ -509,4 +509,17 @@ function checkFavouriteTrueFalse(favourite){
     if(favourite)
         return "false";
     return "true";
+}
+
+function getCurrentDate(){
+    const date = new Date();
+
+    const [month, day, year] = [
+        date.toLocaleDateString('default', {month: 'short'}),
+        date.getDate(),
+        date.getFullYear(),
+    ];
+    
+    var stringDate = day + " " + month + " " + year;
+    return(stringDate);
 }

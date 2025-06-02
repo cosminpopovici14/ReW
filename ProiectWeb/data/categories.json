@@ -76,12 +76,27 @@
       "items": [
         {
           "id": 1,
-          "name": "",
+          "name": "Lapte",
+          "quantity": 2,
+          "consumable": true,
+          "alertDeqTime": "7d",
+          "alert": true
+        },
+        {
+          "id": 2,
+          "name": "Oua",
+          "quantity": 20,
+          "consumable": true,
+          "alertDeqTime": "14d",
+          "alert": true
+        },
+        {
+          "id": 3,
+          "name": "Toaster",
           "quantity": 1,
           "consumable": false,
-          "alertDeqTime": "off",
-          "alert": false,
-          "favourite": false
+          "alertDeqTime": "1y",
+          "alert": false
         }
       ]
     }

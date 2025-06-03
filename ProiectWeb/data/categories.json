@@ -14,26 +14,42 @@
           "name": "1",
           "quantity": 1,
           "consumable": false,
-          "alertDeqTime": "7d",
+          "alertDeqTime": "14d",
           "alert": true,
-          "favourite": true
+          "favourite": true,
+          "lastCheckDate": "2025-06-03T21:07:36.001Z"
         },
         {
           "id": 2,
           "name": "test",
-          "quantity": 123,
+          "quantity": 32,
           "consumable": true,
           "alertDeqTime": "7d",
           "alert": true,
-          "favourite": true
+          "favourite": true,
+          "date": "test",
+          "lastCheckDate": "asdasd"
         },
         {
           "id": 3,
-          "name": "",
+          "name": "asd",
+          "quantity": 122,
+          "consumable": true,
+          "alertDeqTime": "noalert",
+          "alert": false,
+          "favourite": true,
+          "date": "2025-06-03T19:44:29.228Z",
+          "lastCheckDate": "asdasd"
+        },
+        {
+          "id": 4,
+          "name": "asd",
           "quantity": 1,
           "consumable": false,
-          "alertDeqTime": "off",
-          "alert": false
+          "alertDeqTime": "7d",
+          "alert": true,
+          "date": "2025-06-03T21:08:08.299Z",
+          "lastCheckDate": "2025-06-03T21:08:13.166Z"
         }
       ]
     },
@@ -54,9 +70,9 @@
           "id": 2,
           "name": "matei",
           "quantity": 1,
-          "consumable": false,
+          "consumable": "false",
           "alertDeqTime": "7d",
-          "alert": false,
+          "alert": "false",
           "favourite": false
         },
         {
@@ -86,7 +102,7 @@
           "id": 2,
           "name": "Oua",
           "quantity": 20,
-          "consumable": true,
+          "consumable": false,
           "alertDeqTime": "14d",
           "alert": true
         },

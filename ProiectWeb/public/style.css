@@ -465,8 +465,14 @@ footer {
   height: min-content;
 
 }
-
-
+.item-view-category-name{
+  display: flex;
+  justify-content: center;
+}
+.item-view-item-name{
+  display: flex;
+  justify-content: center;
+}
 .item-view-info{
   border-bottom: 1px solid 	#D3D3D3;
   height: 80%;
@@ -476,6 +482,10 @@ footer {
 .item-view-quantity{
   display: flex;
   justify-content: space-between;
+}
+.item-view-quantity-device{
+  display: flex;
+  justify-content: center;
 }
 .quantity-title{
   opacity: 0.7;
@@ -489,6 +499,11 @@ footer {
 .item-view-added{
   display: flex;
   justify-content: space-between;
+  margin-top: 10px;
+}
+.item-view-added-device{
+  display: flex;
+  justify-content: center;
   margin-top: 10px;
 }
  .added-date{
@@ -529,7 +544,19 @@ footer {
   margin: 4px;
 }
 
-.export-button{
+.export-button-devices{
+  display: flex;
+  border-color:#dcdcdc;
+  border-style: solid;
+  border-width: 1px;
+  justify-content: center;
+  border-radius: 7px;
+  margin: 4px;
+  height: 35px;
+  width: 145px;
+  background-color: #4cd964;
+}
+.export-button-consumables{
   display: flex;
   border-color:#dcdcdc;
   border-style: solid;
@@ -541,7 +568,22 @@ footer {
   width: 300px;
   background-color: #4cd964;
 }
-
+.check-button{
+  display: flex;
+  border-color:#dcdcdc;
+  border-style: solid;
+  border-width: 1px;
+  justify-content: center;
+  border-radius: 7px;
+  margin: 4px;
+  height: 35px;
+  width: 145px;
+  background-color: #5AC8FA;
+}
+#check-btn{
+  background-color: #5AC8FA;
+  color: white;
+}
 #export-btn{
   background-color: #4cd964;
   color: white;
@@ -807,4 +849,43 @@ input[type="checkbox"] {
 .add-item-button-text-edit{
   background-color: #4cd964;
   color: white;
+}
+
+.item-view-condition{
+
+
+  display:grid;
+}
+.item-view-conditon-title{
+  display: flex;
+  font-weight: bold;
+  justify-content: center;
+}
+.item-view-condition-conditions{
+
+  display: grid;
+}
+.item-view-condition-text{
+  margin:5%;
+  display: flex;
+  justify-content: flex-start;
+
+  align-items: center;
+  height: 20px;
+}
+
+.opacity-lowered{
+  opacity: 0.8;
+}
+.item-view-condition-image{
+  height: auto;
+  width: auto;
+  max-width: 40px;
+  max-height: 40px;
+  margin-right: 10px;
+}
+
+.view-condition-text-item{
+  margin-left:3px;
+  margin-right: 3px;
 }

@@ -199,7 +199,8 @@ const server = http.createServer((req, res) => {
                 quantity: newItem.quantity, 
                 consumable:newItem.consumable, 
                 alertDeqTime:newItem.alertDeqTime, 
-                alert:newItem.alert 
+                alert:newItem.alert,
+                date:newItem.date 
             });
 
             fs.writeFile('./data/categories.json', JSON.stringify(parsed,null,2), () => {
@@ -237,7 +238,38 @@ const server = http.createServer((req, res) => {
                     editedItem.consumable,
                     editedItem.alertDeqTime,
                     editedItem.alert,
-                    editedItem.favourite)=== false)
+                    editedItem.favourite,
+                    editedItem.date)=== false)
+                {
+                    res.writeHead(404);
+                    res.end('ID Not Found');
+                    return;
+                }
+                fs.writeFile('./data/categories.json', JSON.stringify(parsed,null,2), () => {
+                res.writeHead(201);
+                res.end();
+                });     
+            });
+        });
+        return;
+    }
+     if(req.method === 'PATCH' && /^\/api\/categories\/\d+\/items$/.test(req.url)){
+  
+        let id = parseInt(req.url.split('/',5)[3]);
+        let body = '';
+        req.on('data', chunk => (body+=chunk));
+        req.on('end', ()=>{
+            const editedItem = JSON.parse(body);
+            
+            fs.readFile('./data/categories.json', 'utf-8', (err,data)=>{
+                if (err) {
+                    res.writeHead(500);
+                    res.end('Server Error');
+                    return;
+                }
+                const parsed = JSON.parse(data || '{categories: []}');
+                let myCategory = parsed.categories.find(c => c.id === id);
+                if(editItem(myCategory.items,editedItem)=== false)
                 {
                     res.writeHead(404);
                     res.end('ID Not Found');
@@ -343,23 +375,52 @@ function deleteCategory(obj,objId){
     
 }
 
-function changeItem(obj,objId,newName,newQuantity,newConsumable,newAlertDeqTime,newAlert,newFavourite){
+function changeItem(obj,objId,newName,newQuantity,newConsumable,newAlertDeqTime,newAlert,newFavourite,newDate){
     let ok=0;
     obj.forEach(obj=>{
-        if(obj.id===objId){
+        if(obj.id==objId){
             obj.name=newName;
             obj.quantity=newQuantity;
             obj.consumable=newConsumable;
             obj.alertDeqTime=newAlertDeqTime;
             obj.alert=newAlert;
-            obj.favourite = newFavourite
+            obj.favourite = newFavourite;
+            obj.date = newDate;
             ok=1;
         }
     });
-    if(ok===1) return true;
+    if(ok==1) return true;
     return false;
 }
 
+function editItem(obj, editedObj){
+    let ok=0;
+    console.log(editedObj);
+    obj.forEach(obj=>{
+        if(obj.id == editedObj.id)
+        {
+            if(editedObj.name)
+                obj.name = editedObj.name;
+            else if(editedObj.quantity)
+                obj.quantity = editedObj.quantity;
+            else if(editedObj.consumable === true || editedObj.consumable === false)
+                obj.consumable = editedObj.consumable;
+            else if(editedObj.alertDeqTime)
+                obj.alertDeqTime = editedObj.alertDeqTime;
+            else if(editedObj.alert=== true || editedObj.alert === false)
+                obj.alert = editedObj.alert ;
+            else if(editedObj.favourite=== true || editedObj.favourite === false)
+                obj.favourite = editedObj.favourite ;
+            else if(editedObj.date)
+                obj.date = editedObj.date;
+            else if(editedObj.lastCheckDate)
+                obj.lastCheckDate = editedObj.lastCheckDate;
+            ok=1;
+        }
+    });
+    if(ok==1) return true;
+    return false;
+}
 
 
 //POST - CREATE

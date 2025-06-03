@@ -19,7 +19,7 @@ async function init()
 }
 
 
-async function postItem(name,isConsumable,quantity,autodeq,alert)
+async function postItem(name,isConsumable,quantity,autodeq,alert,date)
 {
     
         let res = await fetch(`/api/categories/${id}/items`,{
@@ -31,18 +31,20 @@ async function postItem(name,isConsumable,quantity,autodeq,alert)
             "quantity": quantity,
             "consumable": isConsumable,
             "alertDeqTime": autodeq,
-            "alert":alert
+            "alert":alert,
+            "date":date
         })
     })
     init();  
 }
 
-async function putItem(itemID,name,isConsumable,quantity,autodeq,alert,favourite){
+
+async function putItem(itemID,name,isConsumable,quantity,autodeq,alert,favourite,date){
 
     itemID = parseInt(itemID);
     quantity = parseInt(quantity);
     favourite = (favourite == "true");
-
+    isConsumable = (isConsumable == "true");
     let res = await fetch(`/api/categories/${id}/items`,{
         method : 'PUT',
         header : {'ContentType' : 'application/json'},
@@ -53,7 +55,8 @@ async function putItem(itemID,name,isConsumable,quantity,autodeq,alert,favourite
             "consumable": isConsumable,
             "alertDeqTime": autodeq,
             "alert":alert,
-            "favourite":favourite
+            "favourite":favourite,
+            "date": date
         })
     });
     init();
@@ -71,7 +74,18 @@ async function deleteItem(idDeleted)
     init();
 }
 
-
+async function patchDeviceCheck(itemID){
+    const date = new Date();
+    let res = await fetch(`/api/categories/${id}/items`,{
+        method : 'PATCH',
+        header : {'ContentType' : 'application/json'},
+        body : JSON.stringify({
+            "id" : itemID,
+            "lastCheckDate": date
+        })
+    });
+    init(); 
+}
 
 init();
 
@@ -80,36 +94,43 @@ init();
 function addItem(){
     var name = document.getElementById("item-name-input").value;
     var isConsumable = document.getElementById("item-consumable-input").checked;
+    const date = new Date();
     if(isConsumable == true){
         var quantity = parseInt(document.getElementById("item-quantity-input").value);
         var autodeq = document.getElementById("item-dec-quantity-interval").value;
         var alert = document.getElementById("item-alert-input").checked;
         console.log(name,isConsumable,quantity,autodeq,alert)
-        postItem(name,isConsumable,quantity,autodeq,alert);
+        postItem(name,isConsumable,quantity,autodeq,alert,date);
     }
     else{
         var checkTime = document.getElementById("item-check-time-interval").value;
         var alert = document.getElementById("item-alert-input").checked;
-        postItem(name,isConsumable,1,checkTime,alert)
+        postItem(name,isConsumable,1,checkTime,alert,date)
     }
 
 }
 
-function editItemConsumable(itemID,itemFavourite){
+function editItemConsumable(itemID,itemFavourite,itemQuantity,itemDate){
     var name = document.getElementById(`item-name-input-${itemID}`).value;
     var quantity = parseInt(document.getElementById(`item-quantity-input-${itemID}`).value);
     var autodeq = document.getElementById(`item-dec-quantity-interval-${itemID}`).value;
     var alert = document.getElementById(`item-alert-input-${itemID}`).checked;
-    console.log("INTRI??",itemID,name,true,quantity,autodeq,alert);
-    putItem(itemID,name,true,quantity,autodeq,alert,itemFavourite);  
+    var date;
+    if(itemQuantity!=quantity)
+        date = new Date();
+    else 
+        date = itemDate;
+    console.log("INTRI?? editItemConsumable",itemID,name,true,quantity,autodeq,alert);
+    putItem(itemID,name,"true",quantity,autodeq,alert,itemFavourite,date);  
+    } 
 
-}
+
 function editItemDevice(itemID,itemFavourite){
     var name = document.getElementById(`item-name-input-${itemID}`).value;
     var checkTime = document.getElementById(`item-check-time-interval-${itemID}`).value;
     var alert = document.getElementById(`item-alert-input-${itemID}`).checked;
     console.log("INTRI??",itemID,name,false,1,checkTime,alert);
-    putItem(itemID,name,false,1,checkTime,alert,itemFavourite)
+    putItem(itemID,name,"false",1,checkTime,alert,itemFavourite)
 }
 
 function printItems(){
@@ -156,7 +177,7 @@ function printItems(){
                             <input  class="custom-checkbox" id="item-alert-input-${item.id}" required="required" ${checkAlert(item.alert)} type="checkbox"> <p class="item-inputs-titles" id="item-alert-p">Enable Alert</p> 
                         </div>
                         <div class="add-item-popup-buttons-div">
-                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text" onclick="editItemConsumable(${item.id},'${item.favourite}'); "; closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
+                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text" onclick="editItemConsumable(${item.id},'${item.favourite}','${item.quantity}','${item.date}'); "; closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
                             <div class = "add-item-popup-button" id="add-item-cancel-button"> <button class = "add-item-button-text" onclick ="closeItemsPopup('edit-popup-${item.id}'); ">Cancel</button></div>  
                         </div>
                     </div> 
@@ -201,9 +222,10 @@ function printItems(){
                     `;
         }
         
-        viewHTML+=`<div class="items-popup" id="view-${item.id}">
+        if(item.consumable == true){
+            viewHTML+=`<div class="items-popup" id="view-${item.id}">
                         <div class="item-view-title">
-                            <h1>${item.name}</h1>
+                            <h1 class="item-view-item-name">${item.name}</h1>
                             <div class="item-view-category">
                                 <div class="item-view-category-title">
                                     Category
@@ -230,7 +252,7 @@ function printItems(){
                                     Added
                                 </div>
                                 <div class="added-date">
-                                    1 Sep 2025
+                                     ${getAddedDate(item.date)}
                                 </div>
                                 <div class="added-alert">
                                     Alert
@@ -249,11 +271,11 @@ function printItems(){
                                     <button onclick="openEditPopup('edit-popup-${item.id}');">Edit Item</button>
                                 </div>
                                 <div class="view-button" id="view-schedule">
-                                    <button onclick="putItem('${item.id}','${item.name}','${item.consumable}','${item.quantity}','${item.alertDeqTime}','${item.alert}','${checkFavouriteTrueFalse(item.favourite)}')">${checkFavourite(item.favourite)}</button>
+                                    <button onclick="putItem('${item.id}','${item.name}','${item.consumable}','${item.quantity}','${item.alertDeqTime}',${item.alert},'${checkFavouriteTrueFalse(item.favourite)}','${item.date}')">${checkFavourite(item.favourite)}</button>
                                 </div>
                             </div>
                             <div class="lower-buttons">
-                                <div class="export-button" id="view-export">
+                                <div class="export-button-consumables" id="view-export">
                                     <button id="export-btn">Export to PDF</button>
                                 </div>
                             </div>
@@ -262,6 +284,77 @@ function printItems(){
                             <button onclick="closeItemsPopup('view-${item.id}')">Close</button>
                         </div>
                     </div>`
+        }
+        else
+        {
+            viewHTML+=`<div class="items-popup" id="view-${item.id}">
+                        <div class="item-view-title">
+                            <h1 class="item-view-item-name">${item.name}</h1>
+                            <div class="item-view-category">
+                                <div class="item-view-category-title">
+                                    Category
+                                </div>
+                                <div class="item-view-category-name">
+                                    ${category.name}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item-view-info">
+                            <div class="item-view-quantity-device">
+                                <div class="quantity-date">
+                                    ${getCurrentDate()}
+                                </div>
+                            </div>
+                            <div class="item-view-added-device">
+                                
+                                <div class="added-alert">
+                                    Alert
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item-view-condition">
+                            <div class="item-view-conditon-title"> <h2>Device Condition</h2> </div>
+                            <div class="item-view-condition-conditions">
+                                <div class="item-view-condition-text">
+                                    <img src= ${verifyCheckStatusImage(item.lastCheckDate, item.alertDeqTime)} alt="Light Bulb" class="item-view-condition-image view-condition-text-item" id="item-view-condition-check">
+                                    <div class="opacity-lowered view-condition-text-item"> Status: </div> 
+                                    <h3 class="view-condition-text-item"> ${verifyCheckStatusText(item.lastCheckDate, item.alertDeqTime)} </h3>
+                                </div>
+                                <div class="item-view-condition-text ">
+                                    <img src= "Images/device_clock.png" alt="Light Bulb" class="item-view-condition-image view-condition-text-item" "> 
+                                    <div class="opacity-lowered view-condition-text-item"> Last Checked: </div>
+                                    <h3 class="view-condition-text-item"> ${getAddedDate(item.lastCheckDate)} </h3> 
+                                </div>
+                                <div class="item-view-condition-text"> 
+                                    <img src= "Images/device_calendar.png" alt="Light Bulb" class="item-view-condition-image view-condition-text-item" "> 
+                                    <div class="opacity-lowered view-condition-text-item"> Next Check: </div>
+                                    <h3 class="view-condition-text-item"> ${getAddedDate(getCheckDate(item.lastCheckDate,item.alertDeqTime))} </h3> 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item-view-buttons">
+                            <div class="upper-buttons">
+                                <div class="view-button" id="view-edit-button">
+                                    <button onclick="openEditPopup('edit-popup-${item.id}');">Edit Item</button>
+                                </div>
+                                <div class="view-button" id="view-schedule">
+                                    <button onclick="putItem('${item.id}','${item.name}','${item.consumable}','${item.quantity}','${item.alertDeqTime}',${item.alert},'${checkFavouriteTrueFalse(item.favourite)}','${item.date}')">${checkFavourite(item.favourite)}</button>
+                                </div>
+                            </div>
+                            <div class="lower-buttons">
+                                <div class="export-button-devices" id="view-export">
+                                    <button id="export-btn">Export to PDF</button>
+                                </div>
+                                <div class="check-button" id="view-check">
+                                    <button id="check-btn" onclick="patchDeviceCheck(${item.id})">Confirm Check</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item-view-close">
+                            <button onclick="closeItemsPopup('view-${item.id}')">Close</button>
+                        </div>
+                    </div>`
+        }
         itemsHTML+= `
         <div class="item" id="item-${item.id}">
                         <div class="above-buttons">
@@ -522,4 +615,63 @@ function getCurrentDate(){
     
     var stringDate = day + " " + month + " " + year;
     return(stringDate);
+}
+function getAddedDate(date){
+    const dateObj = new Date(date);
+    const [month, day, year] = [
+        dateObj.toLocaleDateString('default', {month: 'short'}),
+        dateObj.getDate(),
+        dateObj.getFullYear(),
+    ];
+    var stringDate = day + " " + month + " " + year;
+    return(stringDate);
+
+}
+function getCheckDate(itemLastCheckDate, itemAlertDeqTime){
+    if(itemAlertDeqTime == "noalert")
+        return "No Check Set"
+    if(itemAlertDeqTime == "7d")
+        var res = addDays(itemLastCheckDate, 7);
+    if(itemAlertDeqTime == "14d")
+        var res = addDays(itemLastCheckDate, 14);
+    if(itemAlertDeqTime == "30d")
+        var res = addDays(itemLastCheckDate, 30);
+    if(itemAlertDeqTime == "60d")
+        var res = addDays(itemLastCheckDate, 60);
+    if(itemAlertDeqTime == "90d")
+        var res = addDays(itemLastCheckDate, 90);
+    if(itemAlertDeqTime == "180d")
+        var res = addDays(itemLastCheckDate, 180);
+    if(itemAlertDeqTime == "1y")
+        var res = addDays(itemLastCheckDate, 365);
+    return res;
+}
+function addDays(date, days){
+    var result = new Date(date);
+    console.log("before:", result)
+    result.setDate(result.getDate() + days);
+    console.log("addDays:", result);
+    return result;
+}
+
+function verifyCheckStatusImage(itemLastCheckDate, itemAlertDeqTime){
+    let res = getCheckDate(itemLastCheckDate,itemAlertDeqTime);
+    let verifyDate = new Date(res);
+    let date = new Date();
+    console.log("verifyDate:", verifyDate);
+    console.log("itemLastCheckDate:", itemLastCheckDate);
+    if(date >= verifyDate)
+       return "Images/device_check_bad.png";
+    return "Images/device_check_good.png"
+}
+
+function verifyCheckStatusText(itemLastCheckDate, itemAlertDeqTime){
+    let res = getCheckDate(itemLastCheckDate,itemAlertDeqTime);
+    let verifyDate = new Date(res);
+    let date = new Date();
+    console.log("verifyDate:", verifyDate);
+    console.log("itemLastCheckDate:", itemLastCheckDate);
+    if(date >= verifyDate)
+       return "Check Item";
+    return "OK";
 }

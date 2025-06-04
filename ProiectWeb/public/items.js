@@ -26,25 +26,26 @@ async function postItem(name,isConsumable,quantity,autodeq,alert,date)
         method : 'POST',
         header : {'ContentType' : 'application/json'},
         body : JSON.stringify({
-            "id" : id,
             "name" : name,
             "quantity": quantity,
             "consumable": isConsumable,
-            "alertDeqTime": autodeq,
+            "alertdeqtime": autodeq,
             "alert":alert,
-            "date":date
+            "date":date,
+            "lastcheckdate" : "No Check Yet"
         })
     })
     init();  
 }
 
 
-async function putItem(itemID,name,isConsumable,quantity,autodeq,alert,favourite,date){
+async function putItem(itemID,name,isConsumable,quantity,autodeq,alert,favourite,date,lastcheckdate){
 
     itemID = parseInt(itemID);
     quantity = parseInt(quantity);
     favourite = (favourite == "true");
     isConsumable = (isConsumable == "true");
+    console.log("PUT:::",lastcheckdate);
     let res = await fetch(`/api/categories/${id}/items`,{
         method : 'PUT',
         header : {'ContentType' : 'application/json'},
@@ -53,10 +54,11 @@ async function putItem(itemID,name,isConsumable,quantity,autodeq,alert,favourite
             "name" : name,
             "quantity": quantity,
             "consumable": isConsumable,
-            "alertDeqTime": autodeq,
+            "alertdeqtime": autodeq,
             "alert":alert,
             "favourite":favourite,
-            "date": date
+            "date": date,
+            "lastcheckdate": lastcheckdate
         })
     });
     init();
@@ -81,7 +83,7 @@ async function patchDeviceCheck(itemID){
         header : {'ContentType' : 'application/json'},
         body : JSON.stringify({
             "id" : itemID,
-            "lastCheckDate": date
+            "lastcheckdate": date
         })
     });
     init(); 
@@ -110,7 +112,7 @@ function addItem(){
 
 }
 
-function editItemConsumable(itemID,itemFavourite,itemQuantity,itemDate){
+function editItemConsumable(itemID,itemFavourite,itemQuantity,itemDate, itemLastCheckDate){
     var name = document.getElementById(`item-name-input-${itemID}`).value;
     var quantity = parseInt(document.getElementById(`item-quantity-input-${itemID}`).value);
     var autodeq = document.getElementById(`item-dec-quantity-interval-${itemID}`).value;
@@ -120,17 +122,19 @@ function editItemConsumable(itemID,itemFavourite,itemQuantity,itemDate){
         date = new Date();
     else 
         date = itemDate;
-    console.log("INTRI?? editItemConsumable",itemID,name,true,quantity,autodeq,alert);
-    putItem(itemID,name,"true",quantity,autodeq,alert,itemFavourite,date);  
+    console.log("INTRI?? editItemConsumable",itemID,name,true,quantity,autodeq,alert,itemLastCheckDate);
+    putItem(itemID,name,"true",quantity,autodeq,alert,itemFavourite,date,itemLastCheckDate);  
     } 
 
 
-function editItemDevice(itemID,itemFavourite){
+function editItemDevice(itemID,itemFavourite,itemLastCheckDate){
     var name = document.getElementById(`item-name-input-${itemID}`).value;
     var checkTime = document.getElementById(`item-check-time-interval-${itemID}`).value;
     var alert = document.getElementById(`item-alert-input-${itemID}`).checked;
-    console.log("INTRI??",itemID,name,false,1,checkTime,alert);
-    putItem(itemID,name,"false",1,checkTime,alert,itemFavourite)
+    console.log("INTRI??",itemID,name,false,1,checkTime,alert,itemLastCheckDate);
+
+
+    putItem(itemID,name,"false",1,checkTime,alert,itemFavourite,itemLastCheckDate)
 }
 
 function printItems(){
@@ -162,14 +166,14 @@ function printItems(){
                         <div id="item-date"> 
                             <p class="item-inputs-titles" id="item-dec-quantity-title-${item.id}">Auto-Decrease Quantity</p> 
                             <select name="interval" class="item-interval" id="item-dec-quantity-interval-${item.id}"  >
-                                <option value="noalert" ${checkSelected(item.alertDeqTime, "noalert")}>Off</option>
-                                <option value="7d" ${checkSelected(item.alertDeqTime, "7d")}>7 days</option>
-                                <option value="14d" ${checkSelected(item.alertDeqTime, "14d")}>14 days</option>
-                                <option value="30d" ${checkSelected(item.alertDeqTime, "30d")}>30 days</option>
-                                <option value="60d" ${checkSelected(item.alertDeqTime, "60d")}>60 days</option>
-                                <option value="90d" ${checkSelected(item.alertDeqTime, "90d")}>90 days</option>
-                                <option value="180d" ${checkSelected(item.alertDeqTime, "180d")}>180 days</option>
-                                <option value="1y" ${checkSelected(item.alertDeqTime, "1y")}>1 year</option>
+                                <option value="noalert" ${checkSelected(item.alertdeqtime, "noalert")}>Off</option>
+                                <option value="7d" ${checkSelected(item.alertdeqtime, "7d")}>7 days</option>
+                                <option value="14d" ${checkSelected(item.alertdeqtime, "14d")}>14 days</option>
+                                <option value="30d" ${checkSelected(item.alertdeqtime, "30d")}>30 days</option>
+                                <option value="60d" ${checkSelected(item.alertdeqtime, "60d")}>60 days</option>
+                                <option value="90d" ${checkSelected(item.alertdeqtime, "90d")}>90 days</option>
+                                <option value="180d" ${checkSelected(item.alertdeqtime, "180d")}>180 days</option>
+                                <option value="1y" ${checkSelected(item.alertdeqtime, "1y")}>1 year</option>
                                 
                             </select>
                         </div>
@@ -177,7 +181,7 @@ function printItems(){
                             <input  class="custom-checkbox" id="item-alert-input-${item.id}" required="required" ${checkAlert(item.alert)} type="checkbox"> <p class="item-inputs-titles" id="item-alert-p">Enable Alert</p> 
                         </div>
                         <div class="add-item-popup-buttons-div">
-                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text" onclick="editItemConsumable(${item.id},'${item.favourite}','${item.quantity}','${item.date}'); "; closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
+                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text" onclick="editItemConsumable(${item.id},'${item.favourite}','${item.quantity}','${item.date}','${item.lastcheckdate}'); "; closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
                             <div class = "add-item-popup-button" id="add-item-cancel-button"> <button class = "add-item-button-text" onclick ="closeItemsPopup('edit-popup-${item.id}'); ">Cancel</button></div>  
                         </div>
                     </div> 
@@ -201,21 +205,21 @@ function printItems(){
                         <div id="item-date"> 
                             <p class="item-inputs-titles" id="item-check-time-title-${item.id}">Check Time</p> 
                             <select name="interval" class="item-interval" id="item-check-time-interval-${item.id}"  >
-                                <option value="noalert" ${checkSelected(item.alertDeqTime, "noalert")}>Off</option>
-                                <option value="7d" ${checkSelected(item.alertDeqTime, "7d")}>7 days</option>
-                                <option value="14d" ${checkSelected(item.alertDeqTime, "14d")}>14 days</option>
-                                <option value="30d" ${checkSelected(item.alertDeqTime, "30d")}>30 days</option>
-                                <option value="60d" ${checkSelected(item.alertDeqTime, "60d")}>60 days</option>
-                                <option value="90d" ${checkSelected(item.alertDeqTime, "90d")}>90 days</option>
-                                <option value="180d" ${checkSelected(item.alertDeqTime, "180d")}>180 days</option>
-                                <option value="1y" ${checkSelected(item.alertDeqTime, "1y")}>1 year</option>  
+                                <option value="noalert" ${checkSelected(item.alertdeqtime, "noalert")}>Off</option>
+                                <option value="7d" ${checkSelected(item.alertdeqtime, "7d")}>7 days</option>
+                                <option value="14d" ${checkSelected(item.alertdeqtime, "14d")}>14 days</option>
+                                <option value="30d" ${checkSelected(item.alertdeqtime, "30d")}>30 days</option>
+                                <option value="60d" ${checkSelected(item.alertdeqtime, "60d")}>60 days</option>
+                                <option value="90d" ${checkSelected(item.alertdeqtime, "90d")}>90 days</option>
+                                <option value="180d" ${checkSelected(item.alertdeqtime, "180d")}>180 days</option>
+                                <option value="1y" ${checkSelected(item.alertdeqtime, "1y")}>1 year</option>  
                             </select>
                         </div>
                         <div class="checkbox-div" id="item-alert">
                             <input  class="custom-checkbox" id="item-alert-input-${item.id}" required="required" ${checkAlert(item.alert)} ${console.log("check alert: ",checkAlert(item.alert))} type="checkbox"> <p class="item-inputs-titles" id="item-alert-p">Enable Alert</p> 
                         </div>
                         <div class="add-item-popup-buttons-div">
-                            <div class = "add-item-popup-button-edit" id="add-item-add-button"> <button class = "add-item-button-text-edit" onclick="editItemDevice(${item.id},'${item.favourite}'); "; closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
+                            <div class = "add-item-popup-button-edit" id="add-item-add-button"> <button class = "add-item-button-text-edit" onclick="editItemDevice(${item.id},'${item.favourite}','${item.lastcheckdate}'); "; closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
                             <div class = "add-item-popup-button" id="add-item-cancel-button"> <button class = "add-item-button-text" onclick ="closeItemsPopup('edit-popup-${item.id}'); ">Cancel</button></div>  
                         </div>
                     </div>
@@ -271,7 +275,7 @@ function printItems(){
                                     <button onclick="openEditPopup('edit-popup-${item.id}');">Edit Item</button>
                                 </div>
                                 <div class="view-button" id="view-schedule">
-                                    <button onclick="putItem('${item.id}','${item.name}','${item.consumable}','${item.quantity}','${item.alertDeqTime}',${item.alert},'${checkFavouriteTrueFalse(item.favourite)}','${item.date}')">${checkFavourite(item.favourite)}</button>
+                                    <button onclick="putItem('${item.id}','${item.name}','${item.consumable}','${item.quantity}','${item.alertdeqtime}',${item.alert},'${checkFavouriteTrueFalse(item.favourite)}','${item.date}')">${checkFavourite(item.favourite)}</button>
                                 </div>
                             </div>
                             <div class="lower-buttons">
@@ -316,19 +320,19 @@ function printItems(){
                             <div class="item-view-conditon-title"> <h2>Device Condition</h2> </div>
                             <div class="item-view-condition-conditions">
                                 <div class="item-view-condition-text">
-                                    <img src= ${verifyCheckStatusImage(item.lastCheckDate, item.alertDeqTime)} alt="Light Bulb" class="item-view-condition-image view-condition-text-item" id="item-view-condition-check">
+                                    <img src= ${verifyCheckStatusImage(item.lastcheckdate, item.alertdeqtime)} alt="Light Bulb" class="item-view-condition-image view-condition-text-item" id="item-view-condition-check">
                                     <div class="opacity-lowered view-condition-text-item"> Status: </div> 
-                                    <h3 class="view-condition-text-item"> ${verifyCheckStatusText(item.lastCheckDate, item.alertDeqTime)} </h3>
+                                    <h3 class="view-condition-text-item"> ${verifyCheckStatusText(item.lastcheckdate, item.alertdeqtime)} </h3>
                                 </div>
                                 <div class="item-view-condition-text ">
                                     <img src= "Images/device_clock.png" alt="Light Bulb" class="item-view-condition-image view-condition-text-item" "> 
                                     <div class="opacity-lowered view-condition-text-item"> Last Checked: </div>
-                                    <h3 class="view-condition-text-item"> ${getAddedDate(item.lastCheckDate)} </h3> 
+                                    <h3 class="view-condition-text-item"> ${getAddedDate(item.lastcheckdate)} </h3> 
                                 </div>
                                 <div class="item-view-condition-text"> 
                                     <img src= "Images/device_calendar.png" alt="Light Bulb" class="item-view-condition-image view-condition-text-item" "> 
                                     <div class="opacity-lowered view-condition-text-item"> Next Check: </div>
-                                    <h3 class="view-condition-text-item"> ${getAddedDate(getCheckDate(item.lastCheckDate,item.alertDeqTime))} </h3> 
+                                    <h3 class="view-condition-text-item"> ${getAddedDate(getCheckDate(item.lastcheckdate,item.alertdeqtime))} </h3> 
                                 </div>
                             </div>
                         </div>
@@ -338,7 +342,7 @@ function printItems(){
                                     <button onclick="openEditPopup('edit-popup-${item.id}');">Edit Item</button>
                                 </div>
                                 <div class="view-button" id="view-schedule">
-                                    <button onclick="putItem('${item.id}','${item.name}','${item.consumable}','${item.quantity}','${item.alertDeqTime}',${item.alert},'${checkFavouriteTrueFalse(item.favourite)}','${item.date}')">${checkFavourite(item.favourite)}</button>
+                                    <button onclick="putItem('${item.id}','${item.name}','${item.consumable}','${item.quantity}','${item.alertdeqtime}',${item.alert},'${checkFavouriteTrueFalse(item.favourite)}','${item.date}')">${checkFavourite(item.favourite)}</button>
                                 </div>
                             </div>
                             <div class="lower-buttons">
@@ -555,8 +559,8 @@ function openInputs() {
   }
 }
 
-function checkSelected(alertDeqTime, option){
-    if(alertDeqTime === option)
+function checkSelected(alertdeqtime, option){
+    if(alertdeqtime === option)
         return `selected="selected"`;
     return "";
 }
@@ -617,6 +621,7 @@ function getCurrentDate(){
     return(stringDate);
 }
 function getAddedDate(date){
+    
     const dateObj = new Date(date);
     const [month, day, year] = [
         dateObj.toLocaleDateString('default', {month: 'short'}),
@@ -627,50 +632,48 @@ function getAddedDate(date){
     return(stringDate);
 
 }
-function getCheckDate(itemLastCheckDate, itemAlertDeqTime){
-    if(itemAlertDeqTime == "noalert")
+function getCheckDate(itemlastcheckdate, itemalertdeqtime){
+    if(itemalertdeqtime == "noalert")
         return "No Check Set"
-    if(itemAlertDeqTime == "7d")
-        var res = addDays(itemLastCheckDate, 7);
-    if(itemAlertDeqTime == "14d")
-        var res = addDays(itemLastCheckDate, 14);
-    if(itemAlertDeqTime == "30d")
-        var res = addDays(itemLastCheckDate, 30);
-    if(itemAlertDeqTime == "60d")
-        var res = addDays(itemLastCheckDate, 60);
-    if(itemAlertDeqTime == "90d")
-        var res = addDays(itemLastCheckDate, 90);
-    if(itemAlertDeqTime == "180d")
-        var res = addDays(itemLastCheckDate, 180);
-    if(itemAlertDeqTime == "1y")
-        var res = addDays(itemLastCheckDate, 365);
+    if(itemalertdeqtime == "7d")
+        var res = addDays(itemlastcheckdate, 7);
+    if(itemalertdeqtime == "14d")
+        var res = addDays(itemlastcheckdate, 14);
+    if(itemalertdeqtime == "30d")
+        var res = addDays(itemlastcheckdate, 30);
+    if(itemalertdeqtime == "60d")
+        var res = addDays(itemlastcheckdate, 60);
+    if(itemalertdeqtime == "90d")
+        var res = addDays(itemlastcheckdate, 90);
+    if(itemalertdeqtime == "180d")
+        var res = addDays(itemlastcheckdate, 180);
+    if(itemalertdeqtime == "1y")
+        var res = addDays(itemlastcheckdate, 365);
     return res;
 }
 function addDays(date, days){
     var result = new Date(date);
-    console.log("before:", result)
+
     result.setDate(result.getDate() + days);
-    console.log("addDays:", result);
+
     return result;
 }
 
-function verifyCheckStatusImage(itemLastCheckDate, itemAlertDeqTime){
-    let res = getCheckDate(itemLastCheckDate,itemAlertDeqTime);
+function verifyCheckStatusImage(itemlastcheckdate, itemalertdeqtime){
+    let res = getCheckDate(itemlastcheckdate,itemalertdeqtime);
     let verifyDate = new Date(res);
     let date = new Date();
-    console.log("verifyDate:", verifyDate);
-    console.log("itemLastCheckDate:", itemLastCheckDate);
+   
     if(date >= verifyDate)
        return "Images/device_check_bad.png";
     return "Images/device_check_good.png"
 }
 
-function verifyCheckStatusText(itemLastCheckDate, itemAlertDeqTime){
-    let res = getCheckDate(itemLastCheckDate,itemAlertDeqTime);
+function verifyCheckStatusText(itemlastcheckdate, itemalertdeqtime){
+    let res = getCheckDate(itemlastcheckdate,itemalertdeqtime);
     let verifyDate = new Date(res);
     let date = new Date();
-    console.log("verifyDate:", verifyDate);
-    console.log("itemLastCheckDate:", itemLastCheckDate);
+    
     if(date >= verifyDate)
        return "Check Item";
     return "OK";

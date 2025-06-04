@@ -32,7 +32,8 @@ async function postItem(name,isConsumable,quantity,autodeq,alert,date)
             "alertdeqtime": autodeq,
             "alert":alert,
             "date":date,
-            "lastcheckdate" : "No Check Yet"
+            "favourite": false,
+            "lastcheckdate":"NoDate"
         })
     })
     init();  
@@ -128,13 +129,14 @@ function editItemConsumable(itemID,itemFavourite,itemQuantity,itemDate, itemLast
 
 
 function editItemDevice(itemID,itemFavourite,itemLastCheckDate){
+    var date= new Date();
     var name = document.getElementById(`item-name-input-${itemID}`).value;
     var checkTime = document.getElementById(`item-check-time-interval-${itemID}`).value;
     var alert = document.getElementById(`item-alert-input-${itemID}`).checked;
-    console.log("INTRI??",itemID,name,false,1,checkTime,alert,itemLastCheckDate);
+    console.log("INTRI??",itemID,name,false,1,checkTime,alert,date,itemLastCheckDate);
 
 
-    putItem(itemID,name,"false",1,checkTime,alert,itemFavourite,itemLastCheckDate)
+    putItem(itemID,name,"false",1,checkTime,alert,itemFavourite,date,itemLastCheckDate)
 }
 
 function printItems(){

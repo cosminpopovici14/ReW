@@ -184,11 +184,12 @@ const server = http.createServer((req, res) => {
         let id = parseInt(req.url.split('/',5)[3]);
 
         client.query(
-        `SELECT 
+        `SELECT DISTINCT
             i.id,
             i.name,
             i.quantity,
             p.consumable,
+            a.alert,
             a.alertdeqtime,
             p.favourite,
             d.added_date as date,
@@ -196,7 +197,11 @@ const server = http.createServer((req, res) => {
         FROM items i
         JOIN item_properties p on i.id = p.item_id
         JOIN item_alerts a on i.id = a.item_id
-        JOIN item_dates d on i.id = d.item_id
+        JOIN ( 
+            select item_id,max(added_date) as added_date 
+            from item_dates 
+            group by item_id
+        ) d on i.id = d.item_id
         WHERE i.category_id = $1
         ORDER BY id ASC`
             ,[id],(err,content)=>{
@@ -390,9 +395,8 @@ const server = http.createServer((req, res) => {
                                         }
 
                                         //item_dates
-                                        client.query(`UPDATE item_dates  SET quantity =$1,
-                                                    added_date = $2
-                                                    WHERE item_id=$3`,
+                                        client.query(`INSERT INTO item_dates (quantity, added_date, item_id)
+                                                    VALUES ( $1, $2, $3)`,
                                                     [editedItem.quantity,editedItem.date,editedItem.id],(err3,content)=>{
                                                         if (err3) {
                                                             console.log("err3 : " ,err3);
@@ -441,6 +445,8 @@ const server = http.createServer((req, res) => {
         });
         return;
     }
+
+
      if(req.method === 'PATCH' && /^\/api\/categories\/\d+\/items$/.test(req.url)){
   
         let id = parseInt(req.url.split('/',5)[3]);
@@ -550,7 +556,7 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-     if(req.method === 'DELETE' && /^\/api\/categories\/\d+\/items$/.test(req.url))
+    if(req.method === 'DELETE' && /^\/api\/categories\/\d+\/items$/.test(req.url))
     {
         let id = parseInt(req.url.split('/',5)[3]);
         let body='';
@@ -569,6 +575,29 @@ const server = http.createServer((req, res) => {
             res.end("Deleted Item!");
             })
         });
+        return;
+    }
+
+    if(req.method === 'GET' && /^\/api\/categories\/\d+\/items\/\d+\/data$/.test(req.url)){
+        let id = parseInt(req.url.split('/')[5]);
+        
+        client.query(
+        `SELECT 
+            added_date, quantity from item_dates 
+            WHERE item_id = $1`
+            ,[id],(err,content)=>{
+            
+            if (err) {
+                console.log(err);
+                res.writeHead(500);
+                res.end('Eroare server');
+                return;
+            }
+            let parsed = JSON.stringify(content.rows);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(parsed);
+            })
+
         return;
     }
     
@@ -608,73 +637,3 @@ server.listen(3000, () => {
 });
 
 
-function changeName(obj, objId, newName) {
-    let ok = 0;
-    obj.forEach(obj=>{
-        if (obj.id === objId){
-            obj.name = newName
-            ok=1;
-        };
-    });
-    if(ok === 1)
-        return true;
-    else return false;
-}
-
-
-
-function changeItem(obj,objId,newName,newQuantity,newConsumable,newalertdeqtime,newAlert,newFavourite,newDate){
-    let ok=0;
-    obj.forEach(obj=>{
-        if(obj.id==objId){
-            obj.name=newName;
-            obj.quantity=newQuantity;
-            obj.consumable=newConsumable;
-            obj.alertdeqtime=newalertdeqtime;
-            obj.alert=newAlert;
-            obj.favourite = newFavourite;
-            obj.date = newDate;
-            ok=1;
-        }
-    });
-    if(ok==1) return true;
-    return false;
-}
-
-function editItem(obj, editedObj){
-    let ok=0;
-    console.log(editedObj);
-    obj.forEach(obj=>{
-        if(obj.id == editedObj.id)
-        {
-            if(editedObj.name)
-                obj.name = editedObj.name;
-            else if(editedObj.quantity)
-                obj.quantity = editedObj.quantity;
-            else if(editedObj.consumable === true || editedObj.consumable === false)
-                obj.consumable = editedObj.consumable;
-            else if(editedObj.alertdeqtime)
-                obj.alertdeqtime = editedObj.alertdeqtime;
-            else if(editedObj.alert=== true || editedObj.alert === false)
-                obj.alert = editedObj.alert ;
-            else if(editedObj.favourite=== true || editedObj.favourite === false)
-                obj.favourite = editedObj.favourite ;
-            else if(editedObj.date)
-                obj.date = editedObj.date;
-            else if(editedObj.lastcheckdate)
-                obj.lastcheckdate = editedObj.lastcheckdate;
-            ok=1;
-        }
-    });
-    if(ok==1) return true;
-    return false;
-}
-
-
-//POST - CREATE
-
-//GET -READ
-
-//PUT - UPDATE
-
-//DELETE - DELETE

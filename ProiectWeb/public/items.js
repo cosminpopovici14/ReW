@@ -1,10 +1,12 @@
 const params = new URLSearchParams(window.location.search);
 const id = params.get('categoryID');
+var lastItemID = -1;
 
 console.log(id);
 
 let items = [];
 let category=[];
+let chartData=[];
 let editOpened = 0;
 async function init()
 {
@@ -12,9 +14,16 @@ async function init()
     items = await res.json();
     let res2 = await fetch(`/api/categories/${id}`);
     category= await res2.json();
-    console.log(category);
+    console.log("adfjka",category);
     console.log(items);
     printItems();
+
+}
+
+async function getChartData(itemID) {
+    let res = await fetch(`/api/categories/${id}/items/${itemID}/data`);
+    chartData = await res.json();
+    createCanvas(itemID,chartData);
     
 }
 
@@ -140,7 +149,9 @@ function editItemDevice(itemID,itemFavourite,itemLastCheckDate){
 }
 
 function printItems(){
-    categoryTitleHTML = `${category.name}`;
+    console.log("cATEGORY",category);
+    console.log("CATEGORY NAME: ",category.name);
+    categoryTitleHTML = `${category[0].name}`;
     viewHTML = '';
     editHTML = '';
     let itemsHTML = '';
@@ -237,7 +248,7 @@ function printItems(){
                                     Category
                                 </div>
                                 <div class="item-view-category-name">
-                                    ${category.name}
+                                    ${categoryTitleHTML}
                                 </div>
                             </div>
                         </div>
@@ -301,7 +312,7 @@ function printItems(){
                                     Category
                                 </div>
                                 <div class="item-view-category-name">
-                                    ${category.name}
+                                    ${categoryTitleHTML}
                                 </div>
                             </div>
                         </div>
@@ -396,7 +407,7 @@ function printItems(){
                                 </div>
                                 <div class="item-view" id="item-view-${item.id}">
                                     <button id="view-button"
-                                    onclick="openItemsPopup('view-${item.id}'); createCanvas(${item.id})">View</button>
+                                    onclick="getChartData(${item.id}); openItemsPopup('view-${item.id}'); ">View</button>
                                 </div>
                             </div>
                         </div>
@@ -569,9 +580,14 @@ function checkSelected(alertdeqtime, option){
 
 
 
-function createCanvas(ItemID){
-    var xValues = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    var yValues = [55, 49, 44, 24, 15, 13, 34, 64, 23, 15, 63, 13];
+function createCanvas(ItemID,chartData){
+    var xValues=[];
+    var yValues=[];
+    console.log("CHART: ",chartData);
+    chartData.forEach(function(element){
+        xValues.push(getDayAndMonth(element.added_date));
+        yValues.push(element.quantity);
+    });
     var barColors = "#5AC8FA";
     console.log("Creating canvas");
     new Chart(`myChart-${ItemID}`, {
@@ -634,6 +650,17 @@ function getAddedDate(date){
     return(stringDate);
 
 }
+
+function getDayAndMonth(date){
+    const dateObj = new Date(date);
+    const [month, day] = [
+        dateObj.toLocaleDateString('default', {month: 'short'}),
+        dateObj.getDate(),
+    ];
+    var stringDate = day + " " + month;
+    return(stringDate);
+}
+
 function getCheckDate(itemlastcheckdate, itemalertdeqtime){
     if(itemalertdeqtime == "noalert")
         return "No Check Set"

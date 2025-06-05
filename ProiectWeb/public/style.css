@@ -626,6 +626,10 @@ footer {
   color: white;
 }
 #export-btn{
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  padding: 5px;
   background-color: #4cd964;
   color: white;
 }

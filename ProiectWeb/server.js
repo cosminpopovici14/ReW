@@ -601,10 +601,14 @@ const server = http.createServer((req, res) => {
 
         return;
     }
-    if(req.method === 'GET' && /^\/api\/categories\/\d+\/items\/\d+\/export$/.test(req.url)){
-        let id = parseInt(req.url.split('/')[5]);
-        
-        client.query(
+    if (req.method === 'GET' && /^\/api\/categories\/\d+\/items\/\d+\/export$/.test(req.url)) {
+  const id = parseInt(req.url.split('/')[5]);
+
+  (async () => {
+    try {
+      await client.query('SELECT check_item_exists($1)', [id]);
+
+      const content = await client.query(
         `SELECT DISTINCT
             i.id,
             i.name,
@@ -613,167 +617,117 @@ const server = http.createServer((req, res) => {
             a.alert,
             a.alertdeqtime,
             p.favourite,
-            d.added_date as date,
+            d.added_date AS date,
             a.lastcheckdate
-        FROM items i
-        LEFT JOIN item_properties p on i.id = p.item_id
-        LEFT JOIN item_alerts a on i.id = a.item_id
-        LEFT JOIN ( 
-            select item_id,max(added_date) as added_date 
-            from item_dates 
-            group by item_id
-        ) d on i.id = d.item_id
-        WHERE i.id = $1
-        ORDER BY id ASC`
-            ,[id],(err,content)=>{
-            
-            if (err) {
-                console.log(err);
-                res.writeHead(500);
-                res.end('Eroare server');
-                return;
-            }
-            
-            const jsonData = JSON.parse(JSON.stringify(content.rows));
-            console.log("jsonData", jsonData);
-            if (jsonData.length === 0) {
-                res.writeHead(404, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: 'Nu există date pentru export.' }));
-                return;
-            }
-            const json2csvParser = new Json2csvParser({ header: true });
-            const csv = json2csvParser.parse(jsonData);
+         FROM items i
+         LEFT JOIN item_properties p ON i.id = p.item_id
+         LEFT JOIN item_alerts a ON i.id = a.item_id
+         LEFT JOIN (
+             SELECT item_id, MAX(added_date) AS added_date 
+             FROM item_dates 
+             GROUP BY item_id
+         ) d ON i.id = d.item_id
+         WHERE i.id = $1
+         ORDER BY i.id ASC`,
+        [id]
+      );
 
-            fs.writeFile(`public/Downloads/item-${id}.csv`, csv, function(error) {
-                if (error) throw error;
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end("File Created Successfully");
-            });
-        });
-        return;
-    }
+      const jsonData = content.rows;
+      const fields = Object.keys(jsonData[0]);
+      const json2csvParser = new Json2csvParser({ fields, header: true });
+      const csv = json2csvParser.parse(jsonData);
 
-
-    if(req.method === 'GET' && /^\/api\/categories\/\d+\/items\/export$/.test(req.url)){
-        let id = parseInt(req.url.split('/')[3]);
-        
-        client.query(
-        `SELECT DISTINCT
-            i.id,
-            i.name,
-            i.quantity,
-            p.consumable,
-            a.alert,
-            a.alertdeqtime,
-            p.favourite,
-            d.added_date as date,
-            a.lastcheckdate
-        FROM items i
-        JOIN item_properties p on i.id = p.item_id
-        JOIN item_alerts a on i.id = a.item_id
-        JOIN ( 
-            select item_id,max(added_date) as added_date 
-            from item_dates 
-            group by item_id
-        ) d on i.id = d.item_id
-        WHERE i.category_id = $1
-        ORDER BY id ASC`
-            ,[id],(err,content)=>{
-            
-            if (err) {
-                console.log(err);
-                res.writeHead(500);
-                res.end('Eroare server');
-                return;
-            }
-            const jsonData = JSON.parse(JSON.stringify(content.rows));
-            console.log("jsonData", jsonData);
-            if (jsonData.length === 0) {
-                res.writeHead(404, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: 'Nu există date pentru export.' }));
-                return;
-            }
-            const json2csvParser = new Json2csvParser({ header: true });
-            const csv = json2csvParser.parse(jsonData);
-
-            fs.writeFile(`public/Downloads/category-${id}-items.csv`, csv, function(error) {
-                if (error) throw error;
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end("File Created Successfully");
-            });
-        });
-        return;
-    }
-
-   if (req.method === 'GET' && /^\/api\/categories\/\d+\/export$/.test(req.url)) {
-    let id = parseInt(req.url.split('/')[3]);
-
-    client.query(
-        `SELECT DISTINCT
-            c.id,
-            c.name,
-            i.id as item_id,
-            i.name as item_name,
-            i.quantity,
-            p.consumable,
-            a.alert,
-            a.alertdeqtime,
-            p.favourite,
-            d.added_date as date,
-            a.lastcheckdate
-        FROM categories c
-        LEFT JOIN items i on c.id = i.category_id
-        LEFT JOIN item_properties p on i.id = p.item_id
-        LEFT JOIN item_alerts a on i.id = a.item_id
-        LEFT JOIN ( 
-            select item_id,max(added_date) as added_date 
-            from item_dates 
-            group by item_id
-        ) d on i.id = d.item_id
-        WHERE c.id = $1
-        ORDER BY c.id ASC`,
-        [id],
-        (err, content) => {
-            if (err) {
-                console.log(err);
-                res.writeHead(500);
-                res.end('Eroare server');
-                return;
-            }
-
-            const jsonData = content.rows;
-
-            if (jsonData.length === 0) {
-                res.writeHead(404, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: 'Nu există date pentru categoria cerută.' }));
-                return;
-            }
-
-            const fields = Object.keys(jsonData[0]); // generează automat câmpurile din primul obiect
-            const json2csvParser = new Json2csvParser({ fields, header: true });
-            const csv = json2csvParser.parse(jsonData);
-
-            fs.writeFile(`public/Downloads/category-${id}.csv`, csv, function (error) {
-                if (error) {
-                    console.error(error);
-                    res.writeHead(500);
-                    res.end('Eroare la scrierea fișierului');
-                    return;
-                }
-
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ message: "File Created Successfully" }));
-            });
+      fs.writeFile(`public/Downloads/item-${id}.csv`, csv, (error) => {
+        if (error) {
+          console.error(error);
+          res.writeHead(500);
+          res.end('Eroare la scrierea fișierului');
+          return;
         }
-    );
 
-    return;
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'File Created Successfully' }));
+      });
+    } catch (err) {
+      console.error('Eroare server:', err);
+      const statusCode = err.message.includes('nu există') ? 404 : 500;
+      res.writeHead(statusCode, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message || 'Eroare server' }));
+    }
+  })();
+
+  return;
 }
 
 
-    if (req.method === 'GET' && /^\/api\/categories\/export$/.test(req.url)) {
 
-    client.query(
+    if (req.method === 'GET' && /^\/api\/categories\/\d+\/items\/export$/.test(req.url)) {
+  const id = parseInt(req.url.split('/')[3]);
+
+  (async () => {
+    try {
+      await client.query('SELECT check_category_has_items($1)', [id]);
+
+      const content = await client.query(
+        `SELECT DISTINCT
+            i.id,
+            i.name,
+            i.quantity,
+            p.consumable,
+            a.alert,
+            a.alertdeqtime,
+            p.favourite,
+            d.added_date as date,
+            a.lastcheckdate
+         FROM items i
+         JOIN item_properties p on i.id = p.item_id
+         JOIN item_alerts a on i.id = a.item_id
+         JOIN (
+            SELECT item_id, MAX(added_date) AS added_date
+            FROM item_dates
+            GROUP BY item_id
+         ) d ON i.id = d.item_id
+         WHERE i.category_id = $1
+         ORDER BY i.id ASC`,
+        [id]
+      );
+
+      const jsonData = content.rows;
+      const fields = Object.keys(jsonData[0]);
+      const json2csvParser = new Json2csvParser({ fields, header: true });
+      const csv = json2csvParser.parse(jsonData);
+
+      fs.writeFile(`public/Downloads/category-${id}-items.csv`, csv, (error) => {
+        if (error) {
+          console.error(error);
+          res.writeHead(500);
+          res.end('Eroare la scrierea fișierului');
+          return;
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'File Created Successfully' }));
+      });
+    } catch (err) {
+      console.error('Eroare server:', err);
+      const statusCode = err.message.includes('nu are iteme') ? 404 : 500;
+      res.writeHead(statusCode, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message || 'Eroare server' }));
+    }
+  })();
+
+  return;
+}
+
+
+   if (req.method === 'GET' && /^\/api\/categories\/\d+\/export$/.test(req.url)) {
+  const id = parseInt(req.url.split('/')[3]);
+
+  (async () => {
+    try {
+      await client.query('SELECT check_category_exists($1)', [id]);
+
+      const content = await client.query(
         `SELECT DISTINCT
             c.id,
             c.name,
@@ -786,40 +740,86 @@ const server = http.createServer((req, res) => {
             p.favourite,
             d.added_date as date,
             a.lastcheckdate
-        FROM categories c
-        LEFT JOIN items i on c.id = i.category_id
-        LEFT JOIN item_properties p on i.id = p.item_id
-        LEFT JOIN item_alerts a on i.id = a.item_id
-        LEFT JOIN ( 
-            select item_id,max(added_date) as added_date 
-            from item_dates 
-            group by item_id
-        ) d on i.id = d.item_id
-        ORDER BY c.id ASC`,
-        (err, content) => {
-            if (err) {
-                console.log(err);
-                res.writeHead(500);
-                res.end('Eroare server');
-                return;
-            }
-            console.log("CONTENT",content);
+          FROM categories c
+          LEFT JOIN items i on c.id = i.category_id
+          LEFT JOIN item_properties p on i.id = p.item_id
+          LEFT JOIN item_alerts a on i.id = a.item_id
+          LEFT JOIN ( 
+              select item_id,max(added_date) as added_date 
+              from item_dates 
+              group by item_id
+          ) d on i.id = d.item_id
+          WHERE c.id = $1
+          ORDER BY c.id ASC`,
+        [id]
+      );
 
-            const jsonData = content.rows;
+      const jsonData = content.rows;
 
-            console.log("DATA", jsonData);
+      const fields = Object.keys(jsonData[0]);
+      const json2csvParser = new Json2csvParser({ fields, header: true });
+      const csv = json2csvParser.parse(jsonData);
 
-            if (jsonData.length === 0) {
-                res.writeHead(404, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: 'Nu există date pentru export.' }));
-                return;
-            }
+      fs.writeFile(`public/Downloads/category-${id}.csv`, csv, (error) => {
+        if (error) {
+          console.error(error);
+          res.writeHead(500);
+          res.end('Eroare la scrierea fișierului');
+          return;
+        }
 
-            const fields = Object.keys(jsonData[0]); 
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'File Created Successfully' }));
+      });
+    } catch (err) {
+      console.error('Eroare server:', err);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message || 'Eroare server' }));
+    }
+  })();
+
+  return;
+}
+
+
+
+    if (req.method === 'GET' && /^\/api\/categories\/export$/.test(req.url)) {
+    (async () => {
+        try {
+            await client.query('SELECT check_export_has_data();');
+
+            const result = await client.query(`
+                SELECT DISTINCT
+                    c.id,
+                    c.name,
+                    i.id as item_id,
+                    i.name as item_name,
+                    i.quantity,
+                    p.consumable,
+                    a.alert,
+                    a.alertdeqtime,
+                    p.favourite,
+                    d.added_date as date,
+                    a.lastcheckdate
+                FROM categories c
+                LEFT JOIN items i ON c.id = i.category_id
+                LEFT JOIN item_properties p ON i.id = p.item_id
+                LEFT JOIN item_alerts a ON i.id = a.item_id
+                LEFT JOIN (
+                    SELECT item_id, MAX(added_date) AS added_date
+                    FROM item_dates
+                    GROUP BY item_id
+                ) d ON i.id = d.item_id
+                ORDER BY c.id ASC
+            `);
+
+            const jsonData = result.rows;
+
+            const fields = Object.keys(jsonData[0]);
             const json2csvParser = new Json2csvParser({ fields, header: true });
             const csv = json2csvParser.parse(jsonData);
 
-            fs.writeFile(`public/Downloads/categories.csv`, csv, function (error) {
+            fs.writeFile(`public/Downloads/categories.csv`, csv, (error) => {
                 if (error) {
                     console.error(error);
                     res.writeHead(500);
@@ -830,11 +830,22 @@ const server = http.createServer((req, res) => {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'File Created Successfully' }));
             });
+        } catch (err) {
+            if (err.code === 'P0001') {
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+                console.log("Error: ", err);
+            } else {
+                console.error('Eroare SQL:', err);
+                res.writeHead(500);
+                res.end('Eroare server');
+            }
         }
-    );
+    })();
 
     return;
 }
+
 
 
 

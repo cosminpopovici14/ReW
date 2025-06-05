@@ -160,16 +160,16 @@ function printItems(){
     viewHTML = '';
     editHTML = '';
     let itemsHTML = '';
-
-    console.log("ITEMS:::",items);
-    items.forEach(item =>{
-        if(item.consumable == true)
-        {
-            exportButtonHTML=`
+    exportButtonHTML=`
             <a href="Downloads/category-${category[0].id}-items.csv" download="category-${category[0].id}-items.csv">
             <button class="export-button">Export CSV</button>
             </a>
             `
+    console.log("ITEMS:::",items);
+    items.forEach(item =>{
+        if(item.consumable == true)
+        {
+            
 
             editHTML+=`
             <div class="edit-item-popup" id="edit-popup-${item.id}">
@@ -306,7 +306,7 @@ function printItems(){
                             <div class="lower-buttons">
                                 <div class="export-button-consumables" id="view-export">
                                 <a href="Downloads/item-${item.id}.csv" download="item-${item.id}.csv">
-                                    <button  id="export-btn">Export to PDF</button>
+                                    <button  id="export-btn">Export to CSV</button>
                                 </a>
                                 </div>
                             </div>
@@ -375,7 +375,7 @@ function printItems(){
                             <div class="lower-buttons">
                                 <div class="export-button-devices" id="view-export">
                                     <a href="Downloads/item-${item.id}.csv" download="item-${item.id}.csv">
-                                    <button  id="export-btn">Export to PDF</button>
+                                    <button  id="export-btn">Export to CSV</button>
                                 </a>
                                 </div>
                                 <div class="check-button" id="view-check">

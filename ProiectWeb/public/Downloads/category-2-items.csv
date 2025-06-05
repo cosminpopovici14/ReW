@@ -1,4 +1,0 @@
-"id","name","quantity","consumable","alert","alertdeqtime","favourite","date","lastcheckdate"
-22,"coco",49,true,false,"30d",false,"2025-06-05T07:20:37.426Z","NoDate"
-23,"asd",1,false,true,"7d",false,"2025-06-05T07:10:07.555Z","2025-06-05T07:10:01.841Z"
-24,"cocobaur",46,true,true,"7d",false,"2025-06-05T07:28:22.640Z","NoDate"

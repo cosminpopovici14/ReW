@@ -78,12 +78,14 @@ function addCategory(){
 function printCategory(){
 let categoriesHTML ='';
 let count = 0;
-categories.forEach((category) =>{
 categoriesExportButton = `
 <a href="Downloads/categories.csv" download="categories.csv">
 <button class="export-button">Export CSV</button>
 </a>
 `
+categories.forEach((category) =>{
+
+console.log("EXPORTBUTTON ", categoriesExportButton);
 categoriesHTML += `
     <div class="category" id="category-${category.id}">
                         <div class="category-name" id="category-name-${category.id}">

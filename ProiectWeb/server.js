@@ -1,5 +1,6 @@
 const http = require('http');
 const fs = require('fs');
+const Json2csvParser = require("json2csv").Parser;
 const path = require('path');
 const { json } = require('stream/consumers');
 const { type } = require('os');
@@ -600,7 +601,198 @@ const server = http.createServer((req, res) => {
 
         return;
     }
-    
+    if(req.method === 'GET' && /^\/api\/categories\/\d+\/items\/\d+\/export$/.test(req.url)){
+        let id = parseInt(req.url.split('/')[5]);
+        
+        client.query(
+        `SELECT DISTINCT
+            i.id,
+            i.name,
+            i.quantity,
+            p.consumable,
+            a.alert,
+            a.alertdeqtime,
+            p.favourite,
+            d.added_date as date,
+            a.lastcheckdate
+        FROM items i
+        JOIN item_properties p on i.id = p.item_id
+        JOIN item_alerts a on i.id = a.item_id
+        JOIN ( 
+            select item_id,max(added_date) as added_date 
+            from item_dates 
+            group by item_id
+        ) d on i.id = d.item_id
+        WHERE i.id = $1
+        ORDER BY id ASC`
+            ,[id],(err,content)=>{
+            
+            if (err) {
+                console.log(err);
+                res.writeHead(500);
+                res.end('Eroare server');
+                return;
+            }
+            const jsonData = JSON.parse(JSON.stringify(content.rows));
+            console.log("jsonData", jsonData);
+
+            const json2csvParser = new Json2csvParser({ header: true });
+            const csv = json2csvParser.parse(jsonData);
+
+            fs.writeFile(`public/Downloads/item-${id}.csv`, csv, function(error) {
+                if (error) throw error;
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end("File Created Successfully");
+            });
+        });
+        return;
+    }
+
+
+    if(req.method === 'GET' && /^\/api\/categories\/\d+\/items\/export$/.test(req.url)){
+        let id = parseInt(req.url.split('/')[3]);
+        
+        client.query(
+        `SELECT DISTINCT
+            i.id,
+            i.name,
+            i.quantity,
+            p.consumable,
+            a.alert,
+            a.alertdeqtime,
+            p.favourite,
+            d.added_date as date,
+            a.lastcheckdate
+        FROM items i
+        JOIN item_properties p on i.id = p.item_id
+        JOIN item_alerts a on i.id = a.item_id
+        JOIN ( 
+            select item_id,max(added_date) as added_date 
+            from item_dates 
+            group by item_id
+        ) d on i.id = d.item_id
+        WHERE i.category_id = $1
+        ORDER BY id ASC`
+            ,[id],(err,content)=>{
+            
+            if (err) {
+                console.log(err);
+                res.writeHead(500);
+                res.end('Eroare server');
+                return;
+            }
+            const jsonData = JSON.parse(JSON.stringify(content.rows));
+            console.log("jsonData", jsonData);
+
+            const json2csvParser = new Json2csvParser({ header: true });
+            const csv = json2csvParser.parse(jsonData);
+
+            fs.writeFile(`public/Downloads/category-${id}-items.csv`, csv, function(error) {
+                if (error) throw error;
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end("File Created Successfully");
+            });
+        });
+        return;
+    }
+
+    if(req.method === 'GET' && /^\/api\/categories\/\d+\/export$/.test(req.url)){
+        let id = parseInt(req.url.split('/')[3]);
+        
+        client.query(
+        `SELECT DISTINCT
+            c.id,
+            c.name,
+            i.id as item_id,
+            i.name as item_name,
+            i.quantity,
+            p.consumable,
+            a.alert,
+            a.alertdeqtime,
+            p.favourite,
+            d.added_date as date,
+            a.lastcheckdate
+        FROM categories c
+        JOIN items i on c.id = i.category_id
+        JOIN item_properties p on i.id = p.item_id
+        JOIN item_alerts a on i.id = a.item_id
+        JOIN ( 
+            select item_id,max(added_date) as added_date 
+            from item_dates 
+            group by item_id
+        ) d on i.id = d.item_id
+        WHERE c.id = $1
+        ORDER BY c.id ASC`
+            ,[id],(err,content)=>{
+            
+            if (err) {
+                console.log(err);
+                res.writeHead(500);
+                res.end('Eroare server');
+                return;
+            }
+            const jsonData = JSON.parse(JSON.stringify(content.rows));
+            console.log("jsonData", jsonData);
+
+            const json2csvParser = new Json2csvParser({ header: true });
+            const csv = json2csvParser.parse(jsonData);
+
+            fs.writeFile(`public/Downloads/category-${id}.csv`, csv, function(error) {
+                if (error) throw error;
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end("File Created Successfully");
+            });
+        });
+        return;
+    }
+
+    if(req.method === 'GET' && /^\/api\/categories\/export$/.test(req.url)){
+        
+        client.query(
+        `SELECT DISTINCT
+            c.id,
+            c.name,
+            i.id as item_id,
+            i.name as item_name,
+            i.quantity,
+            p.consumable,
+            a.alert,
+            a.alertdeqtime,
+            p.favourite,
+            d.added_date as date,
+            a.lastcheckdate
+        FROM categories c
+        JOIN items i on c.id = i.category_id
+        JOIN item_properties p on i.id = p.item_id
+        JOIN item_alerts a on i.id = a.item_id
+        JOIN ( 
+            select item_id,max(added_date) as added_date 
+            from item_dates 
+            group by item_id
+        ) d on i.id = d.item_id
+        ORDER BY c.id ASC`
+            ,(err,content)=>{
+            
+            if (err) {
+                console.log(err);
+                res.writeHead(500);
+                res.end('Eroare server');
+                return;
+            }
+            const jsonData = JSON.parse(JSON.stringify(content.rows));
+            console.log("jsonData", jsonData);
+
+            const json2csvParser = new Json2csvParser({ header: true });
+            const csv = json2csvParser.parse(jsonData);
+
+            fs.writeFile(`public/Downloads/categories.csv`, csv, function(error) {
+                if (error) throw error;
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end("File Created Successfully");
+            });
+        });
+        return;
+    }
 
 
     switch (ext) {

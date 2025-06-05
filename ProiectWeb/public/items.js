@@ -27,6 +27,11 @@ async function getChartData(itemID) {
     
 }
 
+async function getItemExport(itemID){
+    let res = await fetch(`/api/categories/${id}/items/${itemID}/export`);
+}
+
+
 
 async function postItem(name,isConsumable,quantity,autodeq,alert,date)
 {
@@ -293,7 +298,9 @@ function printItems(){
                             </div>
                             <div class="lower-buttons">
                                 <div class="export-button-consumables" id="view-export">
-                                    <button id="export-btn">Export to PDF</button>
+                                <a href="Downloads/item-${item.id}.csv" download="item-${item.id}.csv">
+                                    <button  id="export-btn">Export to PDF</button>
+                                </a>
                                 </div>
                             </div>
                         </div>
@@ -360,7 +367,9 @@ function printItems(){
                             </div>
                             <div class="lower-buttons">
                                 <div class="export-button-devices" id="view-export">
-                                    <button id="export-btn">Export to PDF</button>
+                                    <a href="Downloads/item-${item.id}.csv" download="item-${item.id}.csv">
+                                    <button  id="export-btn">Export to PDF</button>
+                                </a>
                                 </div>
                                 <div class="check-button" id="view-check">
                                     <button id="check-btn" onclick="patchDeviceCheck(${item.id})">Confirm Check</button>
@@ -407,7 +416,7 @@ function printItems(){
                                 </div>
                                 <div class="item-view" id="item-view-${item.id}">
                                     <button id="view-button"
-                                    onclick="getChartData(${item.id}); openItemsPopup('view-${item.id}'); ">View</button>
+                                    onclick="getItemExport(${item.id});getChartData(${item.id}); openItemsPopup('view-${item.id}'); ">View</button>
                                 </div>
                             </div>
                         </div>

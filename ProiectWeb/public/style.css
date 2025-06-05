@@ -151,6 +151,11 @@ button{
 #btn2{
  font-size: x-large;
 }
+.export-button{
+  font-size: x-large;
+  color: white;
+  background-color: #4cd964;
+}
 
 .category-delete{
   margin-bottom: 5px;
@@ -158,8 +163,11 @@ button{
 .category-view-items{
   margin-bottom: 5px;
 }
-#under-categories{
+.under-categories{
+  display:flex;
   
+}
+.under-items{
   display:flex;
   justify-content:center;
   margin: 50px;
@@ -253,27 +261,60 @@ input[type="text"]
   color: #fff;
 }
 #add-category-button{  
-  background-color: #fff;
+  background-color: white;
+  margin: 50px;
   padding: 20px;
-  width: 300px;
+  width: 230px;
   max-width: 500px;
+  max-height: fit-content;
   border-radius: 12px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
   text-align: center;
   transition: all 0.5s;
+  position: relative;
   
 }
 #add-item-button{
   background-color: #fff;
   padding: 20px;
-  width: 300px;
+  width: 230px;
   max-width: 500px;
+  max-height: fit-content;
   border-radius: 12px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
   text-align: center;
   transition: all 0.5s;
   position: relative;
   margin-top: 80px;
+}
+
+#export-items-button{
+  margin: 50px;
+  padding: 20px;
+  width: 230px;
+  max-width: 500px;
+  max-height: fit-content;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  transition: all 0.5s;
+  position: relative;
+  margin-top: 80px;
+  background-color: #4cd964;
+}
+
+#export-categories-button{
+  margin: 50px;
+  padding: 20px;
+  width: 230px;
+  max-width: 500px;
+  max-height: fit-content;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  transition: all 0.5s;
+  position: relative;
+  background-color: #4cd964;
 }
 
 #welcome-page {
@@ -889,3 +930,4 @@ input[type="checkbox"] {
   margin-left:3px;
   margin-right: 3px;
 }
+

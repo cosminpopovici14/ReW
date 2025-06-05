@@ -1,2 +1,2 @@
 "id","name","item_id","item_name","quantity","consumable","alert","alertdeqtime","favourite","date","lastcheckdate"
-1,"asd",21,"36asd",1,false,true,"90d",false,"2025-06-04T20:24:49.943Z","2025-06-04T20:22:24.014Z"
+1,"test",1,"sx",33,true,true,"noalert",false,"2025-06-05T08:59:54.076Z","NoDate"

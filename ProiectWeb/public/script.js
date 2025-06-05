@@ -79,6 +79,11 @@ function printCategory(){
 let categoriesHTML ='';
 let count = 0;
 categories.forEach((category) =>{
+categoriesExportButton = `
+<a href="Downloads/categories.csv" download="categories.csv">
+<button class="export-button">Export CSV</button>
+</a>
+`
 categoriesHTML += `
     <div class="category" id="category-${category.id}">
                         <div class="category-name" id="category-name-${category.id}">
@@ -111,6 +116,7 @@ categoriesHTML += `
 });
 
 document.querySelector('.js-categories-page').innerHTML = categoriesHTML;
+document.querySelector('#export-categories-button').innerHTML = categoriesExportButton;
 }
 
 

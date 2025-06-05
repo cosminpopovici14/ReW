@@ -160,10 +160,17 @@ function printItems(){
     viewHTML = '';
     editHTML = '';
     let itemsHTML = '';
+
     console.log("ITEMS:::",items);
     items.forEach(item =>{
         if(item.consumable == true)
         {
+            exportButtonHTML=`
+            <a href="Downloads/category-${category[0].id}-items.csv" download="category-${category[0].id}-items.csv">
+            <button class="export-button">Export CSV</button>
+            </a>
+            `
+
             editHTML+=`
             <div class="edit-item-popup" id="edit-popup-${item.id}">
                         <div class="add-item-image">
@@ -442,6 +449,7 @@ function printItems(){
     document.querySelector('.items-edit-popup-div').innerHTML = editHTML;
     document.querySelector('.items-info-popup-div').innerHTML = viewHTML;
     document.querySelector('.items').innerHTML = itemsHTML;
+    document.querySelector('#export-items-button').innerHTML = exportButtonHTML;
 }
 
 function checkConsumable(consumable){
@@ -608,7 +616,7 @@ function createCanvas(ItemID,chartData){
                 data: yValues
             }]
         },
-        options: {
+        options: {  
             legend: {display: false},
             title: {
                 display: true,

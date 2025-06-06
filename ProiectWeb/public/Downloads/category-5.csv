@@ -1,0 +1,3 @@
+"id","name","item_id","item_name","quantity","consumable","alert","alertdeqtime","favourite","date","lastcheckdate"
+5,"ciocane",29,"pulamea",1,false,true,"7d",false,"2025-06-06T15:56:48.173Z","2025-06-06T15:56:41.869Z"
+5,"ciocane",36,"asdsda",123,true,false,"noalert",false,"2025-06-06T16:54:12.401Z","NoDate"

@@ -1,0 +1,5 @@
+"id","name","quantity","consumable","alert","alertdeqtime","favourite","date","lastcheckdate"
+25,"coco",18,true,true,"noalert",false,"2025-06-05T12:45:58.362Z","NoDate"
+26,"sef",65,true,false,"noalert",false,"2025-06-05T11:59:51.838Z","NoDate"
+27,"test",1,false,true,"off",false,"2025-06-05T11:59:57.758Z","NoDate"
+28,"36asd",1,false,true,"30d",false,"2025-06-05T12:41:50.469Z","2025-06-05T12:41:39.715Z"

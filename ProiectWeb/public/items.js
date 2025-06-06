@@ -35,7 +35,7 @@ async function getItemExport(itemID){
 
 async function postItem(name,isConsumable,quantity,autodeq,alert,date)
 {
-    
+    try{
         let res = await fetch(`/api/categories/${id}/items`,{
         method : 'POST',
         header : {'ContentType' : 'application/json'},
@@ -49,8 +49,17 @@ async function postItem(name,isConsumable,quantity,autodeq,alert,date)
             "favourite": false,
             "lastcheckdate":"NoDate"
         })
-    })
-    init();  
+    });
+    if(!res.ok){
+            const errorMsg = await res.text();
+            throw new Error(errorMsg);
+        }
+    init();
+    } catch(err){
+        console.log("Eroare post " , err.message);
+        openErrorPopup();
+    }
+          
 }
 
 
@@ -723,4 +732,10 @@ function verifyCheckStatusText(itemlastcheckdate, itemalertdeqtime){
     if(date >= verifyDate)
        return "Check Item";
     return "OK";
+}
+
+function openErrorPopup(){
+    let errorPopup = document.getElementById('error-text-div-1')
+    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAA", errorPopup)
+   errorPopup.classList.add("show-error");
 }

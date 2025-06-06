@@ -1,5 +1,6 @@
 const http = require('http');
 const fs = require('fs');
+const Joi = require('joi');
 const Json2csvParser = require("json2csv").Parser;
 const path = require('path');
 const { json } = require('stream/consumers');
@@ -12,7 +13,254 @@ const client = new Client({
         port: 5432,
         database: 'rew-database',
     })   
-client.connect();
+
+
+
+async function initializeDatabase() {
+ try {
+    await client.query( `
+
+
+
+CREATE TABLE IF NOT EXISTS categories (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS items (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  quantity INT NOT NULL,
+  category_id INT REFERENCES categories(id)
+);
+
+CREATE TABLE IF NOT EXISTS item_properties (
+  id SERIAL PRIMARY KEY,
+  item_id INT REFERENCES items(id),
+  consumable BOOLEAN DEFAULT false,
+  favourite BOOLEAN DEFAULT false
+);
+
+CREATE TABLE IF NOT EXISTS item_alerts (
+  id SERIAL PRIMARY KEY,
+  item_id INT REFERENCES items(id),
+  alert BOOLEAN DEFAULT false,
+  alertdeqtime INT,
+  lastcheckdate DATE
+);
+
+CREATE TABLE IF NOT EXISTS item_dates (
+  id SERIAL PRIMARY KEY,
+  item_id INT REFERENCES items(id),
+  quantity INT,
+  added_date DATE
+);
+
+CREATE TABLE IF NOT EXISTS audit_log (
+  id SERIAL PRIMARY KEY,
+  user_id INT,
+  action TEXT NOT NULL,
+  table_name TEXT NOT NULL,
+  record_id INT NOT NULL,
+  action_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_user_audit FOREIGN KEY (user_id)
+    REFERENCES users(id)
+    ON DELETE SET NULL
+);
+
+
+
+
+
+
+CREATE OR REPLACE FUNCTION estimate_depletion_date(p_item_id INT)
+RETURNS DATE AS $$
+DECLARE
+    avg_daily_consumption FLOAT;
+    latest_quantity INT;
+    last_date DATE;
+BEGIN
+    SELECT 
+        AVG(diff) 
+    INTO avg_daily_consumption
+    FROM (
+        SELECT 
+            quantity - LAG(quantity) OVER (ORDER BY added_date) AS diff,
+            added_date
+        FROM item_dates
+        WHERE item_id = p_item_id
+    ) AS consumption
+    WHERE diff < 0;
+
+    SELECT quantity, added_date
+    INTO latest_quantity, last_date
+    FROM item_dates
+    WHERE item_id = p_item_id
+    ORDER BY added_date DESC
+    LIMIT 1;
+
+    IF avg_daily_consumption IS NULL OR avg_daily_consumption = 0 THEN
+        RETURN NULL;
+    END IF;
+
+    RETURN last_date + (latest_quantity / ABS(avg_daily_consumption)) * INTERVAL '1 day';
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION get_consumables_by_category(p_category_id INT)
+RETURNS SETOF consumable_item_info AS $$
+DECLARE
+  item_cursor REFCURSOR;
+  rec RECORD;
+  result_row consumable_item_info;
+BEGIN
+  OPEN item_cursor FOR
+    SELECT 
+      i.id AS item_id,
+      i.name,
+      i.quantity,
+      p.favourite,
+      a.lastcheckdate
+    FROM items i
+    JOIN item_properties p ON i.id = p.item_id
+    JOIN item_alerts a ON i.id = a.item_id
+    WHERE i.category_id = p_category_id AND p.consumable = true;
+
+  LOOP
+    FETCH item_cursor INTO rec;
+    EXIT WHEN NOT FOUND;
+
+    result_row.item_id := rec.item_id;
+    result_row.name := rec.name;
+    result_row.quantity := rec.quantity;
+    result_row.favourite := rec.favourite;
+
+    IF rec.lastcheckdate IS NULL THEN
+      result_row.lastcheckdate := 'NoDate';
+    ELSE
+      result_row.lastcheckdate := rec.lastcheckdate::TEXT;
+    END IF;
+
+    RETURN NEXT result_row;
+  END LOOP;
+
+  CLOSE item_cursor;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION check_export_has_data()
+RETURNS void AS $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM categories c
+        LEFT JOIN items i ON c.id = i.category_id
+        LEFT JOIN item_properties p ON i.id = p.item_id
+        LEFT JOIN item_alerts a ON i.id = a.item_id
+        LEFT JOIN (
+            SELECT item_id, MAX(added_date) AS added_date
+            FROM item_dates
+            GROUP BY item_id
+        ) d ON i.id = d.item_id
+    ) THEN
+        RAISE EXCEPTION 'Nu există date pentru export' USING ERRCODE = 'P0001';
+    END IF;
+END
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION check_category_exists(cat_id INT) RETURNS VOID AS $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM categories WHERE id = cat_id) THEN
+        RAISE EXCEPTION 'Categoria cu id-ul % nu există!', cat_id;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION check_category_has_items(cat_id INTEGER)
+RETURNS void AS $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM items WHERE category_id = cat_id
+    ) THEN
+        RAISE EXCEPTION 'Categoria nu are iteme.';
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION check_item_exists(item_id INTEGER)
+RETURNS void AS $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM items WHERE id = item_id
+    ) THEN
+        RAISE EXCEPTION 'Itemul nu există.';
+    END IF;
+END;
+$$ LANGUAGE plpgsql; 
+
+
+CREATE OR REPLACE FUNCTION log_insert_category()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO audit_log (user_id, action, table_name, record_id)
+  VALUES (NEW.user_id, 'INSERT', 'categories', NEW.id);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE or replace TRIGGER trg_log_insert_category
+AFTER INSERT ON categories
+FOR EACH ROW
+EXECUTE FUNCTION log_insert_category();
+
+CREATE OR REPLACE FUNCTION log_update_category()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO audit_log (user_id, action, table_name, record_id)
+  VALUES (NEW.user_id, 'UPDATE', 'categories', NEW.id);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE or replace TRIGGER trg_log_update_category
+AFTER UPDATE ON categories
+FOR EACH ROW
+EXECUTE FUNCTION log_update_category();
+
+CREATE or replace FUNCTION log_delete_category()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO audit_log (user_id, action, table_name, record_id)
+  VALUES (OLD.user_id, 'DELETE', 'categories', OLD.id);
+  RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE or replace TRIGGER  trg_log_delete_category
+AFTER DELETE ON categories
+FOR EACH ROW
+EXECUTE FUNCTION log_delete_category();
+        `);
+
+    console.log('✅ Tabelele au fost create sau existau deja.');
+} catch (error) {
+        console.error('❌ Eroare la crearea tabelelor:', error.message);
+        process.exit(1); 
+    }
+}
+client.connect()
+    .then(() => {
+        console.log("✅ Conectat la PostgreSQL");
+        return initializeDatabase(); 
+    })
+    .catch(err => {
+        console.error("❌ Eroare la conectarea la PostgreSQL:", err.message);
+        process.exit(1);
+    });
 
 
 const server = http.createServer((req, res) => {
@@ -246,7 +494,7 @@ const server = http.createServer((req, res) => {
         req.on('data', chunk => (body += chunk));
         req.on('end', () => {
             const newItem = JSON.parse(body);
-
+            
 
             //items
             client.query(`INSERT INTO items(category_id,name,quantity)
@@ -255,8 +503,8 @@ const server = http.createServer((req, res) => {
             
             if (err) {
                 console.log(err);
-                res.writeHead(500);
-                res.end('Eroare server');
+                res.writeHead(400);
+                res.end(err.message);
                 return;
             }
 
@@ -268,8 +516,8 @@ const server = http.createServer((req, res) => {
                         [newItem.consumable,newItem.favourite,itemId],(err1,content)=>{
                             if (err1) {
                                 console.log(err1);
-                                res.writeHead(500);
-                                res.end('Eroare server');
+                                res.writeHead(400);
+                                res.end(err1.message);
                                 return;
                             }
                         
@@ -279,8 +527,8 @@ const server = http.createServer((req, res) => {
                                     [newItem.alert,newItem.alertdeqtime,newItem.lastcheckdate,itemId],(err2,content)=>{
                                          if (err2) {
                                             console.log(err2);
-                                            res.writeHead(500);
-                                            res.end('Eroare server');
+                                            res.writeHead(400);
+                                            res.end(err2.message);
                                             return;
                                         }
 
@@ -290,8 +538,8 @@ const server = http.createServer((req, res) => {
                                                     [newItem.quantity,newItem.date,itemId],(err3,content)=>{
                                                         if (err3) {
                                                             console.log(err3);
-                                                            res.writeHead(500);
-                                                            res.end('Eroare server');
+                                                            res.writeHead(400);
+                                                            res.end(err3.message);
                                                             return;
                                                         }
 
@@ -304,42 +552,7 @@ const server = http.createServer((req, res) => {
             })
 
             
-            // fs.readFile('./data/categories.json', 'utf-8', (err, data) => {
-            // if (err) {
-            //     res.writeHead(500);
-            //     res.end('Server Error');
-            //     return;
-            // }    
-            // const parsed = JSON.parse(data || '{"categories": []}');
-            // let myCategory = parsed.categories.find(c => c.id === id);
-
-            // if(!myCategory){
-            //     res.writeHead(404);
-            //     res.end('Category not found');
-            //     return;
-            // }
            
-            // let newId=0;
-            // if(myCategory.items.length === 0){
-            //     newId = 1;
-            // } else{
-            //     newId = myCategory.items.length + 1;
-            // }
-            // myCategory.items.push({ 
-            //     id: newId, 
-            //     name: newItem.name, 
-            //     quantity: newItem.quantity, 
-            //     consumable:newItem.consumable, 
-            //     alertdeqtime:newItem.alertdeqtime, 
-            //     alert:newItem.alert,
-            //     date:newItem.date 
-            // });
-
-            // fs.writeFile('./data/categories.json', JSON.stringify(parsed,null,2), () => {
-            //     res.writeHead(201);
-            //     res.end();
-            // });
-            // });
         });
         return;
     }

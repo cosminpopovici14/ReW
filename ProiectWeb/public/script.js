@@ -20,26 +20,50 @@ async function getCategoryItemsExport(categoryID){
 }
 async function PostCategory(body){
 
+    try{
     const res = await fetch('/api/categories', {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json'},
-        body: JSON.stringify({"name" : body})
-    })
+            method: "POST",
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify({"name" : body})
+        })
+        if(!res.ok){
+                const errorMsg = await res.text();
+                throw new Error(errorMsg);
+            }
+        else{
 
-    init();
+            closePopup('add-popup');
+            init();
+        }
+    } catch(err){
+        console.log("Eroare post " , err.message);
+        openAddCategoryErrorPopup(err.message);
+    }
 }
 
 async function PutCategory(id,body){
-
-    const res = await fetch('/api/categories', {
+    try{
+        const res = await fetch('/api/categories', {
         method: "PUT",
         headers: { 'Content-Type': 'application/json'},
         body: JSON.stringify({
             "id" : id,
             "name" : body})
-    })
+        })
+            if(!res.ok){
+                const errorMsg = await res.text();
+                throw new Error(errorMsg);
+            }
+        else{
 
-    init();
+            closePopup('rename-popup');
+            init();
+        }
+    }  catch(err){
+        console.log("Eroare post " , err.message);
+        openRenameCategoryErrorPopup(err.message);
+    }
+
 }
 
 async function DeleteCategory(id){
@@ -63,6 +87,8 @@ init();
 
 function renameCategory(){
     var text = document.getElementById("category-rename-input").value;
+    if(text === "")
+        text = null;
     PutCategory(renameCount,text);
    
 }
@@ -71,6 +97,8 @@ function renameCategory(){
 function addCategory(){
     
     var text = document.getElementById("category-name-input").value;
+    if(text === "")
+        text = null;
     PostCategory(text);
     
 }
@@ -197,6 +225,29 @@ function closePopup(id)
     console.log(id);
     let popup=document.getElementById(id);
     popup.classList.remove("open-popup");
+    error2 =document.getElementById('error-text-div-2')
+    error2.classList.remove("show-error");
+    error3 =document.getElementById('error-text-div-3')
+    error3.classList.remove("show-error");
+}
+
+
+function openRenameCategoryErrorPopup(errMessage){
+    let errorPopup = document.getElementById('error-text-div-3')
+    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAA", errorPopup)
+    let error = `Error : ${errMessage}`;
+    document.querySelector('.error-text-3').innerHTML = error;
+   errorPopup.classList.add("show-error");
+
+}
+
+function openAddCategoryErrorPopup(errMessage){
+    let errorPopup = document.getElementById('error-text-div-2')
+    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAA", errorPopup)
+    let error = `Error : ${errMessage}`;
+    document.querySelector('.error-text-2').innerHTML = error;
+   errorPopup.classList.add("show-error");
+
 }
 
 

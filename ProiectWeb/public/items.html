@@ -26,18 +26,7 @@
                         </div>
             </section>
         </header>
-        <div class="error-popup-div">
-            <div class = "error-popup">
-
-                <img src="Images/error_img.png" alt="error" class="error-image">
-                <div class="error-title">
-                    <h2>Error</h2>
-                </div>
-                <div class="error-text opacity-lowered">
-                    <h3>Am futut o pe ma ta asdasdasdsdsaaddsadsasdasdasdasdad</h3>
-                </div>
-            </div>
-        </div>
+       
         
         <main>
             
@@ -50,8 +39,8 @@
                         <div class="add-item-popup-title-div">
                             <h2 id="add-item-popup-title">Add Item</h2>
                         </div>
-                        <div class ="error-text-div" id="error-text-div-1">
-                            <p class="error-text">Error : Invalid Input</p>
+                        <div class ="error-text-div" id="error-text-div-post">
+                            <p class="error-text-post">Error : Invalid Input</p>
                         </div>
                         <div id="item-name-div">
                             <p class="item-inputs-titles" id="item-name-p">Item Name</p> <input class="item-inputs" id="item-name-input" required="required" type="text">
@@ -93,7 +82,7 @@
                             <input  class="custom-checkbox" id="item-alert-input" required="required" type="checkbox"> <p class="item-inputs-titles" id="item-alert-p">Enable Alert</p> 
                         </div>
                         <div class="add-item-popup-buttons-div">
-                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text" onclick="addItem();closeItemsPopup('add-popup')">Add Item</button></div>
+                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text" onclick="addItem();">Add Item</button></div>
                             <div class = "add-item-popup-button" id="add-item-cancel-button"> <button class = "add-item-button-text" onclick ="closeItemsPopup('add-popup')">Cancel</button></div>  
                         </div>
                     </div> 

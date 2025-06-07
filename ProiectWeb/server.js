@@ -20,40 +20,59 @@ async function initializeDatabase() {
  try {
     await client.query( `
 
-
-
+CREATE TABLE IF NOT EXISTS users(
+    id SERIAL PRIMARY KEY ,
+    name VARCHAR(50) NOT NULL,
+    password VARCHAR(50) NOT NULL,
+    UNIQUE(name)
+);
 CREATE TABLE IF NOT EXISTS categories (
-  id SERIAL PRIMARY KEY,
-  name TEXT NOT NULL
+    id SERIAL PRIMARY KEY ,
+    name VARCHAR(50) NOT NULL,
+    user_id INT, 
+    CONSTRAINT fk_user FOREIGN KEY(user_id) 
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+    UNIQUE(name)
 );
-
 CREATE TABLE IF NOT EXISTS items (
-  id SERIAL PRIMARY KEY,
-  name TEXT NOT NULL,
-  quantity INT NOT NULL,
-  category_id INT REFERENCES categories(id)
+    id SERIAL PRIMARY KEY ,
+    name VARCHAR(50) NOT NULL ,
+    quantity INT NOT NULL,
+    category_id INT, 
+    CONSTRAINT fk_category FOREIGN KEY(category_id) 
+        REFERENCES categories(id)
+        ON DELETE CASCADE,
+    UNIQUE(name)
 );
-
-CREATE TABLE IF NOT EXISTS item_properties (
-  id SERIAL PRIMARY KEY,
-  item_id INT REFERENCES items(id),
-  consumable BOOLEAN DEFAULT false,
-  favourite BOOLEAN DEFAULT false
-);
-
 CREATE TABLE IF NOT EXISTS item_alerts (
-  id SERIAL PRIMARY KEY,
-  item_id INT REFERENCES items(id),
-  alert BOOLEAN DEFAULT false,
-  alertdeqtime INT,
-  lastcheckdate DATE
+    id SERIAL PRIMARY KEY ,
+    alert BOOLEAN NOT NULL,
+    alertdeqtime VARCHAR(50) NOT NULL,
+    lastcheckdate VARCHAR(50) NOT NULL,
+    item_id INT, 
+    CONSTRAINT fk_item FOREIGN KEY(item_id) 
+        REFERENCES items(id)
+        ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS item_properties (
+    id SERIAL PRIMARY KEY ,
+    consumable BOOLEAN NOT NULL,
+    favourite BOOLEAN NOT NULL,
+    item_id INT, 
+    CONSTRAINT fk_item FOREIGN KEY(item_id) 
+        REFERENCES items(id)
+        ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS item_dates (
-  id SERIAL PRIMARY KEY,
-  item_id INT REFERENCES items(id),
-  quantity INT,
-  added_date DATE
+CREATE TABLE IF NOT EXISTS item_dates(
+    id SERIAL PRIMARY KEY ,
+    added_date VARCHAR(50) NOT NULL,
+    quantity INT NOT NULL,
+    item_id INT, 
+    CONSTRAINT fk_item FOREIGN KEY(item_id) 
+        REFERENCES items(id)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS audit_log (
@@ -109,47 +128,6 @@ $$ LANGUAGE plpgsql;
 
 
 
-CREATE OR REPLACE FUNCTION get_consumables_by_category(p_category_id INT)
-RETURNS SETOF consumable_item_info AS $$
-DECLARE
-  item_cursor REFCURSOR;
-  rec RECORD;
-  result_row consumable_item_info;
-BEGIN
-  OPEN item_cursor FOR
-    SELECT 
-      i.id AS item_id,
-      i.name,
-      i.quantity,
-      p.favourite,
-      a.lastcheckdate
-    FROM items i
-    JOIN item_properties p ON i.id = p.item_id
-    JOIN item_alerts a ON i.id = a.item_id
-    WHERE i.category_id = p_category_id AND p.consumable = true;
-
-  LOOP
-    FETCH item_cursor INTO rec;
-    EXIT WHEN NOT FOUND;
-
-    result_row.item_id := rec.item_id;
-    result_row.name := rec.name;
-    result_row.quantity := rec.quantity;
-    result_row.favourite := rec.favourite;
-
-    IF rec.lastcheckdate IS NULL THEN
-      result_row.lastcheckdate := 'NoDate';
-    ELSE
-      result_row.lastcheckdate := rec.lastcheckdate::TEXT;
-    END IF;
-
-    RETURN NEXT result_row;
-  END LOOP;
-
-  CLOSE item_cursor;
-END;
-$$ LANGUAGE plpgsql;
-
 
 
 CREATE OR REPLACE FUNCTION check_export_has_data()
@@ -203,47 +181,8 @@ END;
 $$ LANGUAGE plpgsql; 
 
 
-CREATE OR REPLACE FUNCTION log_insert_category()
-RETURNS TRIGGER AS $$
-BEGIN
-  INSERT INTO audit_log (user_id, action, table_name, record_id)
-  VALUES (NEW.user_id, 'INSERT', 'categories', NEW.id);
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
 
-CREATE or replace TRIGGER trg_log_insert_category
-AFTER INSERT ON categories
-FOR EACH ROW
-EXECUTE FUNCTION log_insert_category();
 
-CREATE OR REPLACE FUNCTION log_update_category()
-RETURNS TRIGGER AS $$
-BEGIN
-  INSERT INTO audit_log (user_id, action, table_name, record_id)
-  VALUES (NEW.user_id, 'UPDATE', 'categories', NEW.id);
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE or replace TRIGGER trg_log_update_category
-AFTER UPDATE ON categories
-FOR EACH ROW
-EXECUTE FUNCTION log_update_category();
-
-CREATE or replace FUNCTION log_delete_category()
-RETURNS TRIGGER AS $$
-BEGIN
-  INSERT INTO audit_log (user_id, action, table_name, record_id)
-  VALUES (OLD.user_id, 'DELETE', 'categories', OLD.id);
-  RETURN OLD;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE or replace TRIGGER  trg_log_delete_category
-AFTER DELETE ON categories
-FOR EACH ROW
-EXECUTE FUNCTION log_delete_category();
         `);
 
     console.log('✅ Tabelele au fost create sau existau deja.');
@@ -314,8 +253,8 @@ const server = http.createServer((req, res) => {
             
             if (err) {
                 console.log(err);
-                res.writeHead(500);
-                res.end('Eroare server');
+                res.writeHead(400);
+                res.end(checkErrorCode(err.code,err.message));
                 return;
             }
             res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -356,8 +295,8 @@ const server = http.createServer((req, res) => {
             
             if (err) {
                 console.log(err);
-                res.writeHead(500);
-                res.end('Eroare server');
+                res.writeHead(400);
+                res.end(checkErrorCode(err.code,err.message));
                 return;
             }
             res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -504,7 +443,7 @@ const server = http.createServer((req, res) => {
             if (err) {
                 console.log(err);
                 res.writeHead(400);
-                res.end(err.message);
+                res.end(checkErrorCode(err.code,err.message));
                 return;
             }
 
@@ -517,7 +456,7 @@ const server = http.createServer((req, res) => {
                             if (err1) {
                                 console.log(err1);
                                 res.writeHead(400);
-                                res.end(err1.message);
+                                res.end(err1.code);
                                 return;
                             }
                         
@@ -576,8 +515,8 @@ const server = http.createServer((req, res) => {
             
             if (err) {
                 console.log(err);
-                res.writeHead(500);
-                res.end('Eroare server');
+                res.writeHead(400);
+                res.end(checkErrorCode(err.code,err.message));
                 return;
             }
 
@@ -1096,3 +1035,14 @@ server.listen(3000, () => {
 });
 
 
+function checkErrorCode(errorCode,errorMessage){
+    if(errorCode == 23502)
+    {
+        if(errorMessage.includes("name"))
+            return "Name should not be null!"
+        else if(errorMessage.includes("quantity"))
+            return "Quantity should be a number!"
+    }
+    if(errorCode == 23505)
+        return "The name already exists!"
+}

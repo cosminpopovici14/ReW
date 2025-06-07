@@ -37,8 +37,12 @@
                                 <p id="category-name-p">Category Name</p> <input id="category-rename-input" required="required" type="text">
                             </div>
                             <div id="popup-buttons-div">
+                                <div id="popup-buttons-div">
+                                <div class="error-text-div category-error" id="error-text-div-3">
+                                    <p class="error-text-3">Error : Name should not be null! </p>
+                                </div>
                                 <button id="cancel-popup-button" onclick="closePopup('rename-popup')"> Cancel</button>
-                                <button id="add-popup-button" onclick="renameCategory(); closePopup('rename-popup')"> Rename</button>
+                                <button id="add-popup-button" onclick="renameCategory();"> Rename</button>
                             </div>
                         </div>
                     </div>
@@ -49,8 +53,12 @@
                                 <p id="category-name-p">Category Name</p> <input id="category-name-input" required="required" type="text">
                             </div>
                             <div id="popup-buttons-div">
+                                <div class="error-text-div category-error" id="error-text-div-2">
+                                    <p class="error-text-2"> Error : Name should not be null!</p>
+                                </div>
+                                
                                 <button id="cancel-popup-button" onclick="closePopup('add-popup')"> Cancel</button>
-                                <button id="add-popup-button" onclick="addCategory(); closePopup('add-popup')"> Add</button>
+                                <button id="add-popup-button" onclick="addCategory();"> Add</button>
                             </div>
                         </div>
                     </div>

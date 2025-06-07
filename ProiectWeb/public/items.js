@@ -54,10 +54,15 @@ async function postItem(name,isConsumable,quantity,autodeq,alert,date)
             const errorMsg = await res.text();
             throw new Error(errorMsg);
         }
-    init();
+    else{
+        console.log('INTRUUUU')
+        closeItemsPopup('add-popup');
+        init();
+    }
+ 
     } catch(err){
         console.log("Eroare post " , err.message);
-        openErrorPopup();
+        openErrorPopupPost(err.message);
     }
           
 }
@@ -70,7 +75,9 @@ async function putItem(itemID,name,isConsumable,quantity,autodeq,alert,favourite
     favourite = (favourite == "true");
     isConsumable = (isConsumable == "true");
     console.log("PUT:::",lastcheckdate);
-    let res = await fetch(`/api/categories/${id}/items`,{
+
+    try{
+        let res = await fetch(`/api/categories/${id}/items`,{
         method : 'PUT',
         header : {'ContentType' : 'application/json'},
         body : JSON.stringify({
@@ -85,7 +92,22 @@ async function putItem(itemID,name,isConsumable,quantity,autodeq,alert,favourite
             "lastcheckdate": lastcheckdate
         })
     });
-    init();
+        if(!res.ok){
+            const errorMsg = await res.text();
+            throw new Error(errorMsg);
+        }
+        else{
+            console.log('INTRUUUU')
+            closeItemsPopup(`edit-popup-${itemID}`)
+            init();
+        }
+
+    } catch(err){
+        console.log("Eroare put " , err.message);
+        openErrorPopupPut(err.message, itemID);
+    }
+    
+
 }
 
 async function deleteItem(idDeleted)
@@ -113,12 +135,30 @@ async function patchDeviceCheck(itemID){
     init(); 
 }
 
+
+async function patchFavourite(itemID,itemFavourite){
+    console.log("PatchFavourite:")
+    itemFavourite = (itemFavourite == "true");
+   let res = await fetch(`/api/categories/${id}/items`,{
+        method : 'PATCH',
+        header : {'ContentType' : 'application/json'},
+        body : JSON.stringify({
+            "id" : itemID,
+            "favourite": itemFavourite
+        })
+    });
+    init(); 
+}
+
+
 init();
 
 
 
 function addItem(){
     var name = document.getElementById("item-name-input").value;
+    if(name == "")
+        name = null;
     var isConsumable = document.getElementById("item-consumable-input").checked;
     const date = new Date();
     if(isConsumable == true){
@@ -137,7 +177,10 @@ function addItem(){
 }
 
 function editItemConsumable(itemID,itemFavourite,itemQuantity,itemDate, itemLastCheckDate){
+    
     var name = document.getElementById(`item-name-input-${itemID}`).value;
+    if(name === "")
+        name = null;
     var quantity = parseInt(document.getElementById(`item-quantity-input-${itemID}`).value);
     var autodeq = document.getElementById(`item-dec-quantity-interval-${itemID}`).value;
     var alert = document.getElementById(`item-alert-input-${itemID}`).checked;
@@ -154,6 +197,8 @@ function editItemConsumable(itemID,itemFavourite,itemQuantity,itemDate, itemLast
 function editItemDevice(itemID,itemFavourite,itemLastCheckDate){
     var date= new Date();
     var name = document.getElementById(`item-name-input-${itemID}`).value;
+    if(name === "")
+        name = null;
     var checkTime = document.getElementById(`item-check-time-interval-${itemID}`).value;
     var alert = document.getElementById(`item-alert-input-${itemID}`).checked;
     console.log("INTRI??",itemID,name,false,1,checkTime,alert,date,itemLastCheckDate);
@@ -189,7 +234,9 @@ function printItems(){
                         <div class="add-item-popup-title-div">
                             <h2 id="add-item-popup-title">Edit Consumable</h2>
                         </div>
-                        
+                        <div class ="error-text-div" id="error-text-div-put-${item.id}">
+                            <p class="error-text-put-${item.id}">Error : Invalid Input</p>
+                        </div>
                         <div id="item-name-div">
                             <p class="item-inputs-titles" id="item-name-p">Item Name</p> <input class="item-inputs" id="item-name-input-${item.id}" required="required" type="text" value="${item.name}">
                         </div>
@@ -215,7 +262,7 @@ function printItems(){
                             <input  class="custom-checkbox" id="item-alert-input-${item.id}" required="required" ${checkAlert(item.alert)} type="checkbox"> <p class="item-inputs-titles" id="item-alert-p">Enable Alert</p> 
                         </div>
                         <div class="add-item-popup-buttons-div">
-                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text" onclick="editItemConsumable(${item.id},'${item.favourite}','${item.quantity}','${item.date}','${item.lastcheckdate}'); "; closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
+                            <div class = "add-item-popup-button" id="add-item-add-button"> <button class = "add-item-button-text" onclick="editItemConsumable(${item.id},'${item.favourite}','${item.quantity}','${item.date}','${item.lastcheckdate}');  ">Edit</button></div>
                             <div class = "add-item-popup-button" id="add-item-cancel-button"> <button class = "add-item-button-text" onclick ="closeItemsPopup('edit-popup-${item.id}'); ">Cancel</button></div>  
                         </div>
                     </div> 
@@ -231,7 +278,9 @@ function printItems(){
                         <div class="add-item-popup-title-div">
                             <h2 id="add-item-popup-title">Edit Device</h2>
                         </div>
-                        
+                        <div class ="error-text-div" id="error-text-div-put-${item.id}">
+                            <p class="error-text-put-${item.id}">Error : Invalid Input</p>
+                        </div>
                         <div id="item-name-div">
                             <p class="item-inputs-titles" id="item-name-p">Item Name</p> <input class="item-inputs" id="item-name-input-${item.id}" required="required" type="text" value="${item.name}">
                         </div>
@@ -253,7 +302,7 @@ function printItems(){
                             <input  class="custom-checkbox" id="item-alert-input-${item.id}" required="required" ${checkAlert(item.alert)} ${console.log("check alert: ",checkAlert(item.alert))} type="checkbox"> <p class="item-inputs-titles" id="item-alert-p">Enable Alert</p> 
                         </div>
                         <div class="add-item-popup-buttons-div">
-                            <div class = "add-item-popup-button-edit" id="add-item-add-button"> <button class = "add-item-button-text-edit" onclick="editItemDevice(${item.id},'${item.favourite}','${item.lastcheckdate}'); "; closeItemsPopup('edit-popup-${item.id}')">Edit</button></div>
+                            <div class = "add-item-popup-button-edit" id="add-item-add-button"> <button class = "add-item-button-text-edit" onclick="editItemDevice(${item.id},'${item.favourite}','${item.lastcheckdate}');">Edit</button></div>
                             <div class = "add-item-popup-button" id="add-item-cancel-button"> <button class = "add-item-button-text" onclick ="closeItemsPopup('edit-popup-${item.id}'); ">Cancel</button></div>  
                         </div>
                     </div>
@@ -309,7 +358,7 @@ function printItems(){
                                     <button onclick="openEditPopup('edit-popup-${item.id}');">Edit Item</button>
                                 </div>
                                 <div class="view-button" id="view-schedule">
-                                    <button onclick="putItem('${item.id}','${item.name}','${item.consumable}','${item.quantity}','${item.alertdeqtime}',${item.alert},'${checkFavouriteTrueFalse(item.favourite)}','${item.date}')">${checkFavourite(item.favourite)}</button>
+                                    <button onclick="patchFavourite('${item.id}','${checkFavouriteTrueFalse(item.favourite)}')">${checkFavourite(item.favourite)}</button>
                                 </div>
                             </div>
                             <div class="lower-buttons">
@@ -378,7 +427,7 @@ function printItems(){
                                     <button onclick="openEditPopup('edit-popup-${item.id}');">Edit Item</button>
                                 </div>
                                 <div class="view-button" id="view-schedule">
-                                    <button onclick="putItem('${item.id}','${item.name}','${item.consumable}','${item.quantity}','${item.alertdeqtime}',${item.alert},'${checkFavouriteTrueFalse(item.favourite)}','${item.date}')">${checkFavourite(item.favourite)}</button>
+                                    <button onclick="patchFavourite('${item.id}','${checkFavouriteTrueFalse(item.favourite)}')">${checkFavourite(item.favourite)}</button>
                                 </div>
                             </div>
                             <div class="lower-buttons">
@@ -557,9 +606,23 @@ function openItemsPopup(id ,count){
 }
 function closeItemsPopup(id)
 {
-    let popup=document.getElementById(id);
-    popup.classList.remove("open-popup");
-    editOpened=0;
+        let itemID = id.split('-')[2];
+        if(itemID === undefined)
+        {
+            let popup=document.getElementById(id);
+            popup.classList.remove("open-popup"); 
+        }
+        else{
+        console.log("CEPULAMEAA", itemID);
+        let popup=document.getElementById(id);
+        popup.classList.remove("open-popup");    
+        errorPost =document.getElementById('error-text-div-post')
+        errorPost.classList.remove("show-error");
+        errorPut =document.getElementById(`error-text-div-put-${itemID}`)
+        errorPut.classList.remove("show-error");
+        }
+        
+    
 }
 
 function openPopup(id ,count){
@@ -688,7 +751,7 @@ function getDayAndMonth(date){
 }
 
 function getCheckDate(itemlastcheckdate, itemalertdeqtime){
-    if(itemalertdeqtime == "noalert")
+    if(itemalertdeqtime == "off")
         return "No Check Set"
     if(itemalertdeqtime == "7d")
         var res = addDays(itemlastcheckdate, 7);
@@ -734,8 +797,19 @@ function verifyCheckStatusText(itemlastcheckdate, itemalertdeqtime){
     return "OK";
 }
 
-function openErrorPopup(){
-    let errorPopup = document.getElementById('error-text-div-1')
+function openErrorPopupPost(errMessage){
+    let errorPopup = document.getElementById('error-text-div-post')
     console.log("AAAAAAAAAAAAAAAAAAAAAAAAAA", errorPopup)
+    let error = `Error : ${errMessage}`;
+    document.querySelector('.error-text-post').innerHTML = error;
    errorPopup.classList.add("show-error");
+    
+}
+function openErrorPopupPut(errMessage,itemID){
+    let errorPopup = document.getElementById(`error-text-div-put-${itemID}`)
+    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAA", errorPopup)
+    let error = `Error : ${errMessage}`;
+    document.querySelector(`.error-text-put-${itemID}`).innerHTML = error;
+   errorPopup.classList.add("show-error");
+    
 }

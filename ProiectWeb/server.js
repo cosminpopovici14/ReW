@@ -198,7 +198,6 @@ client.connect()
     })
     .catch(err => {
         console.error("❌ Eroare la conectarea la PostgreSQL:", err.message);
-        process.exit(1);
     });
 
 

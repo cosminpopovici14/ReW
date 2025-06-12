@@ -5,17 +5,34 @@
 }
 
 body {
-  background: linear-gradient(#f3f3f3, #e0e0e0);
-  background-attachment: fixed;
+  position: relative;
   font-family: 'Inter', sans-serif;
   color: #1a1a1a;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  z-index: 0;
+  background: none; /* scoatem bg direct de aici */
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0.2; /* doar fundalul va fi mai transparent */
+  background-color: #f6f6f6;
+
+background-image: radial-gradient(circle at center bottom, #dce0e6, #f6f6f6), repeating-radial-gradient(circle at center bottom, #dce0e6, #dce0e6, 40px, transparent 80px, transparent 120px);
+background-blend-mode: multiply;
+  background-attachment: fixed;
 }
 
 header {
-  background-color: #f0f0f0;
+  background-color: transparent;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -24,7 +41,7 @@ header {
   font-size: 1.05em;
   font-weight: 600;
   color: #1a1a1a;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); */
 }
 
 .refs{
@@ -149,6 +166,7 @@ button{
  color: #1a1a1a;
  cursor: pointer;
 }
+
 #btn2{
  font-size: x-large;
 }
@@ -831,6 +849,7 @@ input[type="checkbox"] {
     justify-content:center;
     align-items: center;
     transition: 0.5s all ease-in-out;
+    rotate: 0deg;
    
    
   }
@@ -841,9 +860,7 @@ input[type="checkbox"] {
     border-radius: 5px;
   }
 
-  .menu-bar:hover{
-    transform:rotate(90deg);
-  }
+  
 
   .dropdown-content {
   visibility: hidden;
@@ -868,7 +885,7 @@ input[type="checkbox"] {
 
 .dropdown-content a:hover {background-color: #ddd;}
 
-.dropdown:hover .dropdown-content {visibility: visible; transform: scale(1); }
+
 
 .edit-item-popup{
   visibility: hidden;
@@ -890,10 +907,7 @@ input[type="checkbox"] {
   transform: scale(0.1);
 }
 
-.open-popup{
-  visibility:visible;
-  transform: scale(1);
-}
+
 
 .add-item-button-text-edit{
   background-color: #4cd964;
@@ -1001,3 +1015,24 @@ input[type="checkbox"] {
   margin-right: auto;
 }
 
+.menu-bar {
+  background: transparent;
+}
+
+#cursor{
+  position: absolute;
+  visibility: hidden;
+  border-style: solid;
+  border-radius: 50%;
+  height:30px;
+  width:30px;
+
+  transition: 0.05s ;
+
+  background-color: black;
+}
+
+.open-popup{
+  visibility:visible;
+  transform: scale(1);
+}

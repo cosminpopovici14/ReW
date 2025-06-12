@@ -3,7 +3,15 @@ const id = params.get('categoryID');
 var lastItemID = -1;
 
 console.log(id);
-
+function openMenuPopup(){
+    let popup = document.getElementById('dropdown-content');
+    popup.classList.toggle("open-popup");
+    let menuBar = document.getElementById('menu-bar');
+    console.log(menuBar)
+    menuBar.style.rotate = menuBar.style.rotate === '90deg'? '0deg' : '90deg';
+    
+    
+}
 let items = [];
 let category=[];
 let chartData=[];
@@ -535,7 +543,7 @@ function checkAlertImage(alert){
 function openPopup(id){
     let popup=document.getElementById(id);
     console.log(popup);
-    popup.classList.add("open-popup");
+    popup.classList.toggle("open-popup");
 }
 function openEditPopup(id){
     let popup=document.getElementById(id);
@@ -728,7 +736,10 @@ function getCurrentDate(){
     return(stringDate);
 }
 function getAddedDate(date){
-    
+    if(date == "noalert")
+        return "No Check Set"
+    if(date == "NoDate")
+        return "Never Checked"
     const dateObj = new Date(date);
     const [month, day, year] = [
         dateObj.toLocaleDateString('default', {month: 'short'}),
@@ -751,8 +762,9 @@ function getDayAndMonth(date){
 }
 
 function getCheckDate(itemlastcheckdate, itemalertdeqtime){
+    console.log("ALERTDEQTIME:", itemalertdeqtime);
     if(itemalertdeqtime == "off")
-        return "No Check Set"
+        return "noalert"
     if(itemalertdeqtime == "7d")
         var res = addDays(itemlastcheckdate, 7);
     if(itemalertdeqtime == "14d")

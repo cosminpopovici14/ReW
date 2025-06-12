@@ -1,4 +1,15 @@
 const { Client } = require('pg');
+const nodemailer = require('nodemailer');
+
+
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'manmat2004@gmail.com',
+    pass: 'qwwt hgry kqtk bbmk'
+  }
+});
+
 
 const client = new Client({
         user: 'postgres',
@@ -65,7 +76,7 @@ async function updateItemsQuantity(){
 
              console.log("---------------",decreaseQuantityDate, "----------",currentDate);
 
-            if(decreaseQuantityDate <= currentDate)
+            if(decreaseQuantityDate <= currentDate && item.quantity>0 &&item.consumable==true)
             {
                 client.query(`
                     UPDATE items SET quantity = quantity-1
@@ -85,6 +96,22 @@ async function updateItemsQuantity(){
                                     {
                                         console.log(err2);
                                         return;
+                                    }
+                                    if(item.alert == true && (item.quantity-1==5 ||item.quantity-1===1))
+                                    {
+                                        var mailOptions = {
+                                            from: 'manmat2004@gmail.com',
+                                            to: 'bestresourceplannerintheworld@gmail.com',
+                                            subject: 'Low Quantity Item!',
+                                            text: `The Item ${item.name} has a low quantity of ${item.quantity-1}`
+                                            };
+                                        transporter.sendMail(mailOptions, function(error, info){
+                                            if (error) {
+                                                console.log(error);
+                                            } else {
+                                                console.log('Email sent: ' + info.response);
+                                            }
+                                        });
                                     }
                                     console.log(`Decreased the quantity of item ${item.name}`);
                                 })

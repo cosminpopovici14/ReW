@@ -3,6 +3,15 @@ let categories = [];
 let renameCount=0;
 
 
+
+var cursor= document.getElementById('cursor');
+document.addEventListener('mousemove',function(e){
+    var x =e.clientX;
+    var y = e.clientY;
+    cursor.style.left = x-15 + "px";
+    cursor.style.top = y-15 + "px";
+})
+
 async function init(){
     const res = await fetch('/api/categories')
     const data = await res.json();
@@ -153,7 +162,7 @@ document.querySelector('#export-categories-button').innerHTML = categoriesExport
 
 
 
-if(categories == null)
+if(categories == null)  
 {
     categories = [];
 }
@@ -163,8 +172,17 @@ console.log("alooooooooooo!!");
 function openPopup(id ,count){
     let popup=document.getElementById(id);
     console.log(popup);
-    popup.classList.add("open-popup");
+    popup.classList.toggle("open-popup");
     renameCount=count;
+}
+function openMenuPopup(){
+    let popup = document.getElementById('dropdown-content');
+    popup.classList.toggle("open-popup");
+    let menuBar = document.getElementById('menu-bar');
+    console.log(menuBar)
+    menuBar.style.rotate = menuBar.style.rotate === '90deg'? '0deg' : '90deg';
+    
+    
 }
 
 function openDeleteConfimation(nameID,countID,renameID,deleteID,itemsID,deleteTextID,deleteButtonsID){

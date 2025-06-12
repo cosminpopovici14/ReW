@@ -7,19 +7,20 @@
         
         <link rel="stylesheet" href="style.css">
     </head>
+    <div id="cursor"> </div>
     <body>
         <header>
             <h1><a href ="./index.html">Smart Inventory</a></h1>
             <section class="dropdown"> 
-                        <div class="menu-bar">
+                        <button id="menu-bar" class="menu-bar" onclick="openMenuPopup()">
                             <div class="menu-line">
                             </div>
                             <div class="menu-line">
                             </div>
                             <div class="menu-line">  
                             </div>
-                        </div>
-                        <div class="dropdown-content">
+                        </button>
+                        <div class="dropdown-content" id="dropdown-content">
                             <a href="./index.html">Home</a>
                             <a href="./categories.html">Categories</a>
                         </div>

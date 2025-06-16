@@ -1,3 +1,5 @@
 "id","name","quantity","consumable","alert","alertdeqtime","favourite","date","lastcheckdate"
-29,"pulamea",1,false,true,"7d",false,"2025-06-06T15:56:48.173Z","2025-06-06T15:56:41.869Z"
-36,"asdsda",123,true,false,"noalert",false,"2025-06-06T16:54:12.401Z","NoDate"
+"37","asdasd",1,false,false,"off",false,"2025-06-06T16:57:17.578Z","NoDate"
+"39","asdasdasd",1,false,false,"off",false,"2025-06-06T16:57:22.354Z","NoDate"
+"65","asdsda",123,true,false,"noalert",false,"2025-06-06T16:54:12.401Z","NoDate"
+"66","asd",123,true,false,"noalert",false,"2025-06-06T17:31:05.139Z","NoDate"

@@ -200,7 +200,7 @@ client.connect()
         console.error("❌ Eroare la conectarea la PostgreSQL:", err.message);
     });
 
-
+const login = true;
 const server = http.createServer((req, res) => {
     
     let file = '';
@@ -212,7 +212,11 @@ const server = http.createServer((req, res) => {
     let filePath = path.join(__dirname, 'public', file);
     let ext = path.extname(filePath); 
     let contentType = 'text/html';
-
+    if(req.url!='/login' && login == false){
+        res.writeHead(302, {Location : '/login.html'});
+        res.end();
+        return;
+    }
     if (req.method === 'GET' && req.url === '/api/categories') {
         client.query('SELECT * from categories ORDER BY id',(err,content)=>{
             if (err) {

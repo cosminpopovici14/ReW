@@ -1,2 +1,5 @@
 "id","name","item_id","item_name","quantity","consumable","alert","alertdeqtime","favourite","date","lastcheckdate"
-5,"",,,,,,,,,
+"5","ciocane","37","asdasd",1,false,false,"off",false,"2025-06-06T16:57:17.578Z","NoDate"
+"5","ciocane","39","asdasdasd",1,false,false,"off",false,"2025-06-06T16:57:22.354Z","NoDate"
+"5","ciocane","65","asdsda",123,true,false,"noalert",false,"2025-06-06T16:54:12.401Z","NoDate"
+"5","ciocane","66","asd",123,true,false,"noalert",false,"2025-06-06T17:31:05.139Z","NoDate"

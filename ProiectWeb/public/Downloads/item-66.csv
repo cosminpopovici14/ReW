@@ -1,2 +1,2 @@
 "id","name","quantity","consumable","alert","alertdeqtime","favourite","date","lastcheckdate"
-66,"caca1",1,false,false,"7d",false,"2025-06-08T12:47:34.762Z","2025-06-08T12:47:29.818Z"
+"66","asd",123,true,false,"noalert",false,"2025-06-06T17:31:05.139Z","NoDate"

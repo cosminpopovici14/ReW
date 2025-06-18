@@ -1,2 +1,3 @@
 "id","name","item_id","item_name","quantity","consumable","alert","alertdeqtime","favourite","date","lastcheckdate"
-9,"",,,,,,,,,
+"9","ciocan","67","coco",123,true,true,"noalert",true,"2025-06-16T18:37:40.644Z","NoDate"
+"9","ciocan","68","pucu",34,true,false,"noalert",false,"2025-06-16T18:40:39.368Z","NoDate"

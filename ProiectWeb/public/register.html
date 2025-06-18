@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="login.css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    </head>
+    <body class="finisher-header">
+        <main>
+            <div class="main-window">
+                    <div class="title">
+                        <h2>Register</h2>
+                    </div>
+                    <div class="subtitle">
+                        Welcome to Smart Inventory! Please Sign in or register if you don't have an account.
+                    </div>
+                    <div class="credentials">
+                        <div class="input-field">
+                            <span class="material-icons no-cursor">person</span>
+                            <input type="name" placeholder="Username" id="usernameInputRegister">
+                        </div>
+                        <div class="input-field">
+                            <span class="material-icons no-cursor">mail</span>
+                            <input type="email" placeholder="Email" id="loginInputRegister">
+                        </div>
+                        <div class="input-field">
+                            <span class="material-icons no-cursor">lock</span>
+                            <input type="password" placeholder="Password(>=8 char,1 upper c, 1 lower c, 1 digit, 1 special c)" id="passwordInputRegister">
+                            <span class="material-icons toggle-password" onclick="togglePassword()">visibility_off</span>
+                        </div>
+                    </div>
+                    <div class="forgot-password">
+                        <p class="forgot-password-text">Forgot password?</p>
+                    </div>
+                    <div class="get-started">
+                        <button class="login-button" onclick="addRegister()">Register</button>
+                    </div>
+                    <div class="or">
+                        <a href="login.html"> Or Log In</button>
+                    </div>
+                    <div class="register">
+
+                    </div>
+            </div>
+        </main>
+
+
+        <footer>
+            <p>&copy; 2025 Smart Inventory. All rights reserved.</p>
+        </footer>
+        <script src="register.js"></script>
+    </body>
+</html> 

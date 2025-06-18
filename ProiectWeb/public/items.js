@@ -1,7 +1,43 @@
 const params = new URLSearchParams(window.location.search);
 const id = params.get('categoryID');
 var lastItemID = -1;
-
+new FinisherHeader({
+  "count": 10,
+  "size": {
+    "min": 1300,
+    "max": 1500,
+    "pulse": 0
+  },
+  "speed": {
+    "x": {
+      "min": 0,
+      "max": 0.1
+    },
+    "y": {
+      "min": 0,
+      "max": 0.1
+    }
+  },
+  "colors": {
+    "background": "#e7e5e2",
+    "particles": [
+      "#777a7f",
+      "#d6d9d6",
+      "#98c5bb",
+      "#9fb6b4",
+      "#47716f"
+    ]
+  },
+  "blending": "overlay",
+  "opacity": {
+    "center": 0.5,
+    "edge": 0.05
+  },
+  "skew": 0,
+  "shapes": [
+    "c"
+  ]
+});
 console.log(id);
 function openMenuPopup(){
     let popup = document.getElementById('dropdown-content');
@@ -619,14 +655,15 @@ function closeItemsPopup(id)
         {
             let popup=document.getElementById(id);
             popup.classList.remove("open-popup"); 
+            errorPost =document.getElementById('error-text-div-post');
+            errorPost.classList.remove("show-error");
         }
         else{
         console.log("CEPULAMEAA", itemID);
         let popup=document.getElementById(id);
         popup.classList.remove("open-popup");    
-        errorPost =document.getElementById('error-text-div-post')
-        errorPost.classList.remove("show-error");
-        errorPut =document.getElementById(`error-text-div-put-${itemID}`)
+       
+        errorPut =document.getElementById(`error-text-div-put-${itemID}`);
         errorPut.classList.remove("show-error");
         }
         

@@ -23,8 +23,10 @@ async function initializeDatabase() {
 CREATE TABLE IF NOT EXISTS users(
     id SERIAL PRIMARY KEY ,
     name VARCHAR(50) NOT NULL,
+	email VARCHAR(100) NOT NULL,
     password VARCHAR(50) NOT NULL,
-    UNIQUE(name)
+    UNIQUE(name),
+	UNIQUE(email)
 );
 CREATE TABLE IF NOT EXISTS categories (
     id SERIAL PRIMARY KEY ,
@@ -33,7 +35,7 @@ CREATE TABLE IF NOT EXISTS categories (
     CONSTRAINT fk_user FOREIGN KEY(user_id) 
         REFERENCES users(id)
         ON DELETE CASCADE,
-    UNIQUE(name)
+    UNIQUE(name,user_id)
 );
 CREATE TABLE IF NOT EXISTS items (
     id SERIAL PRIMARY KEY ,
@@ -43,7 +45,7 @@ CREATE TABLE IF NOT EXISTS items (
     CONSTRAINT fk_category FOREIGN KEY(category_id) 
         REFERENCES categories(id)
         ON DELETE CASCADE,
-    UNIQUE(name)
+    UNIQUE(name,category_id)
 );
 CREATE TABLE IF NOT EXISTS item_alerts (
     id SERIAL PRIMARY KEY ,
@@ -191,6 +193,27 @@ $$ LANGUAGE plpgsql;
         process.exit(1); 
     }
 }
+
+function parseCookies(req){
+    let list = {};
+    let cookiesHeader = req.headers.cookie;
+    if(!cookiesHeader)
+        return list;
+    console.log(cookiesHeader);
+    let cookiesArray = [];
+    let i =0;
+    cookiesHeader.split('; ').forEach(cookie => {
+        cookie.split('=').forEach(elem=>{
+            cookiesArray[i++] = elem;
+        })
+    });
+    for(let i = 1; i<cookiesArray.length;i+=2){
+        list[cookiesArray[i-1]] = cookiesArray[i];
+    }
+
+    return list;
+
+}
 client.connect()
     .then(() => {
         console.log("✅ Conectat la PostgreSQL");
@@ -202,23 +225,112 @@ client.connect()
 
 const login = true;
 const server = http.createServer((req, res) => {
-    
+    const cookies = parseCookies(req);
     let file = '';
-    if(req.url ==='/') {
-        file = 'index.html';
-    } else{
-        file =req.url.split('?')[0];
-    }
+    file =req.url.split('?')[0];
+    const userID = parseInt(cookies.userId);
+
     let filePath = path.join(__dirname, 'public', file);
     let ext = path.extname(filePath); 
+
     let contentType = 'text/html';
-    if(req.url!='/login' && login == false){
+    const isPublic =
+    req.url === '/register.html'||
+    req.url === '/login.html' ||
+    req.url === '/api/login' ||
+    req.url === '/api/register' ||
+    req.url.endsWith('.css') ||
+    req.url.endsWith('.js') ||
+    req.url.endsWith('.png') 
+
+    if(!isPublic && cookies.auth != 'true'){
         res.writeHead(302, {Location : '/login.html'});
         res.end();
         return;
     }
+    if(req.url == '/')
+    {
+       res.writeHead(302, {Location : '/index.html'});
+        res.end();
+        return; 
+    }
+    if(req.method === `POST` && req.url === '/api/register'){
+        let body = '';
+        req.on('data', chunk=>body+=chunk);
+        req.on('end',()=>{
+            const user = JSON.parse(body);
+            console.log(user);
+            client.query(`INSERT INTO users(name,email,password)
+                          VALUES ($1,$2,$3) RETURNING id`, 
+                          [user.name,user.email,user.password], (err,content)=>{
+                if(err){
+                    res.writeHead(400);
+                    res.end(err.message);
+                    return;
+                }
+                var passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+                if(passwordRegex.test(user.password)==false){
+                    res.writeHead(400);
+                    res.end("")
+                    return;
+                }
+                let id = content.rows[0].id;
+                res.writeHead(302,{Location : '/index.html',
+                                        'Content-Type' : 'application/json',
+                                        'Set-Cookie' : [
+                                            `userId = ${id}; Max-Age=604800;HttpOnly;Path=/`,
+                                            `auth = true;  Max-Age=604800;HttpOnly;Path=/`
+                                        ]
+                    });
+                res.end("Registered new User!");
+            })
+        })
+        return;
+    }
+    if(req.method === 'POST' && req.url ==='/api/login'){
+        let body='';
+        req.on('data', chunk => body+=chunk);
+        req.on('end', () =>{
+            const user = JSON.parse(body);
+            client.query('SELECT * FROM users where email=$1',[user.email],(err1,content1)=>{
+                if(err1){
+                    res.writeHead(500),
+                    res.end(err1.message);
+                    return;
+                }
+                if(content1.rows.length == 0){
+                    res.writeHead(400);
+                    res.end("Email Not Found!");
+                    return;
+                }
+                client.query('SELECT * FROM users where email=$1 and password=$2',[user.email,user.password],(err2,content2)=>{
+                    if(err2){
+                        res.writeHead(500);
+                        res.end(err2.message);
+                        return;
+                    }
+                    if(content2.rows.length == 0){
+                        res.writeHead(400);
+                        res.end('Wrong Password!');
+                        return;
+                    }
+                    let foundUser = JSON.stringify(content2.rows);
+                    parsed = JSON.parse(foundUser);
+                    res.writeHead(302,{Location : '/index.html',
+                                        'Content-Type' : 'application/json',
+                                        'Set-Cookie' : [
+                                            `userId = ${[parsed[0].id]}; Max-Age=604800;HttpOnly;Path=/`,
+                                            `auth = true;  Max-Age=604800;HttpOnly;Path=/`
+                                        ]
+                    })
+                    res.end("Authenitcated User!");
+                })  
+            })
+        })
+        return;
+    }
     if (req.method === 'GET' && req.url === '/api/categories') {
-        client.query('SELECT * from categories ORDER BY id',(err,content)=>{
+        client.query('SELECT * from categories WHERE user_id =$1 ORDER BY id',[userID],(err,content)=>{
             if (err) {
                 res.writeHead(500);
                 res.end('Eroare server');
@@ -252,7 +364,7 @@ const server = http.createServer((req, res) => {
         req.on('data', chunk => (body += chunk));
         req.on('end', () => {
             const newCategory = JSON.parse(body);
-            client.query('INSERT INTO categories (name) VALUES($1)',[newCategory.name],(err,content)=>{
+            client.query('INSERT INTO categories (name,user_id) VALUES($1,$2) ',[newCategory.name,userID],(err,content)=>{
             
             if (err) {
                 console.log(err);

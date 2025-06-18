@@ -1,2 +1,5 @@
 "id","name","item_id","item_name","quantity","consumable","alert","alertdeqtime","favourite","date","lastcheckdate"
-6,"",,,,,,,,,
+6,"asd",12,"asd",1,false,false,"off",false,"2025-06-18T10:56:05.150Z","NoDate"
+6,"asd",13,"asdasd",1,false,false,"off",false,"2025-06-18T10:56:07.048Z","NoDate"
+6,"asd",14,"asdasdasdasd",1,false,false,"7d",false,"2025-06-18T10:59:21.582Z","2025-06-18T10:59:17.394Z"
+6,"asd",15,"asdasdasdasdasdasd",1,false,false,"off",false,"2025-06-18T10:56:11.987Z","NoDate"

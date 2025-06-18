@@ -9,6 +9,7 @@
     </head>
     <div id="cursor"> </div>
     <body>
+        <div class="background-container finisher-header"></div>
         <header>
             <h1><a href ="./index.html">Smart Inventory</a></h1>
             <section class="dropdown"> 
@@ -39,12 +40,12 @@
                             </div>
                             <div id="popup-buttons-div">
                                 <div id="popup-buttons-div">
-                                <div class="error-text-div category-error" id="error-text-div-3">
-                                    <p class="error-text-3">Error : Name should not be null! </p>
+                                    <div class="error-text-div category-error" id="error-text-div-3">
+                                        <p class="error-text-3">Error : Name should not be null! </p>
+                                    </div>
+                                    <button id="cancel-popup-button" onclick="closePopup('rename-popup')"> Cancel</button>
+                                    <button id="add-popup-button" onclick="renameCategory();"> Rename</button>
                                 </div>
-                                <button id="cancel-popup-button" onclick="closePopup('rename-popup')"> Cancel</button>
-                                <button id="add-popup-button" onclick="renameCategory();"> Rename</button>
-                            </div>
                         </div>
                     </div>
                     <div class="popup-div">
@@ -94,6 +95,8 @@
         <footer>
             <p>&copy; 2025 Smart Inventory. All rights reserved.</p>
         </footer>
+        <script src="Script/finisher-header.es5.min.js" type="text/javascript"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
         <script src="script.js"></script>
     </body>
 

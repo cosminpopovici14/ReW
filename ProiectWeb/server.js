@@ -260,6 +260,11 @@ const server = http.createServer((req, res) => {
         req.on('end',()=>{
             const user = JSON.parse(body);
             console.log(user);
+            if(user.password != user.passwordConfirm){
+                res.writeHead(400);
+                res.end("Passwords do not match!");
+                return;
+            }
             client.query(`INSERT INTO users(name,email,password)
                           VALUES ($1,$2,$3) RETURNING id`, 
                           [user.name,user.email,user.password], (err,content)=>{

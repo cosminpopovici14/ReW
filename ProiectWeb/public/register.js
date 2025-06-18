@@ -126,6 +126,8 @@ function addRegister(){
 function openEmailConfirm(code){
     let confirmPopup = document.getElementById('confirm-popup-id');
     confirmPopup.classList.add("show-error");
+    let mainWindow = document.getElementById('main-window-id');
+    mainWindow.classList.add("blur-window")
 }
 
 function openErrorPopupRegister(err){

@@ -45,8 +45,8 @@ main {
   max-width: 600px;
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.3);
-  /* filter: blur(8px);
-  -webkit-filter: blur(8px); */
+  transition: 0.5s all ease-in-out;
+  
 }
 
 .title {
@@ -218,11 +218,20 @@ main {
     padding: 3rem 2.5rem;
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
     border: 1px solid rgba(255, 255, 255, 0.3);
+    transform: scale(0.1);
+    transition: 0.5s all ease-in-out;
 }
 
 .show-error {
+  transform: scale(1);
   visibility: visible;
   animation: horizontal-shaking 0.5s;
+}
+
+
+.blur-window{
+    filter: blur(8px);
+    -webkit-filter: blur(8px);
 }
 
 @keyframes horizontal-shaking {

@@ -10,14 +10,14 @@
     </head>
     <body class="background-container finisher-header">
         <main>
-            <div class="confirm-popup main-window" id="confirm-popup-id">
+            <div class="confirm-popup" id="confirm-popup-id">
                 <div class="confirm-message"> 
                     <p>We sent you a confirmation code in the mail, write it here to get acces!</p>
                 </div>
                 <div class="input-field">
-                            <span class="material-icons no-cursor">code</span>
-                            <input type="code" placeholder="Your Code" id="registerConfirmCode">
-                        </div>
+                    <span class="material-icons no-cursor">vpn_key</span>
+                    <input type="code" placeholder="Your Code" id="registerConfirmCode">
+                </div>
                 <button onclick="addRegister()"> Confirm</button>
             </div>
             <div class="main-window">
@@ -25,7 +25,7 @@
                         <h2>Register</h2>
                     </div>
                     <div class="subtitle">
-                        Welcome to Smart Inventory! Please Sign in or register if you don't have an account.
+                        Welcome to Smart Inventory! Please register or log in if you already have an account.
                     </div>
                     <div class="credentials">
                         <div class="input-field">
@@ -56,6 +56,9 @@
                                 <li>One special character ("! , @ ? $ % & *")</li>
                             </ul>
                         </div>
+                    </div>
+                    <div class="login-error-div" id="register-error-id">
+                        <p class="register-error-text">Error: The passwords do not correspond!</p>
                     </div>
                     <div class="get-started">
                         <button class="login-button-register" onclick="addRegisterConfirm()">Register</button>

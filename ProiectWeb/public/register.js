@@ -129,6 +129,11 @@ function openEmailConfirm(code){
 }
 
 function openErrorPopupRegister(err){
-    
+    let popup =document.getElementById("register-error-id");
+
+    const errMessage = 'Error : ' + err;
+    document.querySelector(`.register-error-text`).innerHTML = errMessage;
+    console.log(popup);
+    popup.classList.add("show-error");
 }
 

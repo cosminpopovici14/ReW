@@ -304,6 +304,12 @@ const server = http.createServer((req, res) => {
                 res.end("Passwords do not match!");
                 return;
             }
+            var emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+                if(emailRegex.test(user.email)==false){
+                    res.writeHead(400);
+                    res.end("Please write a valid email!")
+                    return;
+                }
             var passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
                 if(passwordRegex.test(user.password)==false){
                     res.writeHead(400);

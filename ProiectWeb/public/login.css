@@ -231,4 +231,12 @@ main {
   100% {
     transform: translateX(0)
   }
+
+}
+ul{
+  list-style-position: inside;
+}
+
+.password-requirements{
+  opacity: 0.5;
 }

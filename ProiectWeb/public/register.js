@@ -90,9 +90,9 @@ async function postRegister(code,username,email,password, passwordConfirm){
 
 
 
-function togglePassword(id){
+function togglePassword(id,iconId){
     const input = document.getElementById(id);
-    const icon = document.querySelector(".toggle-password");
+     const icon = document.getElementById(iconId);
 
     if(input.type === "password"){
         input.type = "text";

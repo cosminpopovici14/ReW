@@ -8,8 +8,7 @@
         <link rel="stylesheet" href="login.css">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     </head>
-    <body class="finisher-header">
-        
+    <body class="background-container finisher-header">
         <main>
             <div class="confirm-popup main-window" id="confirm-popup-id">
                 <div class="confirm-message"> 
@@ -40,12 +39,22 @@
                         <div class="input-field">
                             <span class="material-icons no-cursor">lock</span>
                             <input type="password" placeholder="Password" id="passwordInputRegister">
-                            <span class="material-icons toggle-password" onclick="togglePassword(`passwordInputRegister`)">visibility_off</span>
+                            <span class="material-icons toggle-password" id="toggle" onclick="togglePassword(`passwordInputRegister`,'toggle')">visibility_off</span>
                         </div>
                         <div class="input-field">
                             <span class="material-icons no-cursor">lock</span>
                             <input type="password" placeholder="Confirm Password" id="passwordConfirmInputRegister">
-                            <span class="material-icons toggle-password" onclick="togglePassword(`passwordConfirmInputRegister`)">visibility_off</span>
+                            <span class="material-icons toggle-password" id="toggle-confirm" onclick="togglePassword(`passwordConfirmInputRegister`,`toggle-confirm`)">visibility_off</span>
+                        </div>
+                        <div class="password-requirements">
+                            The password must contain at least:
+                            <ul>
+                                <li>8 characters</li>
+                                <li>One uppercase</li>
+                                <li>One lowercase</li>
+                                <li>One number</li>
+                                <li>One special character ("! , @ ? $ % & *")</li>
+                            </ul>
                         </div>
                     </div>
                     <div class="get-started">

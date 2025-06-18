@@ -2,9 +2,8 @@ const http = require('http');
 const fs = require('fs');
 const Joi = require('joi');
 const Json2csvParser = require("json2csv").Parser;
+const nodemailer = require('nodemailer');
 const path = require('path');
-const { json } = require('stream/consumers');
-const { type } = require('os');
 const { Client } = require('pg');
 const client = new Client({
         user: 'postgres',
@@ -14,7 +13,13 @@ const client = new Client({
         database: 'rew-database',
     })   
 
-
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'manmat2004@gmail.com',
+    pass: 'qwwt hgry kqtk bbmk'
+  }
+});
 
 async function initializeDatabase() {
  try {
@@ -223,7 +228,7 @@ client.connect()
         console.error("❌ Eroare la conectarea la PostgreSQL:", err.message);
     });
 
-const login = true;
+let pendingCodes={};
 const server = http.createServer((req, res) => {
     const cookies = parseCookies(req);
     let file = '';
@@ -260,25 +265,21 @@ const server = http.createServer((req, res) => {
         req.on('end',()=>{
             const user = JSON.parse(body);
             console.log(user);
-            if(user.password != user.passwordConfirm){
+            if(pendingCodes[user.email]!=user.code)
+            {
                 res.writeHead(400);
-                res.end("Passwords do not match!");
+                res.end("Codes do not match!");
                 return;
             }
             client.query(`INSERT INTO users(name,email,password)
                           VALUES ($1,$2,$3) RETURNING id`, 
                           [user.name,user.email,user.password], (err,content)=>{
                 if(err){
-                    res.writeHead(400);
+                    res.writeHead(500);
                     res.end(err.message);
                     return;
                 }
-                var passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
-                if(passwordRegex.test(user.password)==false){
-                    res.writeHead(400);
-                    res.end("")
-                    return;
-                }
+                
                 let id = content.rows[0].id;
                 res.writeHead(302,{Location : '/index.html',
                                         'Content-Type' : 'application/json',
@@ -288,6 +289,56 @@ const server = http.createServer((req, res) => {
                                         ]
                     });
                 res.end("Registered new User!");
+            })
+        })
+        return;
+    }
+    if(req.method === `POST` && req.url === '/api/register/verify'){
+        let body = '';
+        req.on('data', chunk=>body+=chunk);
+        req.on('end',()=>{
+            const user = JSON.parse(body);
+            console.log(user);
+            if(user.password != user.passwordConfirm){
+                res.writeHead(400);
+                res.end("Passwords do not match!");
+                return;
+            }
+            var passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+                if(passwordRegex.test(user.password)==false){
+                    res.writeHead(400);
+                    res.end("Password does not match the criteria!")
+                    return;
+                }
+            client.query('SELECT * FROM users where email=$1',[user.email],(err1,content1)=>{
+                if(err1){
+                    res.writeHead(500),
+                    res.end(err1.message);
+                    return;
+                }
+                if(content1.rows.length != 0){
+                    res.writeHead(400);
+                    res.end("Email Already Exists!");
+                    return;
+                }
+                
+                let randomCode = makeid(5);
+                pendingCodes[user.email] = randomCode;
+                var mailOptions = {
+                        from: 'manmat2004@gmail.com',
+                        to: user.email,
+                        subject: 'Your Confirmation Code!',
+                        text: `Your Confirmation Code is: ${randomCode}`
+                        };
+                transporter.sendMail(mailOptions, function(error, info){
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log('Email sent: ' + info.response);
+                    }
+                });
+                res.writeHead(200, {'Content-Type' : 'application/json'});
+                res.end("Verified Inputs and sent Email!");
             })
         })
         return;
@@ -1165,4 +1216,14 @@ function checkErrorCode(errorCode,errorMessage){
     }
     if(errorCode == 23505)
         return "The name already exists!"
+}
+
+function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
 }

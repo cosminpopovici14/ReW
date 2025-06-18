@@ -1,1 +1,0 @@
-`/api/categories/${id}/items/${itemID}/export`

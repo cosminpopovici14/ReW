@@ -9,7 +9,18 @@
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     </head>
     <body class="finisher-header">
+        
         <main>
+            <div class="confirm-popup main-window" id="confirm-popup-id">
+                <div class="confirm-message"> 
+                    <p>We sent you a confirmation code in the mail, write it here to get acces!</p>
+                </div>
+                <div class="input-field">
+                            <span class="material-icons no-cursor">code</span>
+                            <input type="code" placeholder="Your Code" id="registerConfirmCode">
+                        </div>
+                <button onclick="addRegister()"> Confirm</button>
+            </div>
             <div class="main-window">
                     <div class="title">
                         <h2>Register</h2>
@@ -38,7 +49,7 @@
                         </div>
                     </div>
                     <div class="get-started">
-                        <button class="login-button-register" onclick="addRegister()">Register</button>
+                        <button class="login-button-register" onclick="addRegisterConfirm()">Register</button>
                     </div>
                     <div class="or">
                         Or

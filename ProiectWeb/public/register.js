@@ -38,10 +38,9 @@ new FinisherHeader({
 });
 
 
-async function postRegister(username,email,password, passwordConfirm){
-
+async function postConfirmation(username,email,password, passwordConfirm){
     try{
-        let res = await fetch(`/api/register`,{
+        let res = await fetch(`/api/register/verify`,{
         method : 'POST',
         header : {'ContentType' : 'application/json'},
         body : JSON.stringify({
@@ -55,10 +54,34 @@ async function postRegister(username,email,password, passwordConfirm){
             const errorMsg = await res.text();
             throw new Error(errorMsg);
         }
-         window.location.href = '/index.html';
+        openEmailConfirm();
     }catch(err){
         console.log(err);
         openErrorPopupRegister(err.message);
+    }
+}
+
+async function postRegister(code,username,email,password, passwordConfirm){
+
+    try{
+        let res = await fetch(`/api/register`,{
+        method : 'POST',
+        header : {'ContentType' : 'application/json'},
+        body : JSON.stringify({
+            "code" : code,
+            "name" : username,
+            "email" : email,
+            "password" : password,
+            "passwordConfirm" : passwordConfirm
+        })
+    });
+        if(!res.ok){
+            const errorMsg = await res.text();
+            throw new Error(errorMsg);
+        }
+        window.location.href = '/index.html';
+    }catch(err){
+        console.log(err);
     }
     
         
@@ -83,14 +106,28 @@ function togglePassword(id){
 
 
 
-function addRegister(){
+function addRegisterConfirm(){
     let username = document.getElementById("usernameInputRegister").value;
     let email = document.getElementById("loginInputRegister").value;
     let password = document.getElementById("passwordInputRegister").value;
     let passwordConfirm = document.getElementById("passwordConfirmInputRegister").value;
-
-    postRegister(username,email,password,passwordConfirm);
+    postConfirmation(username,email,password,passwordConfirm);
 }
+function addRegister(){
+    let code = document.getElementById("registerConfirmCode").value;
+    let username = document.getElementById("usernameInputRegister").value;
+    let email = document.getElementById("loginInputRegister").value;
+    let password = document.getElementById("passwordInputRegister").value;
+    let passwordConfirm = document.getElementById("passwordConfirmInputRegister").value;
+    postRegister(code,username,email,password,passwordConfirm);
+}
+
+
+function openEmailConfirm(code){
+    let confirmPopup = document.getElementById('confirm-popup-id');
+    confirmPopup.classList.add("show-error");
+}
+
 function openErrorPopupRegister(err){
     
 }

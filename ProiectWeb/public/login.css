@@ -143,32 +143,7 @@ main {
   border: none;
 }
 
-.show-error {
-  visibility: visible;
-  animation: horizontal-shaking 0.5s;
-}
 
-@keyframes horizontal-shaking {
-  0% {
-    transform: translateX(0)
-  }
-
-  25% {
-    transform: translateX(5px)
-  }
-
-  50% {
-    transform: translateX(-5px)
-  }
-
-  75% {
-    transform: translateX(5px)
-  }
-
-  100% {
-    transform: translateX(0)
-  }
-}
 
 .or {
 
@@ -222,4 +197,38 @@ main {
   justify-content: center;
   align-items: center;
   border: none;
+}
+.confirm-popup{
+    visibility: hidden;
+    position: absolute;
+    transform: translate(0%,-100%);
+    z-index: 10;
+    height: fit-content;
+}
+
+.show-error {
+  visibility: visible;
+  animation: horizontal-shaking 0.5s;
+}
+
+@keyframes horizontal-shaking {
+  0% {
+    transform: translateX(0)
+  }
+
+  25% {
+    transform: translateX(5px)
+  }
+
+  50% {
+    transform: translateX(-5px)
+  }
+
+  75% {
+    transform: translateX(5px)
+  }
+
+  100% {
+    transform: translateX(0)
+  }
 }

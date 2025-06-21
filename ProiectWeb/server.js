@@ -5,6 +5,7 @@ const Json2csvParser = require("json2csv").Parser;
 const nodemailer = require('nodemailer');
 const path = require('path');
 const { Client } = require('pg');
+const { count } = require('console');
 const client = new Client({
         user: 'postgres',
         password: 'STUDENT',
@@ -403,6 +404,54 @@ const server = http.createServer((req, res) => {
             res.end(parsed);
         })
     return;
+    }
+
+    if(req.method === 'GET' && req.url === '/api/items/count'){
+        client.query('SELECT count(*) as total FROM items i join categories c on i.category_id = c.id where c.user_id=$1', [userID], (err, result) => {
+            if(err) {
+                res.writeHead(500);
+                res.end('Eroare server');
+                return;
+            }
+            let count = result.rows[0].total;
+            console.log("Count: ",count);
+            res.writeHead(200, {'Content-Type': 'application/json'});
+            res.end(JSON.stringify(count));
+        })
+        return;
+    }
+
+    if(req.method === 'GET' && req.url === '/api/lowItems/count'){
+        client.query(`SELECT count(*) as total FROM items i 
+            join categories c on i.category_id = c.id 
+            join item_properties p on i.id = p.item_id  
+            where c.user_id=$1 and i.quantity<=5 and p.consumable = true `, [userID], (err, result) => {
+            if(err) {
+                res.writeHead(500);
+                res.end('Eroare server');
+                return;
+            }
+            let count = result.rows[0].total;
+            console.log("Count: ",count);
+            res.writeHead(200, {'Content-Type': 'application/json'});
+            res.end(JSON.stringify(count));
+        })
+        return;
+    }
+
+    if(req.method === 'GET' && req.url === '/api/categories/count'){
+        client.query('SELECT count(*) as total FROM categories c where c.user_id=$1', [userID], (err, result) => {
+            if(err) {
+                res.writeHead(500);
+                res.end('Eroare server');
+                return;
+            }
+            let count = result.rows[0].total;
+            console.log("Count: ",count);
+            res.writeHead(200, {'Content-Type': 'application/json'});
+            res.end(JSON.stringify(count));
+        })
+        return;
     }
     
     if(req.method === 'GET' && /^\/api\/categories\/\d+$/.test(req.url)){

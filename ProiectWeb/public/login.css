@@ -263,3 +263,26 @@ ul{
 .password-requirements{
   opacity: 0.5;
 }
+
+.confirm-message{
+  padding-left: 5px;
+  padding-bottom: 10px;
+}
+
+.confirm-button{
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  max-height: 40px;
+  margin-top: 10px;
+}
+
+.confirm-email-button{
+  height: 100%;
+  width: 20%;
+  border-radius: 10px;
+  font-size: x-large;
+  color: white;
+  background: linear-gradient(to bottom, #c56161, #be3649);
+  border: none;
+}

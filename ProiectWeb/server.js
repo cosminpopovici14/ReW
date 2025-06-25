@@ -205,7 +205,6 @@ function parseCookies(req){
     let cookiesHeader = req.headers.cookie;
     if(!cookiesHeader)
         return list;
-    console.log(cookiesHeader);
     let cookiesArray = [];
     let i =0;
     cookiesHeader.split('; ').forEach(cookie => {

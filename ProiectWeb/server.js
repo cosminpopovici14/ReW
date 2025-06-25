@@ -244,6 +244,7 @@ const server = http.createServer((req, res) => {
     req.url === '/login.html' ||
     req.url === '/api/login' ||
     req.url === '/api/register' ||
+    req.url === '/api/register/verify' ||
     req.url.endsWith('.css') ||
     req.url.endsWith('.js') ||
     req.url.endsWith('.png') 

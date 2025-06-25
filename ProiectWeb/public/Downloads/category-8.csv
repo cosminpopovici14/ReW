@@ -1,2 +1,4 @@
 "id","name","item_id","item_name","quantity","consumable","alert","alertdeqtime","favourite","date","lastcheckdate"
-8,"",,,,,,,,,
+8,"nu sexuale",18,"comsin",5,true,false,"7d",false,"2025-06-25T11:54:29.423Z","NoDate"
+8,"nu sexuale",19,"Bile Anale",1,false,true,"7d",true,"2025-06-25T11:27:13.589Z","2025-06-25T11:26:33.293Z"
+8,"nu sexuale",22,"asdasd",123,true,false,"noalert",false,"2025-06-25T11:27:03.588Z","NoDate"

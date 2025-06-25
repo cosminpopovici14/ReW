@@ -12,12 +12,12 @@ var transporter = nodemailer.createTransport({
 
 
 const client = new Client({
-        user: 'postgres',
-        password: 'STUDENT',
-        host: 'localhost',
-        port: 5432,
-        database: 'rew-database',
-    }) 
+  host: process.env.PGHOST || 'localhost',
+  user: process.env.PGUSER || 'postgres',
+  password: process.env.PGPASSWORD || 'STUDENT',
+  database: process.env.PGDATABASE || 'rew_database',
+  port: process.env.PGPORT || 5432,
+}); 
 
 
 

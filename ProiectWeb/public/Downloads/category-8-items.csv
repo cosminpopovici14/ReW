@@ -1,3 +1,4 @@
 "id","name","quantity","consumable","alert","alertdeqtime","favourite","date","lastcheckdate"
-3,"matei",13,true,true,"30d",false,"2025-06-07T12:13:25.968Z","NoDate"
-5,"dsa",1,false,true,"14d",false,"2025-06-07T12:15:21.123Z","2025-06-07T12:15:16.161Z"
+18,"comsin",5,true,false,"7d",false,"2025-06-25T11:54:29.423Z","NoDate"
+19,"Bile Anale",1,false,true,"7d",true,"2025-06-25T11:27:13.589Z","2025-06-25T11:26:33.293Z"
+22,"asdasd",123,true,false,"noalert",false,"2025-06-25T11:27:03.588Z","NoDate"

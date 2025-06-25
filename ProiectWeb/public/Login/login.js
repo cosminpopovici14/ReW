@@ -27,8 +27,6 @@ async function postLogin(email,password){
 }
 
 
-
-
 function togglePassword(){
     const input = document.getElementById("passwordInput");
     const icon = document.querySelector(".toggle-password");

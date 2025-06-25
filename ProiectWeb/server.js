@@ -234,7 +234,7 @@ const server = http.createServer((req, res) => {
     let file = '';
     file =req.url.split('?')[0];
     const userID = parseInt(cookies.userId);
-
+    console.log(req.url);
     let filePath = path.join(__dirname, 'public', file);
     let ext = path.extname(filePath); 
 

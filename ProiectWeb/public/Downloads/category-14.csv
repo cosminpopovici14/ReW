@@ -1,2 +1,4 @@
 "id","name","item_id","item_name","quantity","consumable","alert","alertdeqtime","favourite","date","lastcheckdate"
-"14","Mancare","20","Shaorma",0,true,true,"7d",true,"2025-06-24T19:29:44.315Z","NoDate"
+"14","jhvhgvhg","20","Shaorma",0,true,true,"7d",true,"2025-06-24T19:29:44.315Z","NoDate"
+"14","jhvhgvhg","21","cereale",1,false,false,"off",false,"2025-06-25T12:21:54.742Z","NoDate"
+"14","jhvhgvhg","22","acscacsa       ",1,false,false,"noalert",false,"2025-06-26T10:23:20.256Z","NoDate"

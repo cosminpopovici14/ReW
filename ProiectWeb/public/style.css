@@ -1035,3 +1035,37 @@ input[type="checkbox"] {
   display: flex;
   
 }
+
+.export-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.export-options {
+  display: none;
+  position: absolute;
+  top: 180%;
+  left: 0;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 230px;
+  transform: translateX(-33%);
+}
+
+.export-options button {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 10px;
+  width: 100%;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.export-options button:hover {
+  background-color: #f0f0f0;
+}

@@ -5,15 +5,21 @@ async function init() {
     console.log(categories);
 
     categories.forEach(category => {
-        fetch(`/api/categories/${category.id}/export`);
+        fetch(`/api/categories/${category.id}/export/csv`);
+        fetch(`/api/categories/${category.id}/export/json`);
+        fetch(`/api/categories/${category.id}/export/xml`);
     });
 
-    await fetch(`/api/categories/export`);
+    await fetch(`/api/categories/export/csv`);
+    await fetch(`/api/categories/export/json`);
+    await fetch(`/api/categories/export/xml`);
     printCategory();
 }
 
 async function getCategoryItemsExport(categoryID) {
-    await fetch(`/api/categories/${categoryID}/items/export`);
+    await fetch(`/api/categories/${categoryID}/items/export/csv`);
+    await fetch(`/api/categories/${categoryID}/items/export/json`);
+    await fetch(`/api/categories/${categoryID}/items/export/xml`);
 }
 
 async function PostCategory(body) {

@@ -22,4 +22,6 @@ document.addEventListener('mousemove', function (e) {
     cursor.style.top = (e.clientY - 15) + "px";
 });
 
+
+
 init();

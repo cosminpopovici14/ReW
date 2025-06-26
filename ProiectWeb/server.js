@@ -592,7 +592,6 @@ const server = http.createServer((req, res) => {
     
 
 
-    //FOR ITEMS:
     if(req.method === 'GET' && /^\/api\/categories\/\d+\/items$/.test(req.url))
     {
         let id = parseInt(req.url.split('/',5)[3]);
@@ -979,7 +978,7 @@ const server = http.createServer((req, res) => {
 
         return;
     }
-    if (req.method === 'GET' && /^\/api\/categories\/\d+\/items\/\d+\/export$/.test(req.url)) {
+    if (req.method === 'GET' && /^\/api\/categories\/\d+\/items\/\d+\/export\/csv$/.test(req.url)) {
   const id = parseInt(req.url.split('/')[5]);
 
   (async () => {
@@ -1039,7 +1038,7 @@ const server = http.createServer((req, res) => {
 
 
 
-    if (req.method === 'GET' && /^\/api\/categories\/\d+\/items\/export$/.test(req.url)) {
+    if (req.method === 'GET' && /^\/api\/categories\/\d+\/items\/export\/csv$/.test(req.url)) {
   const id = parseInt(req.url.split('/')[3]);
 
   (async () => {
@@ -1098,7 +1097,7 @@ const server = http.createServer((req, res) => {
 }
 
 
-   if (req.method === 'GET' && /^\/api\/categories\/\d+\/export$/.test(req.url)) {
+   if (req.method === 'GET' && /^\/api\/categories\/\d+\/export\/csv$/.test(req.url)) {
   const id = parseInt(req.url.split('/')[3]);
 
   (async () => {
@@ -1161,7 +1160,7 @@ const server = http.createServer((req, res) => {
 
 
 
-    if (req.method === 'GET' && /^\/api\/categories\/export$/.test(req.url)) {
+    if (req.method === 'GET' && /^\/api\/categories\/export\/csv$/.test(req.url)) {
     (async () => {
         try {
             await client.query('SELECT check_export_has_data();');
@@ -1220,9 +1219,129 @@ const server = http.createServer((req, res) => {
             }
         }
     })();
+    
 
     return;
 }
+
+if (req.method === 'GET' && /^\/api\/categories\/export\/json$/.test(req.url)) {
+  (async () => {
+    try {
+      await client.query('SELECT check_export_has_data();');
+
+      const result = await client.query(`
+        SELECT DISTINCT
+            c.id,
+            c.name,
+            i.id as item_id,
+            i.name as item_name,
+            i.quantity,
+            p.consumable,
+            a.alert,
+            a.alertdeqtime,
+            p.favourite,
+            d.added_date as date,
+            a.lastcheckdate
+        FROM categories c
+        LEFT JOIN items i ON c.id = i.category_id
+        LEFT JOIN item_properties p ON i.id = p.item_id
+        LEFT JOIN item_alerts a ON i.id = a.item_id
+        LEFT JOIN (
+            SELECT item_id, MAX(added_date) AS added_date
+            FROM item_dates
+            GROUP BY item_id
+        ) d ON i.id = d.item_id
+        WHERE c.user_id = $1
+        ORDER BY c.id ASC
+      `,[userID]);
+
+      const jsonData = JSON.stringify(result.rows, null, 2);
+
+      fs.writeFile(`public/Downloads/categories.json`, jsonData, (err) => {
+        if (err) {
+          console.error(err);
+          res.writeHead(500);
+          res.end('Eroare la scrierea fișierului JSON');
+          return;
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'JSON exportat cu succes!' }));
+      });
+    } catch (err) {
+      res.writeHead(500);
+      res.end('Eroare server la export JSON');
+    }
+  })();
+  return;
+}
+
+if (req.method === 'GET' && /^\/api\/categories\/export\/xml$/.test(req.url)) {
+  (async () => {
+    try {
+      await client.query('SELECT check_export_has_data();');
+
+      const result = await client.query(`
+        SELECT DISTINCT
+            c.id,
+            c.name,
+            i.id as item_id,
+            i.name as item_name,
+            i.quantity,
+            p.consumable,
+            a.alert,
+            a.alertdeqtime,
+            p.favourite,
+            d.added_date as date,
+            a.lastcheckdate
+        FROM categories c
+        LEFT JOIN items i ON c.id = i.category_id
+        LEFT JOIN item_properties p ON i.id = p.item_id
+        LEFT JOIN item_alerts a ON i.id = a.item_id
+        LEFT JOIN (
+            SELECT item_id, MAX(added_date) AS added_date
+            FROM item_dates
+            GROUP BY item_id
+        ) d ON i.id = d.item_id
+        WHERE c.user_id = $1
+        ORDER BY c.id ASC
+      `, [userID]);
+
+      const data = result.rows;
+
+      const { create } = require('xmlbuilder2');
+      const root = create({ version: '1.0' }).ele('categories');
+
+      data.forEach(entry => {
+        const category = root.ele('category');
+        for (const [key, value] of Object.entries(entry)) {
+          category.ele(key).txt(value !== null ? String(value) : '');
+        }
+      });
+
+      const xml = root.end({ prettyPrint: true });
+
+      fs.writeFile(`public/Downloads/categories.xml`, xml, (err) => {
+        if (err) {
+          console.error(err);
+          res.writeHead(500);
+          res.end('Eroare la scrierea fișierului XML');
+          return;
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'XML exportat cu succes!' }));
+      });
+    } catch (err) {
+      console.error(err);
+      res.writeHead(500);
+      res.end('Eroare server la export XML');
+    }
+  })();
+  return;
+}
+
+
 
 
 

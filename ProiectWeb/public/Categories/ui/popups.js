@@ -37,6 +37,20 @@ function openAddCategoryErrorPopup(errMessage) {
     errorPopup.classList.add("show-error");
 }
 
+function toggleExportOptions() {
+  const exportOptions = document.getElementById('export-options');
+  exportOptions.style.display = exportOptions.style.display === 'block' ? 'none' : 'block';
+}
+
+document.addEventListener('click', function(e) {
+  const dropdown = document.querySelector('.export-dropdown');
+  if (dropdown && !dropdown.contains(e.target)) {
+    const options = document.getElementById('export-options');
+    if (options) options.style.display = 'none';
+  }
+});
+
+
 window.openPopup = openPopup;
 window.closePopup = closePopup;
 window.openDeleteConfimation = openDeleteConfimation;

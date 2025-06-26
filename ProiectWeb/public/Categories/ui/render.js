@@ -1,10 +1,17 @@
 function printCategory() {
     let categoriesHTML = '';
     let count = 0;
-    const categoriesExportButton = `
-        <a href="Downloads/categories.csv" download="categories.csv">
-            <button class="export-button">Export CSV</button>
-        </a>`;
+    categoriesExportButton = `
+  <div class="export-dropdown">
+    <button class="export-button" onclick="toggleExportOptions()">Export</button>
+    <div class="export-options" id="export-options">
+      <a href="Downloads/categories.csv" download="categories.csv"><button>CSV</button></a>
+      <a href="Downloads/categories.json" download="categories.json"><button>JSON</button></a>
+      <a href="Downloads/categories.xml" download="categories.xml"><button>XML</button></a>
+    </div>
+  </div>
+`;
+
 
     categories.forEach((category) => {
         categoriesHTML += `

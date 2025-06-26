@@ -16,23 +16,6 @@ body {
   
 }
 
-
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  opacity: 0.2; 
-  background-color: #f6f6f6;
-
-background-image: radial-gradient(circle at center bottom, #dce0e6, #f6f6f6), repeating-radial-gradient(circle at center bottom, #dce0e6, #dce0e6, 40px, transparent 80px, transparent 120px);
-background-blend-mode: multiply;
-  background-attachment: fixed;
-}
-
 header {
   background-color: transparent;
   display: flex;
@@ -65,7 +48,7 @@ main {
 }
 #main-page{
   display: grid;
-  
+  justify-items: center;  
 }
 
 #categories-page{
@@ -186,14 +169,19 @@ button{
 }
 .under-categories{
   display:flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
   
 }
-.under-items{
-  display:flex;
-  justify-content:center;
-  margin: 50px;
-  top: 50px;
+.under-items {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 20px;
+  margin-top: 120px;
 }
+
 .popup-div{
   display: flex;
   justify-content: center;
@@ -225,7 +213,7 @@ button{
   position: absolute;
 }
 #add-popup{
-  position:absolute;
+  position:fixed;
 }
 
 #category-name-p{
@@ -308,23 +296,20 @@ input[type="text"]
   text-align: center;
   transition: all 0.5s;
   position: relative;
-  margin-top: 80px;
 }
 
-#export-items-button{
-  margin: 50px;
+#export-items-button {
   padding: 20px;
   width: 230px;
   max-width: 500px;
-  max-height: fit-content;
   border-radius: 12px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
   text-align: center;
   transition: all 0.5s;
   position: relative;
-  margin-top: 80px;
   background-color: #4cd964;
 }
+
 
 #export-categories-button{
   margin: 50px;
@@ -418,7 +403,8 @@ footer {
 
 .item-name{
   margin-top: 20px;
-  width: 160px;
+  width: 100%;
+  max-width: 160px;
   margin-right: 60px;
   padding: 10px;
   
@@ -817,15 +803,10 @@ input[type="checkbox"] {
   margin-top: 3px;
 }
 
-
-
 .items-title{
   position: relative;
   display: flex;
   justify-content: center;
-  top: 30%;
-  left: 50%;
-  translate: -50% 0;
   font-size: 50px;
   font-weight: bold;
 }

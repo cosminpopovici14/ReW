@@ -1,0 +1,85 @@
+/* Stiluri responsive pentru telefon */
+@media (max-width: 600px) {
+  .background-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100%;
+    z-index: -1;
+  }
+
+  .item {
+    width: 90%;
+    max-width: none;
+    height: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .item-name {
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+  }
+
+  #item-name-name {
+    font-size: 20px;
+  }
+
+  #item-name-category {
+    font-size: 16px;
+  }
+
+  .item-stock,
+  .item-alert {
+    margin: 8px 0 0 0;
+    font-size: 16px;
+    width: auto;
+  }
+
+  .item-alert {
+    margin-left: 0;
+  }
+
+  .item-alert-text {
+    margin-top: 0;
+  }
+
+  .item-buttons-position {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 12px;
+  }
+
+  .item-buttons {
+    width: 100%;
+    visibility: visible !important;
+    /* Vizibile mereu pe mobil */
+    justify-content: space-between;
+  }
+
+  .item-picture {
+    margin: 0 0 12px 0;
+  }
+
+  .items-title {
+    font-size: 36px;
+    text-align: center;
+  }
+
+  .under-items {
+    flex-direction: column;
+    align-items: center;
+    margin-top: 100px;
+    gap: 12px;
+  }
+
+  #add-item-button,
+  #export-items-button {
+    max-width: none;
+    padding: 16px;
+  }
+}

@@ -1,0 +1,65 @@
+
+/* Responsive design for categories page */
+@media screen and (max-width: 768px) {
+  #above-categories h1 {
+    font-size: 28px;
+    text-align: center;
+  }
+
+  .under-categories {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  #add-category-button, #export-categories-button {
+    width: 80%;
+    margin: 10px 0;
+    padding: 15px;
+    font-size: 1.1rem;
+  }
+
+  .popup {
+    width: 90% !important;
+    top: 100px !important;
+    padding: 15px !important;
+  }
+
+  input[type="text"] {
+    font-size: 18px !important;
+  }
+
+  #popup-buttons-div {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  #add-popup-button, #cancel-popup-button {
+    width: 100%;
+    margin: 0;
+  }
+
+  .category {
+    width: 90% !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  #above-categories h1 {
+    font-size: 24px;
+  }
+
+  #add-category-button, #export-categories-button {
+    font-size: 1rem;
+    padding: 12px;
+  }
+
+  .popup {
+    padding: 10px !important;
+  }
+
+  input[type="text"] {
+    font-size: 16px !important;
+  }
+}

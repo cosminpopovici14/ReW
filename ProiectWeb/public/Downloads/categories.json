@@ -1,67 +1,15 @@
 [
   {
-    "id": 16,
-    "name": "abracadabra",
-    "item_id": 27,
-    "item_name": "cox",
+    "id": "63",
+    "name": "kjbkbh",
+    "item_id": "41",
+    "item_name": "ascc",
     "quantity": 1,
     "consumable": false,
     "alert": false,
     "alertdeqtime": "off",
     "favourite": false,
-    "date": "2025-06-27T17:53:07.678Z",
+    "date": "2025-06-27T21:35:22.319Z",
     "lastcheckdate": "NoDate"
-  },
-  {
-    "id": 16,
-    "name": "abracadabra",
-    "item_id": 28,
-    "item_name": "toni",
-    "quantity": 1,
-    "consumable": false,
-    "alert": false,
-    "alertdeqtime": "off",
-    "favourite": false,
-    "date": "2025-06-27T17:53:10.658Z",
-    "lastcheckdate": "NoDate"
-  },
-  {
-    "id": 16,
-    "name": "abracadabra",
-    "item_id": 29,
-    "item_name": "montana",
-    "quantity": 1,
-    "consumable": false,
-    "alert": false,
-    "alertdeqtime": "off",
-    "favourite": false,
-    "date": "2025-06-27T17:53:14.362Z",
-    "lastcheckdate": "NoDate"
-  },
-  {
-    "id": 16,
-    "name": "abracadabra",
-    "item_id": 30,
-    "item_name": "jos",
-    "quantity": 1,
-    "consumable": false,
-    "alert": false,
-    "alertdeqtime": "off",
-    "favourite": false,
-    "date": "2025-06-27T17:53:17.819Z",
-    "lastcheckdate": "NoDate"
-  },
-  {
-    "id": 17,
-    "name": "sa",
-    "item_id": 0,
-    "item_name": "",
-    "quantity": 0,
-    "consumable": false,
-    "alert": false,
-    "alertdeqtime": "",
-    "favourite": false,
-    "date": "",
-    "lastcheckdate": ""
   }
 ]

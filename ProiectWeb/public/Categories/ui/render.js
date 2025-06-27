@@ -32,7 +32,7 @@ function printCategory() {
                     <h2> Are you sure you want to delete? </h2>
                 </div>
                 <div class="category-items-count" id="category-items-count-${category.id}">
-                    <p>0 items</p>
+                    <p></p>
                 </div>
                 <div class="category-rename" id="category-rename-${category.id}">
                     <button id="rename-button" onclick="openPopup('rename-popup',${category.id})"> Rename </button>

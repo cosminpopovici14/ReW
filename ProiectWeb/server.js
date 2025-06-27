@@ -9,24 +9,24 @@ const { count } = require('console');
 const xml2js = require('xml2js');
 const { parse } = require('csv-parse/sync');
 const client = new Client({
-  host: process.env.PGHOST || 'localhost',
-  user: process.env.PGUSER || 'postgres',
-  password: process.env.PGPASSWORD || 'STUDENT',
-  database: process.env.PGDATABASE || 'rew_database',
-  port: process.env.PGPORT || 5432,
-});  
+    host: process.env.PGHOST || 'localhost',
+    user: process.env.PGUSER || 'postgres',
+    password: process.env.PGPASSWORD || 'STUDENT',
+    database: process.env.PGDATABASE || 'rew_database',
+    port: process.env.PGPORT || 5432,
+});
 
 var transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'manmat2004@gmail.com',
-    pass: 'qwwt hgry kqtk bbmk'
-  }
+    service: 'gmail',
+    auth: {
+        user: 'manmat2004@gmail.com',
+        pass: 'qwwt hgry kqtk bbmk'
+    }
 });
 
 async function initializeDatabase() {
- try {
-    await client.query( `
+    try {
+        await client.query(`
 
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
@@ -304,27 +304,27 @@ $$ LANGUAGE plpgsql;
 
         `);
 
-    console.log('✅ Tabelele au fost create sau existau deja.');
-} catch (error) {
+        console.log('✅ Tabelele au fost create sau existau deja.');
+    } catch (error) {
         console.error('❌ Eroare la crearea tabelelor:', error.message);
-        process.exit(1); 
+        process.exit(1);
     }
 }
 
-function parseCookies(req){
+function parseCookies(req) {
     let list = {};
     let cookiesHeader = req.headers.cookie;
-    if(!cookiesHeader)
+    if (!cookiesHeader)
         return list;
     let cookiesArray = [];
-    let i =0;
+    let i = 0;
     cookiesHeader.split('; ').forEach(cookie => {
-        cookie.split('=').forEach(elem=>{
+        cookie.split('=').forEach(elem => {
             cookiesArray[i++] = elem;
         })
     });
-    for(let i = 1; i<cookiesArray.length;i+=2){
-        list[cookiesArray[i-1]] = cookiesArray[i];
+    for (let i = 1; i < cookiesArray.length; i += 2) {
+        list[cookiesArray[i - 1]] = cookiesArray[i];
     }
     return list;
 
@@ -332,144 +332,142 @@ function parseCookies(req){
 client.connect()
     .then(() => {
         console.log("✅ Conectat la PostgreSQL");
-        return initializeDatabase(); 
+        return initializeDatabase();
     })
     .catch(err => {
         console.error("❌ Eroare la conectarea la PostgreSQL:", err.message);
     });
 
-let pendingCodes={};
+let pendingCodes = {};
 const server = http.createServer((req, res) => {
     const cookies = parseCookies(req);
     console.log(cookies);
     let file = '';
-    file =req.url.split('?')[0];
+    file = req.url.split('?')[0];
     const userID = parseInt(cookies.userId);
     console.log(req.url);
     let filePath = path.join(__dirname, 'public', file);
-    let ext = path.extname(filePath); 
+    let ext = path.extname(filePath);
 
     let contentType = 'text/html';
     const isPublic =
-    req.url === '/register.html'||
-    req.url === '/login.html' ||
-    req.url === '/api/login' ||
-    req.url === '/api/register' ||
-    req.url === '/api/register/verify' ||
-    req.url.endsWith('.css') ||
-    req.url.endsWith('.js') ||
-    req.url.endsWith('.png') 
+        req.url === '/register.html' ||
+        req.url === '/login.html' ||
+        req.url === '/api/login' ||
+        req.url === '/api/register' ||
+        req.url === '/api/register/verify' ||
+        req.url.endsWith('.css') ||
+        req.url.endsWith('.js') ||
+        req.url.endsWith('.png')
 
-    if(!isPublic && cookies.auth != 'true'){
-        res.writeHead(302, {Location : '/login.html'});
+    if (!isPublic && cookies.auth != 'true') {
+        res.writeHead(302, { Location: '/login.html' });
         res.end();
         return;
     }
-    if(req.url == '/' )
-        if(cookies.role == 'user')
-        {
-       res.writeHead(302, {Location : '/index.html'});
-        res.end();
-        return; 
+    if (req.url == '/')
+        if (cookies.role == 'user') {
+            res.writeHead(302, { Location: '/index.html' });
+            res.end();
+            return;
         }
-    else{
-        res.writeHead(302, {Location : '/admin.html'});
-        res.end();
-        return;
-    }
-    if(req.url == '/admin.html' && cookies.role == 'user'){
+        else {
+            res.writeHead(302, { Location: '/admin.html' });
+            res.end();
+            return;
+        }
+    if (req.url == '/admin.html' && cookies.role == 'user') {
         res.writeHead(403);
         res.end("Acces Denied. Admins Only!")
         return;
     }
-    if(req.method === `GET` && req.url === '/api/admin/users'){
-        client.query('SELECT * from users',(err,content)=>{
-            if(err){
+    if (req.method === `GET` && req.url === '/api/admin/users') {
+        client.query('SELECT * from users', (err, content) => {
+            if (err) {
                 res.setHeader(500);
                 res.end("Server Error");
                 return;
             }
-            let parsed = JSON.stringify({users : content.rows});
+            let parsed = JSON.stringify({ users: content.rows });
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(parsed);
         });
         return;
     }
-    if(req.method === 'DELETE' && req.url=== '/api/admin/users')
-    {
-        let body='';
-        req.on('data', chunk =>{body+=chunk});
-        req.on('end', ()=>{
+    if (req.method === 'DELETE' && req.url === '/api/admin/users') {
+        let body = '';
+        req.on('data', chunk => { body += chunk });
+        req.on('end', () => {
             const deletedUser = JSON.parse(body);
-            client.query('DELETE FROM users WHERE id=$1',[deletedUser.id],(err,content)=>{
-            
-            if (err) {
-                console.log(err);
-                res.writeHead(500);
-                res.end('Eroare server');
-                return;
-            }
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end("Deleted User!");
+            client.query('DELETE FROM users WHERE id=$1', [deletedUser.id], (err, content) => {
+
+                if (err) {
+                    console.log(err);
+                    res.writeHead(500);
+                    res.end('Eroare server');
+                    return;
+                }
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end("Deleted User!");
             })
         });
         return;
     }
-    if(req.method === `GET` && req.url === '/api/admin/auditlog'){
-        client.query('SELECT * from audit_log ORDER BY action_time DESC',(err,content)=>{
-            if(err){
+    if (req.method === `GET` && req.url === '/api/admin/auditlog') {
+        client.query('SELECT * from audit_log ORDER BY action_time DESC', (err, content) => {
+            if (err) {
                 res.setHeader(500);
                 res.end("Server Error");
                 return;
             }
-            let parsed = JSON.stringify({logs : content.rows});
+            let parsed = JSON.stringify({ logs: content.rows });
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(parsed);
         });
         return;
     }
-    if(req.method === `POST` && req.url === '/api/register'){
+    if (req.method === `POST` && req.url === '/api/register') {
         let body = '';
-        req.on('data', chunk=>body+=chunk);
-        req.on('end',()=>{
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
             const user = JSON.parse(body);
             console.log(user);
-            if(pendingCodes[user.email]!=user.code)
-            {
+            if (pendingCodes[user.email] != user.code) {
                 res.writeHead(400);
                 res.end("Codes do not match!");
                 return;
             }
             client.query(`INSERT INTO users(name,email,password)
-                          VALUES ($1,$2,$3) RETURNING id`, 
-                          [user.name,user.email,user.password], (err,content)=>{
-                if(err){
-                    res.writeHead(500);
-                    res.end(err.message);
-                    return;
-                }
-                
-                let id = content.rows[0].id;
-                res.writeHead(302,{Location : '/index.html',
-                                        'Content-Type' : 'application/json',
-                                        'Set-Cookie' : [
-                                            `userId = ${id}; Max-Age=604800;HttpOnly;Path=/`,
-                                            `auth = true;  Max-Age=604800;HttpOnly;Path=/`,
-                                            `role = user;  Max-Age=604800;HttpOnly;Path=/`
-                                        ]
+                          VALUES ($1,$2,$3) RETURNING id`,
+                [user.name, user.email, user.password], (err, content) => {
+                    if (err) {
+                        res.writeHead(500);
+                        res.end(err.message);
+                        return;
+                    }
+
+                    let id = content.rows[0].id;
+                    res.writeHead(302, {
+                        Location: '/index.html',
+                        'Content-Type': 'application/json',
+                        'Set-Cookie': [
+                            `userId = ${id}; Max-Age=604800;HttpOnly;Path=/`,
+                            `auth = true;  Max-Age=604800;HttpOnly;Path=/`,
+                            `role = user;  Max-Age=604800;HttpOnly;Path=/`
+                        ]
                     });
-                res.end("Registered new User!");
-            })
+                    res.end("Registered new User!");
+                })
         })
         return;
     }
-    if(req.method === `POST` && req.url === '/api/register/verify'){
+    if (req.method === `POST` && req.url === '/api/register/verify') {
         let body = '';
-        req.on('data', chunk=>body+=chunk);
-        req.on('end',()=>{
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
             const user = JSON.parse(body);
             console.log(user);
-            if(user.password != user.passwordConfirm){
+            if (user.password != user.passwordConfirm) {
                 res.writeHead(400);
                 res.end("Passwords do not match!");
                 return;
@@ -481,183 +479,186 @@ const server = http.createServer((req, res) => {
             //         return;
             //     }
             var passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
-                if(passwordRegex.test(user.password)==false){
-                    res.writeHead(400);
-                    res.end("Password does not match the criteria!")
-                    return;
-                }
-            client.query('SELECT * FROM users where email=$1',[user.email],(err1,content1)=>{
-                if(err1){
+            if (passwordRegex.test(user.password) == false) {
+                res.writeHead(400);
+                res.end("Password does not match the criteria!")
+                return;
+            }
+            client.query('SELECT * FROM users where email=$1', [user.email], (err1, content1) => {
+                if (err1) {
                     res.writeHead(500),
-                    res.end(err1.message);
+                        res.end(err1.message);
                     return;
                 }
-                if(content1.rows.length != 0){
+                if (content1.rows.length != 0) {
                     res.writeHead(400);
                     res.end("Email Already Exists!");
                     return;
                 }
-                
+
                 let randomCode = makeid(5);
                 pendingCodes[user.email] = randomCode;
                 var mailOptions = {
-                        from: 'manmat2004@gmail.com',
-                        to: user.email,
-                        subject: 'Your Confirmation Code!',
-                        text: `Your Confirmation Code is: ${randomCode}`
-                        };
-                transporter.sendMail(mailOptions, function(error, info){
+                    from: 'manmat2004@gmail.com',
+                    to: user.email,
+                    subject: 'Your Confirmation Code!',
+                    text: `Your Confirmation Code is: ${randomCode}`
+                };
+                transporter.sendMail(mailOptions, function (error, info) {
                     if (error) {
                         console.log(error);
                     } else {
                         console.log('Email sent: ' + info.response);
                     }
                 });
-                res.writeHead(200, {'Content-Type' : 'application/json'});
+                res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end("Verified Inputs and sent Email!");
             })
         })
         return;
     }
-    if(req.method === 'POST' && req.url ==='/api/login'){
-        let body='';
-        req.on('data', chunk => body+=chunk);
-        req.on('end', () =>{
+    if (req.method === 'POST' && req.url === '/api/login') {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
             const user = JSON.parse(body);
-            client.query('SELECT * FROM users where email=$1',[user.email],(err1,content1)=>{
-                if(err1){
+            client.query('SELECT * FROM users where email=$1', [user.email], (err1, content1) => {
+                if (err1) {
                     res.writeHead(500),
-                    res.end(err1.message);
+                        res.end(err1.message);
                     return;
                 }
-                if(content1.rows.length == 0){
+                if (content1.rows.length == 0) {
                     res.writeHead(400);
                     res.end("Email Not Found!");
                     return;
                 }
-                client.query('SELECT * FROM users where email=$1 and password=$2',[user.email,user.password],(err2,content2)=>{
-                    if(err2){
+                client.query('SELECT * FROM users where email=$1 and password=$2', [user.email, user.password], (err2, content2) => {
+                    if (err2) {
                         res.writeHead(500);
                         res.end(err2.message);
                         return;
                     }
-                    if(content2.rows.length == 0){
+                    if (content2.rows.length == 0) {
                         res.writeHead(400);
                         res.end('Wrong Password!');
                         return;
                     }
                     let foundUser = JSON.stringify(content2.rows);
                     parsed = JSON.parse(foundUser);
-                    if((user.email == 'admin1@admin.com' && user.password == 'parola123') 
-                         || (user.email == 'admin2@admin.com' && user.password == 'parola456')){
-                        res.writeHead(302,{Location : '/admin.html',
-                                        'Content-Type' : 'application/json',
-                                        'Set-Cookie' : [
-                                            `userId = ${[parsed[0].id]}; Max-Age=604800;HttpOnly;Path=/`,
-                                            `auth = true;  Max-Age=604800;HttpOnly;Path=/`,
-                                            `role = admin;  Max-Age=604800;HttpOnly;Path=/`
-                                        ]
-                         })
+                    if ((user.email == 'admin1@admin.com' && user.password == 'parola123')
+                        || (user.email == 'admin2@admin.com' && user.password == 'parola456')) {
+                        res.writeHead(302, {
+                            Location: '/admin.html',
+                            'Content-Type': 'application/json',
+                            'Set-Cookie': [
+                                `userId = ${[parsed[0].id]}; Max-Age=604800;HttpOnly;Path=/`,
+                                `auth = true;  Max-Age=604800;HttpOnly;Path=/`,
+                                `role = admin;  Max-Age=604800;HttpOnly;Path=/`
+                            ]
+                        })
                         res.end("Authenitcated Admin!");
-                        return; 
-                     }
-                    else{
-                        res.writeHead(302,{Location : '/index.html',
-                                        'Content-Type' : 'application/json',
-                                        'Set-Cookie' : [
-                                            `userId = ${[parsed[0].id]}; Max-Age=604800;HttpOnly;Path=/`,
-                                            `auth = true;  Max-Age=604800;HttpOnly;Path=/`,
-                                            `role = user;  Max-Age=604800;HttpOnly;Path=/`
-                                        ]
+                        return;
+                    }
+                    else {
+                        res.writeHead(302, {
+                            Location: '/index.html',
+                            'Content-Type': 'application/json',
+                            'Set-Cookie': [
+                                `userId = ${[parsed[0].id]}; Max-Age=604800;HttpOnly;Path=/`,
+                                `auth = true;  Max-Age=604800;HttpOnly;Path=/`,
+                                `role = user;  Max-Age=604800;HttpOnly;Path=/`
+                            ]
                         })
                         res.end("Authenitcated User!");
                     }
-                    
-                })  
+
+                })
             })
         })
         return;
     }
 
-    if(req.method ==='GET'  && req.url == '/api/logout'){
-        res.writeHead(302,{Location : '/login.html',
-                                        'Content-Type' : 'application/json',
-                                        'Set-Cookie' : [
-                                            `userId = ; Max-Age=604800;HttpOnly;Path=/`,
-                                            `auth = false;  Max-Age=604800;HttpOnly;Path=/`,
-                                            `role = ;  Max-Age=604800;HttpOnly;Path=/`
-                                        ]
-                        })
+    if (req.method === 'GET' && req.url == '/api/logout') {
+        res.writeHead(302, {
+            Location: '/login.html',
+            'Content-Type': 'application/json',
+            'Set-Cookie': [
+                `userId = ; Max-Age=604800;HttpOnly;Path=/`,
+                `auth = false;  Max-Age=604800;HttpOnly;Path=/`,
+                `role = ;  Max-Age=604800;HttpOnly;Path=/`
+            ]
+        })
         res.end("Logged Out User!");
         return;
     }
 
 
     if (req.method === 'GET' && req.url === '/api/categories') {
-        client.query('SELECT * from categories WHERE user_id =$1 ORDER BY id',[userID],(err,content)=>{
+        client.query('SELECT * from categories WHERE user_id =$1 ORDER BY id', [userID], (err, content) => {
             if (err) {
                 res.writeHead(500);
                 res.end('Eroare server');
                 return;
             }
-            let parsed = JSON.stringify({categories : content.rows});
+            let parsed = JSON.stringify({ categories: content.rows });
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(parsed);
         })
-    return;
+        return;
     }
 
-    if(req.method === 'GET' && req.url === '/api/items/count'){
+    if (req.method === 'GET' && req.url === '/api/items/count') {
         client.query('SELECT count(*) as total FROM items i join categories c on i.category_id = c.id where c.user_id=$1', [userID], (err, result) => {
-            if(err) {
+            if (err) {
                 res.writeHead(500);
                 res.end('Eroare server');
                 return;
             }
             let count = result.rows[0].total;
-            console.log("Count: ",count);
-            res.writeHead(200, {'Content-Type': 'application/json'});
+            console.log("Count: ", count);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(count));
         })
         return;
     }
 
-    if(req.method === 'GET' && req.url === '/api/lowItems/count'){
+    if (req.method === 'GET' && req.url === '/api/lowItems/count') {
         client.query(`SELECT count(*) as total FROM items i 
             join categories c on i.category_id = c.id 
             join item_properties p on i.id = p.item_id  
             where c.user_id=$1 and i.quantity<=5 and p.consumable = true `, [userID], (err, result) => {
-            if(err) {
+            if (err) {
                 res.writeHead(500);
                 res.end('Eroare server');
                 return;
             }
             let count = result.rows[0].total;
-            console.log("Count: ",count);
-            res.writeHead(200, {'Content-Type': 'application/json'});
+            console.log("Count: ", count);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(count));
         })
         return;
     }
 
-    if(req.method === 'GET' && req.url === '/api/categories/count'){
+    if (req.method === 'GET' && req.url === '/api/categories/count') {
         client.query('SELECT count(*) as total FROM categories c where c.user_id=$1', [userID], (err, result) => {
-            if(err) {
+            if (err) {
                 res.writeHead(500);
                 res.end('Eroare server');
                 return;
             }
             let count = result.rows[0].total;
-            console.log("Count: ",count);
-            res.writeHead(200, {'Content-Type': 'application/json'});
+            console.log("Count: ", count);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(count));
         })
         return;
     }
-    
-    if(req.method === 'GET' && /^\/api\/categories\/\d+$/.test(req.url)){
-        let id = parseInt(req.url.split('/',4)[3]);
-         client.query('SELECT * from categories where id = $1',[id],(err,content)=>{
+
+    if (req.method === 'GET' && /^\/api\/categories\/\d+$/.test(req.url)) {
+        let id = parseInt(req.url.split('/', 4)[3]);
+        client.query('SELECT * from categories where id = $1', [id], (err, content) => {
             if (err) {
                 console.log(err);
                 res.writeHead(500);
@@ -676,16 +677,16 @@ const server = http.createServer((req, res) => {
         req.on('data', chunk => (body += chunk));
         req.on('end', () => {
             const newCategory = JSON.parse(body);
-            client.query('INSERT INTO categories (name,user_id) VALUES($1,$2) ',[newCategory.name,userID],(err,content)=>{
-            
-            if (err) {
-                console.log(err);
-                res.writeHead(400);
-                res.end(checkErrorCode(err.code,err.message));
-                return;
-            }
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end("Added Category!");
+            client.query('INSERT INTO categories (name,user_id) VALUES($1,$2) ', [newCategory.name, userID], (err, content) => {
+
+                if (err) {
+                    console.log(err);
+                    res.writeHead(400);
+                    res.end(checkErrorCode(err.code, err.message));
+                    return;
+                }
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end("Added Category!");
             })
             // fs.readFile('./data/categories.json', 'utf-8', (err, data) => {
             // if (err) {
@@ -713,21 +714,21 @@ const server = http.createServer((req, res) => {
     }
 
 
-    if(req.method === 'PUT' && req.url === "/api/categories"){
+    if (req.method === 'PUT' && req.url === "/api/categories") {
         let body = '';
-        req.on('data', chunk => (body+=chunk));
-        req.on('end', ()=>{
+        req.on('data', chunk => (body += chunk));
+        req.on('end', () => {
             const renamedCategory = JSON.parse(body);
-            client.query('UPDATE categories SET name=$1 WHERE id=$2',[renamedCategory.name,renamedCategory.id],(err,content)=>{
-            
-            if (err) {
-                console.log(err);
-                res.writeHead(400);
-                res.end(checkErrorCode(err.code,err.message));
-                return;
-            }
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end("Edited Category!");
+            client.query('UPDATE categories SET name=$1 WHERE id=$2', [renamedCategory.name, renamedCategory.id], (err, content) => {
+
+                if (err) {
+                    console.log(err);
+                    res.writeHead(400);
+                    res.end(checkErrorCode(err.code, err.message));
+                    return;
+                }
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end("Edited Category!");
             })
 
 
@@ -753,22 +754,21 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    if(req.method === 'DELETE' && req.url=== '/api/categories')
-    {
-        let body='';
-        req.on('data', chunk =>{body+=chunk});
-        req.on('end', ()=>{
+    if (req.method === 'DELETE' && req.url === '/api/categories') {
+        let body = '';
+        req.on('data', chunk => { body += chunk });
+        req.on('end', () => {
             const deletedCategory = JSON.parse(body);
-            client.query('DELETE FROM categories WHERE id=$1',[deletedCategory.id],(err,content)=>{
-            
-            if (err) {
-                console.log(err);
-                res.writeHead(500);
-                res.end('Eroare server');
-                return;
-            }
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end("Deleted Category!");
+            client.query('DELETE FROM categories WHERE id=$1', [deletedCategory.id], (err, content) => {
+
+                if (err) {
+                    console.log(err);
+                    res.writeHead(500);
+                    res.end('Eroare server');
+                    return;
+                }
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end("Deleted Category!");
             })
             // fs.readFile('./data/categories.json','utf-8', (err,data)=>{
             //     if(err){
@@ -776,7 +776,7 @@ const server = http.createServer((req, res) => {
             //         res.end('Server Error');
             //         return;
             //     }
-                
+
             //     let parsed = JSON.parse(data || '{categories:[]}');
             //     if(deleteCategory(parsed.categories,deletedCategory.id) == false){
             //         res.writeHead(404);
@@ -790,15 +790,14 @@ const server = http.createServer((req, res) => {
         });
         return;
     }
-    
 
 
-    if(req.method === 'GET' && /^\/api\/categories\/\d+\/items$/.test(req.url))
-    {
-        let id = parseInt(req.url.split('/',5)[3]);
+
+    if (req.method === 'GET' && /^\/api\/categories\/\d+\/items$/.test(req.url)) {
+        let id = parseInt(req.url.split('/', 5)[3]);
 
         client.query(
-        `SELECT DISTINCT
+            `SELECT DISTINCT
             i.id,
             i.name,
             i.quantity,
@@ -818,17 +817,17 @@ const server = http.createServer((req, res) => {
         ) d on i.id = d.item_id
         WHERE i.category_id = $1
         ORDER BY id ASC`
-            ,[id],(err,content)=>{
-            
-            if (err) {
-                console.log(err);
-                res.writeHead(500);
-                res.end('Eroare server');
-                return;
-            }
-            let parsed = JSON.stringify(content.rows);
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(parsed);
+            , [id], (err, content) => {
+
+                if (err) {
+                    console.log(err);
+                    res.writeHead(500);
+                    res.end('Eroare server');
+                    return;
+                }
+                let parsed = JSON.stringify(content.rows);
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(parsed);
             })
 
         // fs.readFile('./data/categories.json', 'utf-8', (err, content) => {
@@ -852,145 +851,144 @@ const server = http.createServer((req, res) => {
     }
 
 
-    if (req.method === 'POST' && /^\/api\/categories\/\d+\/items$/.test(req.url)) 
-    {
-        let id = parseInt(req.url.split('/',5)[3]);
+    if (req.method === 'POST' && /^\/api\/categories\/\d+\/items$/.test(req.url)) {
+        let id = parseInt(req.url.split('/', 5)[3]);
         let body = '';
         req.on('data', chunk => (body += chunk));
         req.on('end', () => {
             const newItem = JSON.parse(body);
-            
+
 
             //items
             client.query(`INSERT INTO items(category_id,name,quantity)
                           VALUES($1,$2,$3) RETURNING id`
-            ,[id,newItem.name,newItem.quantity],(err,content)=>{
-            
-            if (err) {
-                console.log(err);
-                res.writeHead(400);
-                res.end(checkErrorCode(err.code,err.message));
-                return;
-            }
+                , [id, newItem.name, newItem.quantity], (err, content) => {
 
-            let itemId = content.rows[0].id;
+                    if (err) {
+                        console.log(err);
+                        res.writeHead(400);
+                        res.end(checkErrorCode(err.code, err.message));
+                        return;
+                    }
 
-            //item_properties
-            client.query(`INSERT INTO item_properties (consumable,favourite,item_id)
+                    let itemId = content.rows[0].id;
+
+                    //item_properties
+                    client.query(`INSERT INTO item_properties (consumable,favourite,item_id)
                           VALUES($1,$2,$3)`,
-                        [newItem.consumable,newItem.favourite,itemId],(err1,content)=>{
+                        [newItem.consumable, newItem.favourite, itemId], (err1, content) => {
                             if (err1) {
                                 console.log(err1);
                                 res.writeHead(400);
                                 res.end(err1.code);
                                 return;
                             }
-                        
-                        //item_alerts
-                        client.query(`INSERT INTO item_alerts(alert,alertdeqtime,lastcheckdate,item_id)
+
+                            //item_alerts
+                            client.query(`INSERT INTO item_alerts(alert,alertdeqtime,lastcheckdate,item_id)
                                       VALUES($1,$2,$3,$4)`,
-                                    [newItem.alert,newItem.alertdeqtime,newItem.lastcheckdate,itemId],(err2,content)=>{
-                                         if (err2) {
-                                            console.log(err2);
-                                            res.writeHead(400);
-                                            res.end(err2.message);
-                                            return;
-                                        }
+                                [newItem.alert, newItem.alertdeqtime, newItem.lastcheckdate, itemId], (err2, content) => {
+                                    if (err2) {
+                                        console.log(err2);
+                                        res.writeHead(400);
+                                        res.end(err2.message);
+                                        return;
+                                    }
 
-                                        //item_dates
-                                        client.query(`INSERT INTO item_dates(quantity,added_date,item_id)
+                                    //item_dates
+                                    client.query(`INSERT INTO item_dates(quantity,added_date,item_id)
                                                       VALUES($1,$2,$3)`,
-                                                    [newItem.quantity,newItem.date,itemId],(err3,content)=>{
-                                                        if (err3) {
-                                                            console.log(err3);
-                                                            res.writeHead(400);
-                                                            res.end(err3.message);
-                                                            return;
-                                                        }
+                                        [newItem.quantity, newItem.date, itemId], (err3, content) => {
+                                            if (err3) {
+                                                console.log(err3);
+                                                res.writeHead(400);
+                                                res.end(err3.message);
+                                                return;
+                                            }
 
-                                                        res.writeHead(200, { 'Content-Type': 'application/json' });
-                                                        res.end("Added new Item");
-                                                    })
-                                    })
+                                            res.writeHead(200, { 'Content-Type': 'application/json' });
+                                            res.end("Added new Item");
+                                        })
+                                })
                         })
 
-            })
+                })
 
-            
-           
+
+
         });
         return;
     }
-    
 
 
-    if(req.method === 'PUT' && /^\/api\/categories\/\d+\/items$/.test(req.url)){
+
+    if (req.method === 'PUT' && /^\/api\/categories\/\d+\/items$/.test(req.url)) {
         console.log("test");
-        let id = parseInt(req.url.split('/',5)[3]);
+        let id = parseInt(req.url.split('/', 5)[3]);
         let body = '';
-        req.on('data', chunk => (body+=chunk));
-        req.on('end', ()=>{
+        req.on('data', chunk => (body += chunk));
+        req.on('end', () => {
             const editedItem = JSON.parse(body);
-            
+
 
             client.query(`UPDATE items SET category_id =$1,
                                            name = $2,
                                            quantity = $3
                                            WHERE id=$4`
-            ,[id,editedItem.name,editedItem.quantity,editedItem.id],(err,content)=>{
-            
-            if (err) {
-                console.log(err);
-                res.writeHead(400);
-                res.end(checkErrorCode(err.code,err.message));
-                return;
-            }
+                , [id, editedItem.name, editedItem.quantity, editedItem.id], (err, content) => {
+
+                    if (err) {
+                        console.log(err);
+                        res.writeHead(400);
+                        res.end(checkErrorCode(err.code, err.message));
+                        return;
+                    }
 
 
 
-            //item_properties
-            client.query(`UPDATE item_properties SET consumable =$1,
+                    //item_properties
+                    client.query(`UPDATE item_properties SET consumable =$1,
                                            favourite = $2
                                            WHERE item_id=$3`,
-                        [editedItem.consumable,editedItem.favourite,editedItem.id],(err1,content)=>{
+                        [editedItem.consumable, editedItem.favourite, editedItem.id], (err1, content) => {
                             if (err1) {
-                                console.log("err1 : " ,err1);
+                                console.log("err1 : ", err1);
                                 res.writeHead(500);
                                 res.end('Eroare server');
                                 return;
                             }
-                        
-                        //item_alerts
-                        client.query(`UPDATE item_alerts SET alert =$1,
+
+                            //item_alerts
+                            client.query(`UPDATE item_alerts SET alert =$1,
                                            alertdeqtime = $2,
                                            lastcheckdate = $3
                                            WHERE item_id=$4`,
-                                    [editedItem.alert,editedItem.alertdeqtime,editedItem.lastcheckdate,editedItem.id],(err2,content)=>{
-                                         if (err2) {
-                                            console.log("err2 : " ,err2);
-                                            res.writeHead(500);
-                                            res.end('Eroare server');
-                                            return;
-                                        }
+                                [editedItem.alert, editedItem.alertdeqtime, editedItem.lastcheckdate, editedItem.id], (err2, content) => {
+                                    if (err2) {
+                                        console.log("err2 : ", err2);
+                                        res.writeHead(500);
+                                        res.end('Eroare server');
+                                        return;
+                                    }
 
-                                        //item_dates
-                                        client.query(`INSERT INTO item_dates (quantity, added_date, item_id)
+                                    //item_dates
+                                    client.query(`INSERT INTO item_dates (quantity, added_date, item_id)
                                                     VALUES ( $1, $2, $3)`,
-                                                    [editedItem.quantity,editedItem.date,editedItem.id],(err3,content)=>{
-                                                        if (err3) {
-                                                            console.log("err3 : " ,err3);
-                                                            res.writeHead(500);
-                                                            res.end('Eroare server');
-                                                            return;
-                                                        }
+                                        [editedItem.quantity, editedItem.date, editedItem.id], (err3, content) => {
+                                            if (err3) {
+                                                console.log("err3 : ", err3);
+                                                res.writeHead(500);
+                                                res.end('Eroare server');
+                                                return;
+                                            }
 
-                                                        res.writeHead(200, { 'Content-Type': 'application/json' });
-                                                        res.end("Edited the Item");
-                                                    })
-                                    })
+                                            res.writeHead(200, { 'Content-Type': 'application/json' });
+                                            res.end("Edited the Item");
+                                        })
+                                })
                         })
 
-            })
+                })
 
 
             // fs.readFile('./data/categories.json', 'utf-8', (err,data)=>{
@@ -1026,17 +1024,17 @@ const server = http.createServer((req, res) => {
     }
 
 
-     if(req.method === 'PATCH' && /^\/api\/categories\/\d+\/items$/.test(req.url)){
-  
-        let id = parseInt(req.url.split('/',5)[3]);
+    if (req.method === 'PATCH' && /^\/api\/categories\/\d+\/items$/.test(req.url)) {
+
+        let id = parseInt(req.url.split('/', 5)[3]);
         let body = '';
-        req.on('data', chunk => (body+=chunk));
-        req.on('end', ()=>{
+        req.on('data', chunk => (body += chunk));
+        req.on('end', () => {
             const editedItem = JSON.parse(body);
-            
-           
-            if(editedItem.name)
-                client.query('UPDATE items SET name=$1 WHERE id=$2',[editedItem.name,editedItem.id],(err,content)=>{
+
+
+            if (editedItem.name)
+                client.query('UPDATE items SET name=$1 WHERE id=$2', [editedItem.name, editedItem.id], (err, content) => {
 
                     if (err) {
                         console.log(err);
@@ -1046,10 +1044,10 @@ const server = http.createServer((req, res) => {
                     }
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end("Edited Category!");
-                    })
-            else if(editedItem.quantity)
-                client.query('UPDATE items SET quantity=$1 WHERE id=$2',[editedItem.quantity,editedItem.id],(err,content)=>{
-                    
+                })
+            else if (editedItem.quantity)
+                client.query('UPDATE items SET quantity=$1 WHERE id=$2', [editedItem.quantity, editedItem.id], (err, content) => {
+
                     if (err) {
                         console.log(err);
                         res.writeHead(500);
@@ -1058,10 +1056,10 @@ const server = http.createServer((req, res) => {
                     }
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end("Edited Category!");
-                    })
-            else if(editedItem.consumable === true || editedItem.consumable === false)
-                client.query('UPDATE item_properties SET consumable=$1 WHERE item_id=$2',[editedItem.consumable,editedItem.id],(err,content)=>{
-            
+                })
+            else if (editedItem.consumable === true || editedItem.consumable === false)
+                client.query('UPDATE item_properties SET consumable=$1 WHERE item_id=$2', [editedItem.consumable, editedItem.id], (err, content) => {
+
                     if (err) {
                         console.log(err);
                         res.writeHead(500);
@@ -1070,10 +1068,10 @@ const server = http.createServer((req, res) => {
                     }
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end("Edited Category!");
-                    })
-            else if(editedItem.alertdeqtime)
-                        client.query('UPDATE item_alerts SET alertdeqtime=$1 WHERE item_id=$2',[editedItem.alertdeqtime,editedItem.id],(err,content)=>{
-                    
+                })
+            else if (editedItem.alertdeqtime)
+                client.query('UPDATE item_alerts SET alertdeqtime=$1 WHERE item_id=$2', [editedItem.alertdeqtime, editedItem.id], (err, content) => {
+
                     if (err) {
                         console.log(err);
                         res.writeHead(500);
@@ -1082,10 +1080,10 @@ const server = http.createServer((req, res) => {
                     }
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end("Edited Category!");
-                    })
-            else if(editedItem.alert=== true || editedItem.alert === false)
-                client.query('UPDATE item_alerts SET alert=$1 WHERE item_id=$2',[editedItem.alert,editedItem.id],(err,content)=>{
-            
+                })
+            else if (editedItem.alert === true || editedItem.alert === false)
+                client.query('UPDATE item_alerts SET alert=$1 WHERE item_id=$2', [editedItem.alert, editedItem.id], (err, content) => {
+
                     if (err) {
                         console.log(err);
                         res.writeHead(500);
@@ -1094,10 +1092,10 @@ const server = http.createServer((req, res) => {
                     }
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end("Edited Category!");
-                    })
-            else if(editedItem.favourite=== true || editedItem.favourite === false)
-                        client.query('UPDATE item_properties SET favourite=$1 WHERE item_id=$2',[editedItem.favourite,editedItem.id],(err,content)=>{
-                    
+                })
+            else if (editedItem.favourite === true || editedItem.favourite === false)
+                client.query('UPDATE item_properties SET favourite=$1 WHERE item_id=$2', [editedItem.favourite, editedItem.id], (err, content) => {
+
                     if (err) {
                         console.log(err);
                         res.writeHead(500);
@@ -1106,10 +1104,10 @@ const server = http.createServer((req, res) => {
                     }
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end("Edited Category!");
-                    })
-            else if(editedItem.date)
-                client.query('UPDATE item_dates SET added_date=$1 WHERE item_id=$2',[editedItem.date,editedItem.id],(err,content)=>{
-            
+                })
+            else if (editedItem.date)
+                client.query('UPDATE item_dates SET added_date=$1 WHERE item_id=$2', [editedItem.date, editedItem.id], (err, content) => {
+
                     if (err) {
                         console.log(err);
                         res.writeHead(500);
@@ -1118,10 +1116,10 @@ const server = http.createServer((req, res) => {
                     }
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end("Edited Category!");
-                    })
-            else if(editedItem.lastcheckdate)
-                client.query('UPDATE item_alerts SET lastcheckdate=$1 WHERE item_id=$2',[editedItem.lastcheckdate,editedItem.id],(err,content)=>{
-            
+                })
+            else if (editedItem.lastcheckdate)
+                client.query('UPDATE item_alerts SET lastcheckdate=$1 WHERE item_id=$2', [editedItem.lastcheckdate, editedItem.id], (err, content) => {
+
                     if (err) {
                         console.log(err);
                         res.writeHead(500);
@@ -1130,64 +1128,63 @@ const server = http.createServer((req, res) => {
                     }
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end("Edited Category!");
-                    })
-            })
+                })
+        })
         return;
     }
 
-    if(req.method === 'DELETE' && /^\/api\/categories\/\d+\/items$/.test(req.url))
-    {
-        let id = parseInt(req.url.split('/',5)[3]);
-        let body='';
-        req.on('data', chunk =>{body+=chunk});
-        req.on('end', ()=>{
+    if (req.method === 'DELETE' && /^\/api\/categories\/\d+\/items$/.test(req.url)) {
+        let id = parseInt(req.url.split('/', 5)[3]);
+        let body = '';
+        req.on('data', chunk => { body += chunk });
+        req.on('end', () => {
             const deletedItem = JSON.parse(body);
-             client.query('DELETE FROM items WHERE id=$1',[deletedItem.id],(err,content)=>{
-            
-            if (err) {
-                console.log(err);
-                res.writeHead(500);
-                res.end('Eroare server');
-                return;
-            }
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end("Deleted Item!");
+            client.query('DELETE FROM items WHERE id=$1', [deletedItem.id], (err, content) => {
+
+                if (err) {
+                    console.log(err);
+                    res.writeHead(500);
+                    res.end('Eroare server');
+                    return;
+                }
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end("Deleted Item!");
             })
         });
         return;
     }
 
-    if(req.method === 'GET' && /^\/api\/categories\/\d+\/items\/\d+\/data$/.test(req.url)){
+    if (req.method === 'GET' && /^\/api\/categories\/\d+\/items\/\d+\/data$/.test(req.url)) {
         let id = parseInt(req.url.split('/')[5]);
-        
+
         client.query(
-        `SELECT 
+            `SELECT 
             added_date, quantity from item_dates 
             WHERE item_id = $1`
-            ,[id],(err,content)=>{
-            
-            if (err) {
-                console.log(err);
-                res.writeHead(500);
-                res.end('Eroare server');
-                return;
-            }
-            let parsed = JSON.stringify(content.rows);
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(parsed);
+            , [id], (err, content) => {
+
+                if (err) {
+                    console.log(err);
+                    res.writeHead(500);
+                    res.end('Eroare server');
+                    return;
+                }
+                let parsed = JSON.stringify(content.rows);
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(parsed);
             })
 
         return;
     }
     if (req.method === 'GET' && /^\/api\/categories\/\d+\/items\/\d+\/export\/csv$/.test(req.url)) {
-  const id = parseInt(req.url.split('/')[5]);
+        const id = parseInt(req.url.split('/')[5]);
 
-  (async () => {
-    try {
-      await client.query('SELECT check_item_exists($1)', [id]);
+        (async () => {
+            try {
+                await client.query('SELECT check_item_exists($1)', [id]);
 
-      const content = await client.query(
-        `SELECT DISTINCT
+                const content = await client.query(
+                    `SELECT DISTINCT
             i.id,
             i.name,
             i.quantity,
@@ -1207,47 +1204,47 @@ const server = http.createServer((req, res) => {
          ) d ON i.id = d.item_id
          WHERE i.id = $1
          ORDER BY i.id ASC`,
-        [id]
-      );
+                    [id]
+                );
 
-      const jsonData = content.rows;
-      const fields = Object.keys(jsonData[0]);
-      const json2csvParser = new Json2csvParser({ fields, header: true });
-      const csv = json2csvParser.parse(jsonData);
+                const jsonData = content.rows;
+                const fields = Object.keys(jsonData[0]);
+                const json2csvParser = new Json2csvParser({ fields, header: true });
+                const csv = json2csvParser.parse(jsonData);
 
-      fs.writeFile(`public/Downloads/item-${id}.csv`, csv, (error) => {
-        if (error) {
-          console.error(error);
-          res.writeHead(500);
-          res.end('Eroare la scrierea fișierului');
-          return;
-        }
+                fs.writeFile(`public/Downloads/item-${id}.csv`, csv, (error) => {
+                    if (error) {
+                        console.error(error);
+                        res.writeHead(500);
+                        res.end('Eroare la scrierea fișierului');
+                        return;
+                    }
 
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'File Created Successfully' }));
-      });
-    } catch (err) {
-      console.error('Eroare server:', err);
-      const statusCode = err.message.includes('nu există') ? 404 : 500;
-      res.writeHead(statusCode, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: err.message || 'Eroare server' }));
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ message: 'File Created Successfully' }));
+                });
+            } catch (err) {
+                console.error('Eroare server:', err);
+                const statusCode = err.message.includes('nu există') ? 404 : 500;
+                res.writeHead(statusCode, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message || 'Eroare server' }));
+            }
+        })();
+
+        return;
     }
-  })();
-
-  return;
-}
 
 
 
     if (req.method === 'GET' && /^\/api\/categories\/\d+\/items\/export\/csv$/.test(req.url)) {
-  const id = parseInt(req.url.split('/')[3]);
+        const id = parseInt(req.url.split('/')[3]);
 
-  (async () => {
-    try {
-      await client.query('SELECT check_category_has_items($1)', [id]);
+        (async () => {
+            try {
+                await client.query('SELECT check_category_has_items($1)', [id]);
 
-      const content = await client.query(
-        `SELECT DISTINCT
+                const content = await client.query(
+                    `SELECT DISTINCT
             i.id,
             i.name,
             i.quantity,
@@ -1267,46 +1264,46 @@ const server = http.createServer((req, res) => {
          ) d ON i.id = d.item_id
          WHERE i.category_id = $1
          ORDER BY i.id ASC`,
-        [id]
-      );
+                    [id]
+                );
 
-      const jsonData = content.rows;
-      const fields = Object.keys(jsonData[0]);
-      const json2csvParser = new Json2csvParser({ fields, header: true });
-      const csv = json2csvParser.parse(jsonData);
+                const jsonData = content.rows;
+                const fields = Object.keys(jsonData[0]);
+                const json2csvParser = new Json2csvParser({ fields, header: true });
+                const csv = json2csvParser.parse(jsonData);
 
-      fs.writeFile(`public/Downloads/category-${id}-items.csv`, csv, (error) => {
-        if (error) {
-          console.error(error);
-          res.writeHead(500);
-          res.end('Eroare la scrierea fișierului');
-          return;
-        }
+                fs.writeFile(`public/Downloads/category-${id}-items.csv`, csv, (error) => {
+                    if (error) {
+                        console.error(error);
+                        res.writeHead(500);
+                        res.end('Eroare la scrierea fișierului');
+                        return;
+                    }
 
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'File Created Successfully' }));
-      });
-    } catch (err) {
-      console.error('Eroare server:', err);
-      const statusCode = err.message.includes('nu are iteme') ? 404 : 500;
-      res.writeHead(statusCode, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: err.message || 'Eroare server' }));
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ message: 'File Created Successfully' }));
+                });
+            } catch (err) {
+                console.error('Eroare server:', err);
+                const statusCode = err.message.includes('nu are iteme') ? 404 : 500;
+                res.writeHead(statusCode, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message || 'Eroare server' }));
+            }
+        })();
+
+        return;
     }
-  })();
-
-  return;
-}
 
 
-   if (req.method === 'GET' && /^\/api\/categories\/\d+\/export\/csv$/.test(req.url)) {
-  const id = parseInt(req.url.split('/')[3]);
+    if (req.method === 'GET' && /^\/api\/categories\/\d+\/export\/csv$/.test(req.url)) {
+        const id = parseInt(req.url.split('/')[3]);
 
-  (async () => {
-    try {
-      await client.query('SELECT check_category_exists($1)', [id]);
+        (async () => {
+            try {
+                await client.query('SELECT check_category_exists($1)', [id]);
 
-      const content = await client.query(
-        `SELECT DISTINCT
+                const content = await client.query(
+                    `SELECT DISTINCT
             c.id,
             c.name,
             i.id as item_id,
@@ -1329,40 +1326,40 @@ const server = http.createServer((req, res) => {
           ) d on i.id = d.item_id
           WHERE c.id = $1
           ORDER BY c.id ASC`,
-        [id]
-      );
+                    [id]
+                );
 
-      const jsonData = content.rows;
+                const jsonData = content.rows;
 
-      const fields = Object.keys(jsonData[0]);
-      const json2csvParser = new Json2csvParser({ fields, header: true });
-      const csv = json2csvParser.parse(jsonData);
+                const fields = Object.keys(jsonData[0]);
+                const json2csvParser = new Json2csvParser({ fields, header: true });
+                const csv = json2csvParser.parse(jsonData);
 
-      fs.writeFile(`public/Downloads/category-${id}.csv`, csv, (error) => {
-        if (error) {
-          console.error(error);
-          res.writeHead(500);
-          res.end('Eroare la scrierea fișierului');
-          return;
-        }
+                fs.writeFile(`public/Downloads/category-${id}.csv`, csv, (error) => {
+                    if (error) {
+                        console.error(error);
+                        res.writeHead(500);
+                        res.end('Eroare la scrierea fișierului');
+                        return;
+                    }
 
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'File Created Successfully' }));
-      });
-    } catch (err) {
-      console.error('Eroare server:', err);
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: err.message || 'Eroare server' }));
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ message: 'File Created Successfully' }));
+                });
+            } catch (err) {
+                console.error('Eroare server:', err);
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message || 'Eroare server' }));
+            }
+        })();
+
+        return;
     }
-  })();
-
-  return;
-}
 
 
 
     if (req.method === 'GET' && req.url === '/api/categories/export/csv') {
-    (async () => {
+        (async () => {
             try {
                 await client.query('SELECT check_export_has_data();');
 
@@ -1422,66 +1419,14 @@ const server = http.createServer((req, res) => {
             }
         })();
         return;
-}
-
-if (req.method === 'GET' && req.url === '/api/categories/export/json') {
-  (async () => {
-    try {
-      await client.query('SELECT check_export_has_data();');
-
-      const result = await client.query(`
-        SELECT DISTINCT
-            c.id,
-            c.name,
-            i.id as item_id,
-            i.name as item_name,
-            i.quantity,
-            p.consumable,
-            a.alert,
-            a.alertdeqtime,
-            p.favourite,
-            d.added_date as date,
-            a.lastcheckdate
-        FROM categories c
-        LEFT JOIN items i ON c.id = i.category_id
-        LEFT JOIN item_properties p ON i.id = p.item_id
-        LEFT JOIN item_alerts a ON i.id = a.item_id
-        LEFT JOIN (
-            SELECT item_id, MAX(added_date) AS added_date
-            FROM item_dates
-            GROUP BY item_id
-        ) d ON i.id = d.item_id
-        WHERE c.user_id = $1
-        ORDER BY c.id ASC
-      `,[userID]);
-
-      const jsonData = JSON.stringify(result.rows, null, 2);
-
-      fs.writeFile(`public/Downloads/categories.json`, jsonData, (err) => {
-        if (err) {
-          console.error(err);
-          res.writeHead(500);
-          res.end('Eroare la scrierea fișierului JSON');
-          return;
-        }
-
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'JSON exportat cu succes!' }));
-      });
-    } catch (err) {
-      res.writeHead(500);
-      res.end('Eroare server la export JSON');
     }
-  })();
-  return;
-}
 
-if (req.method === 'GET' && req.url === '/api/categories/export/xml') {
-  (async () => {
-    try {
-      await client.query('SELECT check_export_has_data();');
+    if (req.method === 'GET' && req.url === '/api/categories/export/json') {
+        (async () => {
+            try {
+                await client.query('SELECT check_export_has_data();');
 
-      const result = await client.query(`
+                const result = await client.query(`
         SELECT DISTINCT
             c.id,
             c.name,
@@ -1507,125 +1452,177 @@ if (req.method === 'GET' && req.url === '/api/categories/export/xml') {
         ORDER BY c.id ASC
       `, [userID]);
 
-      const data = result.rows;
+                const jsonData = JSON.stringify(result.rows, null, 2);
 
-      const { create } = require('xmlbuilder2');
-      const root = create({ version: '1.0' }).ele('categories');
+                fs.writeFile(`public/Downloads/categories.json`, jsonData, (err) => {
+                    if (err) {
+                        console.error(err);
+                        res.writeHead(500);
+                        res.end('Eroare la scrierea fișierului JSON');
+                        return;
+                    }
 
-      data.forEach(entry => {
-        const category = root.ele('category');
-        for (const [key, value] of Object.entries(entry)) {
-          category.ele(key).txt(value !== null ? String(value) : '');
-        }
-      });
-
-      const xml = root.end({ prettyPrint: true });
-
-      fs.writeFile(`public/Downloads/categories.xml`, xml, (err) => {
-        if (err) {
-          console.error(err);
-          res.writeHead(500);
-          res.end('Eroare la scrierea fișierului XML');
-          return;
-        }
-
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'XML exportat cu succes!' }));
-      });
-    } catch (err) {
-      console.error(err);
-      res.writeHead(500);
-      res.end('Eroare server la export XML');
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ message: 'JSON exportat cu succes!' }));
+                });
+            } catch (err) {
+                res.writeHead(500);
+                res.end('Eroare server la export JSON');
+            }
+        })();
+        return;
     }
-  })();
-  return;
-}
 
-if (req.method === 'POST' && req.url === '/api/categories/import') {
-  let body = '';
-  req.on('data', chunk => body += chunk);
-  req.on('end', async () => {
-    try {
-      const { file, type } = JSON.parse(body);
+    if (req.method === 'GET' && req.url === '/api/categories/export/xml') {
+        (async () => {
+            try {
+                await client.query('SELECT check_export_has_data();');
 
-      let items;
+                const result = await client.query(`
+        SELECT DISTINCT
+            c.id,
+            c.name,
+            i.id as item_id,
+            i.name as item_name,
+            i.quantity,
+            p.consumable,
+            a.alert,
+            a.alertdeqtime,
+            p.favourite,
+            d.added_date as date,
+            a.lastcheckdate
+        FROM categories c
+        LEFT JOIN items i ON c.id = i.category_id
+        LEFT JOIN item_properties p ON i.id = p.item_id
+        LEFT JOIN item_alerts a ON i.id = a.item_id
+        LEFT JOIN (
+            SELECT item_id, MAX(added_date) AS added_date
+            FROM item_dates
+            GROUP BY item_id
+        ) d ON i.id = d.item_id
+        WHERE c.user_id = $1
+        ORDER BY c.id ASC
+      `, [userID]);
 
-      if (type === 'csv') {
-        items = parse(file, { columns: true, skip_empty_lines: true });
-      } else if (type === 'xml') {
-        const parsed = await xml2js.parseStringPromise(file, { explicitArray: false });
-        if (!parsed || !parsed.categories || !parsed.categories.category)
-          throw new Error("Invalid XML Format");
+                const data = result.rows;
 
-        let rawItems = parsed.categories.category;
-        items = Array.isArray(rawItems) ? rawItems : [rawItems];
+                const { create } = require('xmlbuilder2');
+                const root = create({ version: '1.0' }).ele('categories');
 
-        for (const item of items) {
-          item.id = Number(item.id);
-          item.item_id = Number(item.item_id);
-          item.quantity = Number(item.quantity);
-          item.consumable = item.consumable === 'true' || item.consumable === true;
-          item.favourite = item.favourite === 'true' || item.favourite === true;
-          item.alert = item.alert === 'true' || item.alert === true;
-        }
-      } else if (type === 'json') {
-        items = JSON.parse(file);
-      } else {
-        throw new Error("⚠️ Format fișier neacceptat.");
-      }
+                data.forEach(entry => {
+                    const category = root.ele('category');
+                    for (const [key, value] of Object.entries(entry)) {
+                        category.ele(key).txt(value !== null ? String(value) : '');
+                    }
+                });
 
-      if (!Array.isArray(items)) throw new Error("⚠️ Structura fișierului trebuie să fie un array de obiecte.");
+                const xml = root.end({ prettyPrint: true });
 
-      const categoriiMap = new Map();
-      for (const item of items) {
-        const key = `${item.id}|${item.name}`;
-        if (!categoriiMap.has(key)) categoriiMap.set(key, []);
-        categoriiMap.get(key).push(item);
-      }
+                fs.writeFile(`public/Downloads/categories.xml`, xml, (err) => {
+                    if (err) {
+                        console.error(err);
+                        res.writeHead(500);
+                        res.end('Eroare la scrierea fișierului XML');
+                        return;
+                    }
 
-      for (const [key, lista] of categoriiMap.entries()) {
-        const [catId, catName] = key.split('|');
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ message: 'XML exportat cu succes!' }));
+                });
+            } catch (err) {
+                console.error(err);
+                res.writeHead(500);
+                res.end('Eroare server la export XML');
+            }
+        })();
+        return;
+    }
 
-        await client.query(`
+    if (req.method === 'POST' && req.url === '/api/categories/import') {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', async () => {
+            try {
+                const { file, type } = JSON.parse(body);
+
+                let items;
+
+                if (type === 'csv') {
+                    items = parse(file, { columns: true, skip_empty_lines: true });
+                } else if (type === 'xml') {
+                    const parsed = await xml2js.parseStringPromise(file, { explicitArray: false });
+                    if (!parsed || !parsed.categories || !parsed.categories.category)
+                        throw new Error("Invalid XML Format");
+
+                    let rawItems = parsed.categories.category;
+                    items = Array.isArray(rawItems) ? rawItems : [rawItems];
+
+                    for (const item of items) {
+                        item.id = Number(item.id);
+                        item.item_id = Number(item.item_id);
+                        item.quantity = Number(item.quantity);
+                        item.consumable = item.consumable === 'true' || item.consumable === true;
+                        item.favourite = item.favourite === 'true' || item.favourite === true;
+                        item.alert = item.alert === 'true' || item.alert === true;
+                    }
+                } else if (type === 'json') {
+                    items = JSON.parse(file);
+                } else {
+                    throw new Error("⚠️ Format fișier neacceptat.");
+                }
+
+                if (!Array.isArray(items)) throw new Error("⚠️ Structura fișierului trebuie să fie un array de obiecte.");
+
+                const categoriiMap = new Map();
+                for (const item of items) {
+                    const key = `${item.id}|${item.name}`;
+                    if (!categoriiMap.has(key)) categoriiMap.set(key, []);
+                    categoriiMap.get(key).push(item);
+                }
+
+                for (const [key, lista] of categoriiMap.entries()) {
+                    const [catId, catName] = key.split('|');
+
+                    await client.query(`
           INSERT INTO categories (id, name, user_id)
           VALUES ($1, $2, $3)
         `, [catId, catName, userID]);
 
-        for (const item of lista) {
-          const itemId = item.item_id;
+                    for (const item of lista) {
+                        const itemId = item.item_id;
 
-          await client.query(`
+                        await client.query(`
             INSERT INTO items (id, name, quantity, category_id)
             VALUES ($1, $2, $3, $4)
           `, [itemId, item.item_name, item.quantity, catId]);
 
-          await client.query(`
+                        await client.query(`
             INSERT INTO item_properties (consumable, favourite, item_id)
             VALUES ($1, $2, $3)
           `, [item.consumable, item.favourite, itemId]);
 
-          await client.query(`
+                        await client.query(`
             INSERT INTO item_alerts (alert, alertdeqtime, lastcheckdate, item_id)
             VALUES ($1, $2, $3, $4)
           `, [item.alert, item.alertdeqtime, item.lastcheckdate, itemId]);
 
-          await client.query(`
+                        await client.query(`
             INSERT INTO item_dates (added_date, quantity, item_id)
             VALUES ($1, $2, $3)
           `, [item.date, item.quantity, itemId]);
-        }
-      }
+                    }
+                }
 
-      res.writeHead(200, { 'Content-Type': 'text/plain' });
-      res.end("✅ Import reușit!");
-    } catch (err) {
-      console.error("❌ Eroare import:", err.message);
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end("❌ Eroare import: " + err.message);
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.end("✅ Import reușit!");
+            } catch (err) {
+                console.error("❌ Eroare import:", err.message);
+                res.writeHead(500, { 'Content-Type': 'text/plain' });
+                res.end("❌ Eroare import: " + err.message);
+            }
+        });
+        return;
     }
-  });
-  return;
-}
 
 
     switch (ext) {
@@ -1646,9 +1643,9 @@ if (req.method === 'POST' && req.url === '/api/categories/import') {
             break;
     }
 
-    async function updateItemsQuantity(){
-    console.log("--------------------------");
-    client.query(`
+    async function updateItemsQuantity() {
+        console.log("--------------------------");
+        client.query(`
         SELECT DISTINCT
             i.id,
             i.name,
@@ -1668,96 +1665,107 @@ if (req.method === 'POST' && req.url === '/api/categories/import') {
             group by item_id
         ) d on i.id = d.item_id
         ORDER BY id ASC
-        `,(err,content)=>{
+        `, (err, content) => {
             let parsed = JSON.stringify(content.rows);
-            let items = JSON.parse(parsed); 
+            let items = JSON.parse(parsed);
             var decreaseQuantityDate;
-            items.forEach(item=>{
+            items.forEach(item => {
 
                 const currentDate = new Date();
-            if(item.alertdeqtime == "7d")
-                decreaseQuantityDate = addMinutes(item.date, 7);
-            if(item.alertdeqtime == "14d")
-                decreaseQuantityDate = addDays(item.date, 14);
-            if(item.alertdeqtime == "30d")
-                decreaseQuantityDate = addDays(item.date, 30);
-            if(item.alertdeqtime == "60d")
-                decreaseQuantityDate = addDays(item.date, 60);
-            if(item.alertdeqtime == "90d")
-                decreaseQuantityDate = addDays(item.date, 90);
-            if(item.alertdeqtime == "180d")
-                decreaseQuantityDate = addDays(item.date, 180);
-            if(item.alertdeqtime == "1y")
-                decreaseQuantityDate = addDays(item.date, 365);
+                if (item.alertdeqtime == "7d")
+                    decreaseQuantityDate = addMinutes(item.date, 7);
+                if (item.alertdeqtime == "14d")
+                    decreaseQuantityDate = addDays(item.date, 14);
+                if (item.alertdeqtime == "30d")
+                    decreaseQuantityDate = addDays(item.date, 30);
+                if (item.alertdeqtime == "60d")
+                    decreaseQuantityDate = addDays(item.date, 60);
+                if (item.alertdeqtime == "90d")
+                    decreaseQuantityDate = addDays(item.date, 90);
+                if (item.alertdeqtime == "180d")
+                    decreaseQuantityDate = addDays(item.date, 180);
+                if (item.alertdeqtime == "1y")
+                    decreaseQuantityDate = addDays(item.date, 365);
 
 
-             console.log("---------------",decreaseQuantityDate, "----------",currentDate);
+                console.log("---------------", decreaseQuantityDate, "----------", currentDate);
 
-            if(decreaseQuantityDate <= currentDate && item.quantity>0 &&item.consumable==true)
-            {
-                client.query(`
+                if (decreaseQuantityDate <= currentDate && item.quantity > 0)
+                    if (item.consumable == true) {
+                        client.query(`
                     UPDATE items SET quantity = quantity-1
-                    WHERE id = $1  
-                    `, [item.id],(err1,content)=>{
-                        if(err1)
-                        {
-                            console.log(err1);
-                            return;
-                        }
+                    WHERE id = $1 
+                    `, [item.id], (err1, content) => {
+                            if (err1) {
+                                console.log(err1);
+                                return;
+                            }
                             client.query(`
                                     INSERT INTO item_dates (quantity, added_date, item_id)
                                             VALUES ( $1, $2, $3)
-                                `,[item.quantity-1,currentDate,item.id],(err2,content)=>{
+                                `, [item.quantity - 1, currentDate, item.id], (err2, content) => {
 
-                                    if(err2)
-                                    {
-                                        console.log(err2);
-                                        return;
-                                    }
-                                    if(item.alert == true && (item.quantity-1==5 ||item.quantity-1===1))
-                                    {
-                                        var mailOptions = {
-                                            from: 'manmat2004@gmail.com',
-                                            to: 'manmat2004@gmail.com',
-                                            subject: 'Low Quantity Item!',
-                                            text: `The Item ${item.name} has a low quantity of ${item.quantity-1}`
-                                            };
-                                        transporter.sendMail(mailOptions, function(error, info){
-                                            if (error) {
-                                                console.log(error);
-                                            } else {
-                                                console.log('Email sent: ' + info.response);
-                                            }
-                                        });
-                                    }
-                                    console.log(`Decreased the quantity of item ${item.name}`);
-                                })
-                            
-                        
-                    });
-            }   
+                                if (err2) {
+                                    console.log(err2);
+                                    return;
+                                }
+                                if (item.alert == true && (item.quantity - 1 == 5 || item.quantity - 1 === 1)) {
+                                    var mailOptions = {
+                                        from: 'manmat2004@gmail.com',
+                                        to: 'manmat2004@gmail.com',
+                                        subject: 'Low Quantity Item!',
+                                        text: `The Item ${item.name} has a low quantity of ${item.quantity - 1}`
+                                    };
+                                    transporter.sendMail(mailOptions, function (error, info) {
+                                        if (error) {
+                                            console.log(error);
+                                        } else {
+                                            console.log('Email sent: ' + info.response);
+                                        }
+                                    });
+                                }
+                                console.log(`Decreased the quantity of item ${item.name}`);
+                            })
+
+
+                        });
+                    } else {
+                        var mailOptions = {
+                            from: 'manmat2004@gmail.com',
+                            to: 'manmat2004@gmail.com',
+                            subject: 'Low Quantity Item!',
+                            text: `The Item ${item.name} needs to be checked`
+                        };
+                        transporter.sendMail(mailOptions, function (error, info) {
+                            if (error) {
+                                console.log(error);
+                            } else {
+                                console.log('Email sent: ' + info.response);
+                            }
+                        });
+                    }
             })
 
-            
+
         })
-}
+    }
 
-setInterval(updateItemsQuantity,5*1000);
+    setInterval(updateItemsQuantity, 20 * 1000);
 
 
-function addDays(date, days){
-    var decreaseQuantity = new Date(date);
+    function addDays(date, days) {
+        var decreaseQuantity = new Date(date);
 
-    decreaseQuantity.setDate(decreaseQuantity.getDate() + days);
+        decreaseQuantity.setDate(decreaseQuantity.getDate() + days);
 
-    return decreaseQuantity;
-}
+        return decreaseQuantity;
+    }
 
-function addMinutes(date,minutes){
-    var decreaseQuantity = new Date(date);
-    var final =  new Date(decreaseQuantity.getTime() + 10*1000);
-    return final;
-}
+    function addMinutes(date, minutes) {
+        var decreaseQuantity = new Date(date);
+        var final = new Date(decreaseQuantity.getTime() + 10 * 1000);
+        return final;
+    }
 
     fs.readFile(filePath, (err, content) => {
         if (err) {
@@ -1771,28 +1779,27 @@ function addMinutes(date,minutes){
 });
 
 
-server.listen(3000,'0.0.0.0',() => {
+server.listen(3000, '0.0.0.0', () => {
     console.log('Server is running on http://localhost:3000');
 });
 
 
-function checkErrorCode(errorCode,errorMessage){
-    if(errorCode == 23502)
-    {
-        if(errorMessage.includes("name"))
+function checkErrorCode(errorCode, errorMessage) {
+    if (errorCode == 23502) {
+        if (errorMessage.includes("name"))
             return "Name should not be null!"
-        else if(errorMessage.includes("quantity"))
+        else if (errorMessage.includes("quantity"))
             return "Quantity should be a number!"
     }
-    if(errorCode == 23505)
+    if (errorCode == 23505)
         return "The name already exists!"
 }
 
 function makeid(length) {
-    var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
+    for (var i = 0; i < length; i++) {
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return result;

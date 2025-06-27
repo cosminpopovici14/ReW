@@ -1,68 +1,16 @@
 <?xml version="1.0"?>
 <categories>
   <category>
-    <id>16</id>
-    <name>abracadabra</name>
-    <item_id>27</item_id>
-    <item_name>cox</item_name>
+    <id>63</id>
+    <name>kjbkbh</name>
+    <item_id>41</item_id>
+    <item_name>ascc</item_name>
     <quantity>1</quantity>
     <consumable>false</consumable>
     <alert>false</alert>
     <alertdeqtime>off</alertdeqtime>
     <favourite>false</favourite>
-    <date>2025-06-27T17:53:07.678Z</date>
+    <date>2025-06-27T21:35:22.319Z</date>
     <lastcheckdate>NoDate</lastcheckdate>
-  </category>
-  <category>
-    <id>16</id>
-    <name>abracadabra</name>
-    <item_id>28</item_id>
-    <item_name>toni</item_name>
-    <quantity>1</quantity>
-    <consumable>false</consumable>
-    <alert>false</alert>
-    <alertdeqtime>off</alertdeqtime>
-    <favourite>false</favourite>
-    <date>2025-06-27T17:53:10.658Z</date>
-    <lastcheckdate>NoDate</lastcheckdate>
-  </category>
-  <category>
-    <id>16</id>
-    <name>abracadabra</name>
-    <item_id>29</item_id>
-    <item_name>montana</item_name>
-    <quantity>1</quantity>
-    <consumable>false</consumable>
-    <alert>false</alert>
-    <alertdeqtime>off</alertdeqtime>
-    <favourite>false</favourite>
-    <date>2025-06-27T17:53:14.362Z</date>
-    <lastcheckdate>NoDate</lastcheckdate>
-  </category>
-  <category>
-    <id>16</id>
-    <name>abracadabra</name>
-    <item_id>30</item_id>
-    <item_name>jos</item_name>
-    <quantity>1</quantity>
-    <consumable>false</consumable>
-    <alert>false</alert>
-    <alertdeqtime>off</alertdeqtime>
-    <favourite>false</favourite>
-    <date>2025-06-27T17:53:17.819Z</date>
-    <lastcheckdate>NoDate</lastcheckdate>
-  </category>
-  <category>
-    <id>17</id>
-    <name>sa</name>
-    <item_id>0</item_id>
-    <item_name/>
-    <quantity>0</quantity>
-    <consumable>false</consumable>
-    <alert>false</alert>
-    <alertdeqtime/>
-    <favourite>false</favourite>
-    <date/>
-    <lastcheckdate/>
   </category>
 </categories>

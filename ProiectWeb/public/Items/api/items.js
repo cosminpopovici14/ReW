@@ -23,7 +23,7 @@ function getChartData(itemID) {
 }
 
 function getItemExport(itemID) {
-    fetch(`/api/categories/${id}/items/${itemID}/export`);
+    fetch(`/api/categories/${id}/items/${itemID}/export/csv`);
 }
 
 function postItem(name, isConsumable, quantity, autodeq, alert, date) {

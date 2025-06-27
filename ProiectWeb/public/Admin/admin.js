@@ -49,7 +49,7 @@ async function fetchAudit() {
 
 
     async function deleteUser(userId) {
-  if (!confirm("Sigur vrei să ștergi acest utilizator?")) return;
+  if (!confirm("Sigur vrei sa stergi acest utilizator?")) return;
 
   const res = await fetch(`/api/admin/users`, {
     method: 'DELETE',
@@ -58,7 +58,7 @@ async function fetchAudit() {
   });
 
   if (res.ok) {
-    alert("Utilizator șters!");
+    alert("Utilizator sters!");
     fetchUsers(); 
   } else {
     const msg = await res.text();

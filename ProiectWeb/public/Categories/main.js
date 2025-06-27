@@ -38,10 +38,10 @@ function handleImport(event) {
       });
 
       if (!res.ok) throw new Error(await res.text());
-      alert("Import reușit!");
+      alert("Import done!");
       init();
     } catch (err) {
-      alert("Eroare import: " + err.message);
+      alert("Import error: " + err.message);
     }
   };
 

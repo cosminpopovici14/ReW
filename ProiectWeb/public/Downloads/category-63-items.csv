@@ -1,2 +1,4 @@
 "id","name","quantity","consumable","alert","alertdeqtime","favourite","date","lastcheckdate"
-"41","ascc",1,false,false,"off",false,"2025-06-27T21:35:22.319Z","NoDate"
+"41","ascc",1,false,true,"7d",false,"2025-06-27T22:14:20.109Z","2025-06-27T22:13:23.693Z"
+"42","cereale",-8,true,true,"7d",false,"2025-06-28T01:15:59.601+03:00","NoDate"
+"43","dsvvs",5,true,true,"7d",false,"2025-06-28T01:15:59.835+03:00","NoDate"

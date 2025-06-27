@@ -1,16 +1,29 @@
 <?xml version="1.0"?>
 <categories>
   <category>
-    <id>63</id>
-    <name>kjbkbh</name>
-    <item_id>41</item_id>
-    <item_name>ascc</item_name>
+    <id>65</id>
+    <name>ab</name>
+    <item_id>48</item_id>
+    <item_name>cacs</item_name>
     <quantity>1</quantity>
     <consumable>false</consumable>
-    <alert>false</alert>
-    <alertdeqtime>off</alertdeqtime>
+    <alert>true</alert>
+    <alertdeqtime>7d</alertdeqtime>
     <favourite>false</favourite>
-    <date>2025-06-27T21:35:22.319Z</date>
+    <date>2025-06-27T22:38:59.672Z</date>
+    <lastcheckdate>2025-06-27T22:39:38.866Z</lastcheckdate>
+  </category>
+  <category>
+    <id>65</id>
+    <name>ab</name>
+    <item_id>49</item_id>
+    <item_name>cacsjhv</item_name>
+    <quantity>5</quantity>
+    <consumable>true</consumable>
+    <alert>true</alert>
+    <alertdeqtime>7d</alertdeqtime>
+    <favourite>false</favourite>
+    <date>2025-06-27T22:46:13.129Z</date>
     <lastcheckdate>NoDate</lastcheckdate>
   </category>
 </categories>

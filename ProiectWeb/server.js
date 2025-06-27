@@ -265,7 +265,7 @@ BEGIN
             GROUP BY item_id
         ) d ON i.id = d.item_id
     ) THEN
-        RAISE EXCEPTION 'Nu există date pentru export' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'Nu exista date pentru export' USING ERRCODE = 'P0001';
     END IF;
 END
 $$ LANGUAGE plpgsql;
@@ -273,7 +273,7 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION check_category_exists(cat_id INT) RETURNS VOID AS $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM categories WHERE id = cat_id) THEN
-        RAISE EXCEPTION 'Categoria cu id-ul % nu există!', cat_id;
+        RAISE EXCEPTION 'Categoria cu id-ul % nu exista!', cat_id;
     END IF;
 END;
 $$ LANGUAGE plpgsql;
@@ -295,7 +295,7 @@ BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM items WHERE id = item_id
     ) THEN
-        RAISE EXCEPTION 'Itemul nu există.';
+        RAISE EXCEPTION 'Itemul nu exista.';
     END IF;
 END;
 $$ LANGUAGE plpgsql; 
@@ -1216,7 +1216,7 @@ const server = http.createServer((req, res) => {
                     if (error) {
                         console.error(error);
                         res.writeHead(500);
-                        res.end('Eroare la scrierea fișierului');
+                        res.end('Error writing file');
                         return;
                     }
 
@@ -1225,7 +1225,7 @@ const server = http.createServer((req, res) => {
                 });
             } catch (err) {
                 console.error('Eroare server:', err);
-                const statusCode = err.message.includes('nu există') ? 404 : 500;
+                const statusCode = err.message.includes('nu exista') ? 404 : 500;
                 res.writeHead(statusCode, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ error: err.message || 'Eroare server' }));
             }
@@ -1276,7 +1276,7 @@ const server = http.createServer((req, res) => {
                     if (error) {
                         console.error(error);
                         res.writeHead(500);
-                        res.end('Eroare la scrierea fișierului');
+                        res.end('Error writing file');
                         return;
                     }
 
@@ -1339,7 +1339,7 @@ const server = http.createServer((req, res) => {
                     if (error) {
                         console.error(error);
                         res.writeHead(500);
-                        res.end('Eroare la scrierea fișierului');
+                        res.end('Error writing file');
                         return;
                     }
 
@@ -1399,7 +1399,7 @@ const server = http.createServer((req, res) => {
                     if (error) {
                         console.error(error);
                         res.writeHead(500);
-                        res.end('Eroare la scrierea fișierului');
+                        res.end('Error writing file');
                         return;
                     }
 
@@ -1458,7 +1458,7 @@ const server = http.createServer((req, res) => {
                     if (err) {
                         console.error(err);
                         res.writeHead(500);
-                        res.end('Eroare la scrierea fișierului JSON');
+                        res.end('Error writing JSON file');
                         return;
                     }
 
@@ -1522,7 +1522,7 @@ const server = http.createServer((req, res) => {
                     if (err) {
                         console.error(err);
                         res.writeHead(500);
-                        res.end('Eroare la scrierea fișierului XML');
+                        res.end('Error writing XML file');
                         return;
                     }
 
@@ -1568,10 +1568,10 @@ const server = http.createServer((req, res) => {
                 } else if (type === 'json') {
                     items = JSON.parse(file);
                 } else {
-                    throw new Error("⚠️ Format fișier neacceptat.");
+                    throw new Error("Bad file format.");
                 }
 
-                if (!Array.isArray(items)) throw new Error("⚠️ Structura fișierului trebuie să fie un array de obiecte.");
+                if (!Array.isArray(items)) throw new Error("Should be an array.");
 
                 const categoriiMap = new Map();
                 for (const item of items) {
@@ -1614,11 +1614,11 @@ const server = http.createServer((req, res) => {
                 }
 
                 res.writeHead(200, { 'Content-Type': 'text/plain' });
-                res.end("✅ Import reușit!");
+                res.end("Import done!");
             } catch (err) {
-                console.error("❌ Eroare import:", err.message);
+                console.error("Import error:", err.message);
                 res.writeHead(500, { 'Content-Type': 'text/plain' });
-                res.end("❌ Eroare import: " + err.message);
+                res.end("Import error: " + err.message);
             }
         });
         return;
@@ -1643,9 +1643,10 @@ const server = http.createServer((req, res) => {
             break;
     }
 
-    async function updateItemsQuantity() {
-        console.log("--------------------------");
-        client.query(`
+   async function updateItemsQuantity() {
+    const currentDate = new Date();
+
+    client.query(`
         SELECT DISTINCT
             i.id,
             i.name,
@@ -1657,98 +1658,106 @@ const server = http.createServer((req, res) => {
             d.added_date as date,
             a.lastcheckdate
         FROM items i
-        JOIN item_properties p on i.id = p.item_id
-        JOIN item_alerts a on i.id = a.item_id
-        JOIN ( 
-            select item_id,max(added_date) as added_date 
-            from item_dates 
-            group by item_id
-        ) d on i.id = d.item_id
-        ORDER BY id ASC
-        `, (err, content) => {
-            let parsed = JSON.stringify(content.rows);
-            let items = JSON.parse(parsed);
-            var decreaseQuantityDate;
-            items.forEach(item => {
+        JOIN item_properties p ON i.id = p.item_id
+        JOIN item_alerts a ON i.id = a.item_id
+        JOIN (
+            SELECT item_id, MAX(added_date) AS added_date
+            FROM item_dates
+            GROUP BY item_id
+        ) d ON i.id = d.item_id
+        ORDER BY i.id ASC
+    `, (err, result) => {
+        if (err) return console.log("DB SELECT error:", err);
 
-                const currentDate = new Date();
-                if (item.alertdeqtime == "7d")
-                    decreaseQuantityDate = addMinutes(item.date, 7);
-                if (item.alertdeqtime == "14d")
-                    decreaseQuantityDate = addDays(item.date, 14);
-                if (item.alertdeqtime == "30d")
-                    decreaseQuantityDate = addDays(item.date, 30);
-                if (item.alertdeqtime == "60d")
-                    decreaseQuantityDate = addDays(item.date, 60);
-                if (item.alertdeqtime == "90d")
-                    decreaseQuantityDate = addDays(item.date, 90);
-                if (item.alertdeqtime == "180d")
-                    decreaseQuantityDate = addDays(item.date, 180);
-                if (item.alertdeqtime == "1y")
-                    decreaseQuantityDate = addDays(item.date, 365);
+        const items = result.rows;
 
+        items.forEach(item => {
+            const itemDate = new Date(item.date);
+            const lastCheck = item.lastcheckdate ? new Date(item.lastcheckdate) : null;
 
-                console.log("---------------", decreaseQuantityDate, "----------", currentDate);
+            // Calculează data următoarei scăderi/verificări
+            let decreaseDate = (() => {
+                switch (item.alertdeqtime) {
+                    case "7d": return addMinutes(item.date, 7);
+                    case "14d": return addDays(itemDate, 14);
+                    case "30d": return addDays(itemDate, 30);
+                    case "60d": return addDays(itemDate, 60);
+                    case "90d": return addDays(itemDate, 90);
+                    case "180d": return addDays(itemDate, 180);
+                    case "1y": return addDays(itemDate, 365);
+                    default: return null;
+                }
+            })();
 
-                if (decreaseQuantityDate <= currentDate && item.quantity > 0)
-                    if (item.consumable == true) {
-                        client.query(`
-                    UPDATE items SET quantity = quantity-1
-                    WHERE id = $1 
-                    `, [item.id], (err1, content) => {
-                            if (err1) {
-                                console.log(err1);
-                                return;
-                            }
+            // Dacă nu a trecut perioada sau cantitatea e zero, ieșim
+            if (!decreaseDate || decreaseDate > currentDate || item.quantity <= 0) return;
+
+            const newQuantity = item.quantity - 1;
+
+            // 🔹 CONSUMABILE
+            if (item.consumable) {
+                if (newQuantity < 0) return;
+
+                client.query(`UPDATE items SET quantity = $1 WHERE id = $2`, [newQuantity, item.id], err1 => {
+                    if (err1) return console.log("UPDATE error:", err1);
+
+                    client.query(`
+                        INSERT INTO item_dates (quantity, added_date, item_id)
+                        VALUES ($1, $2, $3)
+                    `, [newQuantity, currentDate, item.id], err2 => {
+                        if (err2) return console.log("INSERT error:", err2);
+
+                        const shouldSendEmail = item.alert === true && (newQuantity === 5);
+
+                        if (shouldSendEmail) {
+                            const mailOptions = {
+                                from: 'manmat2004@gmail.com',
+                                to: 'cpopovici56@gmail.com',
+                                subject: 'Low Quantity Item!',
+                                text: `The Item ${item.name} has a low quantity of ${newQuantity}`
+                            };
+
+                            transporter.sendMail(mailOptions, (error, info) => {
+                                if (error) console.log(error);
+                                else console.log('Email sent:', info.response);
+                            });
+                        }
+
+                        console.log(`Decreased quantity for: ${item.name}, new quantity: ${item.quantity}, shouldSendEmail: ${shouldSendEmail}`);
+                    });
+                });
+            }
+
+            // 🔸 NON-CONSUMABILE
+            else {
+                const shouldSendEmail =
+                    !lastCheck || lastCheck.toDateString() !== currentDate.toDateString();
+
+                if (shouldSendEmail) {
+                    const mailOptions = {
+                        from: 'manmat2004@gmail.com',
+                        to: 'cpopovici56@gmail.com',
+                        subject: 'Item Check Reminder',
+                        text: `The Item ${item.name} needs to be checked.`
+                    };
+
+                    transporter.sendMail(mailOptions, (error, info) => {
+                        if (error) console.log(error);
+                        else {
+                            console.log('Email sent:', info.response);
                             client.query(`
-                                    INSERT INTO item_dates (quantity, added_date, item_id)
-                                            VALUES ( $1, $2, $3)
-                                `, [item.quantity - 1, currentDate, item.id], (err2, content) => {
-
-                                if (err2) {
-                                    console.log(err2);
-                                    return;
-                                }
-                                if (item.alert == true && (item.quantity - 1 == 5 || item.quantity - 1 === 1)) {
-                                    var mailOptions = {
-                                        from: 'manmat2004@gmail.com',
-                                        to: 'manmat2004@gmail.com',
-                                        subject: 'Low Quantity Item!',
-                                        text: `The Item ${item.name} has a low quantity of ${item.quantity - 1}`
-                                    };
-                                    transporter.sendMail(mailOptions, function (error, info) {
-                                        if (error) {
-                                            console.log(error);
-                                        } else {
-                                            console.log('Email sent: ' + info.response);
-                                        }
-                                    });
-                                }
-                                console.log(`Decreased the quantity of item ${item.name}`);
-                            })
+                                UPDATE item_alerts SET lastcheckdate = $1 WHERE item_id = $2
+                            `, [currentDate, item.id]);
+                        }
+                    });
+                }
+            }
+        });
+    });
+}
 
 
-                        });
-                    } else {
-                        var mailOptions = {
-                            from: 'manmat2004@gmail.com',
-                            to: 'manmat2004@gmail.com',
-                            subject: 'Low Quantity Item!',
-                            text: `The Item ${item.name} needs to be checked`
-                        };
-                        transporter.sendMail(mailOptions, function (error, info) {
-                            if (error) {
-                                console.log(error);
-                            } else {
-                                console.log('Email sent: ' + info.response);
-                            }
-                        });
-                    }
-            })
 
-
-        })
-    }
 
     setInterval(updateItemsQuantity, 20 * 1000);
 

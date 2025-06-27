@@ -6,8 +6,6 @@ async function init() {
 
     categories.forEach(category => {
         fetch(`/api/categories/${category.id}/export/csv`);
-        fetch(`/api/categories/${category.id}/export/json`);
-        fetch(`/api/categories/${category.id}/export/xml`);
     });
 
     await fetch(`/api/categories/export/csv`);

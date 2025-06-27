@@ -6,6 +6,8 @@ const nodemailer = require('nodemailer');
 const path = require('path');
 const { Client } = require('pg');
 const { count } = require('console');
+const xml2js = require('xml2js');
+const { parse } = require('csv-parse/sync');
 const client = new Client({
   host: process.env.PGHOST || 'localhost',
   user: process.env.PGUSER || 'postgres',
@@ -1356,12 +1358,12 @@ const server = http.createServer((req, res) => {
 
 
 
-    if (req.method === 'GET' && /^\/api\/categories\/export\/csv$/.test(req.url)) {
+    if (req.method === 'GET' && req.url === '/api/categories/export/csv') {
     (async () => {
-        try {
-            await client.query('SELECT check_export_has_data();');
+            try {
+                await client.query('SELECT check_export_has_data();');
 
-            const result = await client.query(`
+                const result = await client.query(`
                 SELECT DISTINCT
                     c.id,
                     c.name,
@@ -1383,44 +1385,43 @@ const server = http.createServer((req, res) => {
                     FROM item_dates
                     GROUP BY item_id
                 ) d ON i.id = d.item_id
+                WHERE c.user_id = $1
                 ORDER BY c.id ASC
-            `);
+            `, [userID]);
 
-            const jsonData = result.rows;
+                const jsonData = result.rows;
 
-            const fields = Object.keys(jsonData[0]);
-            const json2csvParser = new Json2csvParser({ fields, header: true });
-            const csv = json2csvParser.parse(jsonData);
+                const fields = Object.keys(jsonData[0]);
+                const json2csvParser = new Json2csvParser({ fields, header: true });
+                const csv = json2csvParser.parse(jsonData);
 
-            fs.writeFile(`public/Downloads/categories.csv`, csv, (error) => {
-                if (error) {
-                    console.error(error);
+                fs.writeFile(`public/Downloads/categories.csv`, csv, (error) => {
+                    if (error) {
+                        console.error(error);
+                        res.writeHead(500);
+                        res.end('Eroare la scrierea fișierului');
+                        return;
+                    }
+
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ message: 'File Created Successfully' }));
+                });
+            } catch (err) {
+                if (err.code === 'P0001') {
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ error: err.message }));
+                    console.log("Error: ", err);
+                } else {
+                    console.error('Eroare SQL:', err);
                     res.writeHead(500);
-                    res.end('Eroare la scrierea fișierului');
-                    return;
+                    res.end('Eroare server');
                 }
-
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ message: 'File Created Successfully' }));
-            });
-        } catch (err) {
-            if (err.code === 'P0001') {
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: err.message }));
-                console.log("Error: ", err);
-            } else {
-                console.error('Eroare SQL:', err);
-                res.writeHead(500);
-                res.end('Eroare server');
             }
-        }
-    })();
-    
-
-    return;
+        })();
+        return;
 }
 
-if (req.method === 'GET' && /^\/api\/categories\/export\/json$/.test(req.url)) {
+if (req.method === 'GET' && req.url === '/api/categories/export/json') {
   (async () => {
     try {
       await client.query('SELECT check_export_has_data();');
@@ -1472,7 +1473,7 @@ if (req.method === 'GET' && /^\/api\/categories\/export\/json$/.test(req.url)) {
   return;
 }
 
-if (req.method === 'GET' && /^\/api\/categories\/export\/xml$/.test(req.url)) {
+if (req.method === 'GET' && req.url === '/api/categories/export/xml') {
   (async () => {
     try {
       await client.query('SELECT check_export_has_data();');
@@ -1542,60 +1543,84 @@ if (req.method === 'POST' && req.url === '/api/categories/import') {
   req.on('data', chunk => body += chunk);
   req.on('end', async () => {
     try {
-      const parsed = JSON.parse(body);
-      const { file, type } = parsed;
+      const { file, type } = JSON.parse(body);
 
-      if (!file || !type) {
-        res.writeHead(400);
-        res.end('Lipsește fișierul sau tipul lui.');
-        return;
-      }
+      let items;
 
-      let categoriesToImport = [];
+      if (type === 'csv') {
+        items = parse(file, { columns: true, skip_empty_lines: true });
+      } else if (type === 'xml') {
+        const parsed = await xml2js.parseStringPromise(file, { explicitArray: false });
+        if (!parsed || !parsed.categories || !parsed.categories.category)
+          throw new Error("Invalid XML Format");
 
-      if (type === 'json') {
-        categoriesToImport = JSON.parse(file); 
-      } else if (type === 'csv') {
-        const lines = file.split('\n').filter(l => l.trim() !== '');
-        const headers = lines[0].split(',').map(h => h.trim());
-        for (let i = 1; i < lines.length; i++) {
-          const row = lines[i].split(',').map(x => x.trim());
-          const obj = {};
-          headers.forEach((h, j) => obj[h] = row[j]);
-          categoriesToImport.push(obj);
+        let rawItems = parsed.categories.category;
+        items = Array.isArray(rawItems) ? rawItems : [rawItems];
+
+        for (const item of items) {
+          item.id = Number(item.id);
+          item.item_id = Number(item.item_id);
+          item.quantity = Number(item.quantity);
+          item.consumable = item.consumable === 'true' || item.consumable === true;
+          item.favourite = item.favourite === 'true' || item.favourite === true;
+          item.alert = item.alert === 'true' || item.alert === true;
         }
+      } else if (type === 'json') {
+        items = JSON.parse(file);
       } else {
-        res.writeHead(400);
-        res.end('Format necunoscut. Acceptat: json, csv');
-        return;
+        throw new Error("⚠️ Format fișier neacceptat.");
       }
 
-      const imported = [];
+      if (!Array.isArray(items)) throw new Error("⚠️ Structura fișierului trebuie să fie un array de obiecte.");
 
-      for (const cat of categoriesToImport) {
-        const name = cat.name || cat.category_name;
-        if (!name) continue;
+      const categoriiMap = new Map();
+      for (const item of items) {
+        const key = `${item.id}|${item.name}`;
+        if (!categoriiMap.has(key)) categoriiMap.set(key, []);
+        categoriiMap.get(key).push(item);
+      }
 
-        try {
-          const insert = await client.query(
-            `INSERT INTO categories (name, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING RETURNING id`,
-            [name, userID]
-          );
-          if (insert.rows.length > 0) imported.push(name);
-        } catch (err) {
-          console.error("Eroare la inserare categorie:", err.message);
+      for (const [key, lista] of categoriiMap.entries()) {
+        const [catId, catName] = key.split('|');
+
+        await client.query(`
+          INSERT INTO categories (id, name, user_id)
+          VALUES ($1, $2, $3)
+        `, [catId, catName, userID]);
+
+        for (const item of lista) {
+          const itemId = item.item_id;
+
+          await client.query(`
+            INSERT INTO items (id, name, quantity, category_id)
+            VALUES ($1, $2, $3, $4)
+          `, [itemId, item.item_name, item.quantity, catId]);
+
+          await client.query(`
+            INSERT INTO item_properties (consumable, favourite, item_id)
+            VALUES ($1, $2, $3)
+          `, [item.consumable, item.favourite, itemId]);
+
+          await client.query(`
+            INSERT INTO item_alerts (alert, alertdeqtime, lastcheckdate, item_id)
+            VALUES ($1, $2, $3, $4)
+          `, [item.alert, item.alertdeqtime, item.lastcheckdate, itemId]);
+
+          await client.query(`
+            INSERT INTO item_dates (added_date, quantity, item_id)
+            VALUES ($1, $2, $3)
+          `, [item.date, item.quantity, itemId]);
         }
       }
 
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ message: `Importate ${imported.length} categorii.` }));
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end("✅ Import reușit!");
     } catch (err) {
-      console.error("Eroare import:", err.message);
-      res.writeHead(500);
-      res.end('Eroare server la import');
+      console.error("❌ Eroare import:", err.message);
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end("❌ Eroare import: " + err.message);
     }
   });
-
   return;
 }
 

@@ -1654,8 +1654,8 @@ if (req.method === 'POST' && req.url === '/api/categories/import') {
     });
 });
 
-server.listen(3000,'0.0.0.0',() => {
-    console.log('Server is running on http://localhost:3000');
+server.listen(80,'0.0.0.0',() => {
+    console.log('Server is running');
 });
 
 

@@ -1,0 +1,3 @@
+"id","name","item_id","item_name","quantity","consumable","alert","alertdeqtime","favourite","date","lastcheckdate"
+"60","a","38","fg",3,true,false,"noalert",true,,"NoDate"
+"60","a","39","mateo",1,false,false,"off",false,,"NoDate"

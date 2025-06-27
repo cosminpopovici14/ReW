@@ -93,7 +93,20 @@ function handleImport(event) {
 
   reader.readAsText(file);
 }
+async function logout() {
+    try{
+        let res = await fetch(`/api/logout`);
+        if(!res.ok){
+            const errorMsg = await res.text();
+            throw new Error(errorMsg);
+        }
 
+         window.location.href = '/login.html';
+    }catch(err){
+        console.log(err);
+    }
+}
+window.logout = logout;
 window.handleImport = handleImport;
 window.init = init;
 window.getCategoryItemsExport = getCategoryItemsExport;

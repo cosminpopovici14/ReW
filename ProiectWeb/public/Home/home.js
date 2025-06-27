@@ -57,7 +57,7 @@ async function init() {
 init();
 
 function displayStatistics() {
-
+  console.log(document.cookie);
     console.log(totalItems);  
 
     let totals = ` <div class="welcome-page-statistic">
@@ -73,6 +73,22 @@ function displayStatistics() {
                </div>`
     document.querySelector('#welcome-page-statistics-block').innerHTML = totals;
 }
+
+
+async function logout() {
+    try{
+        let res = await fetch(`/api/logout`);
+        if(!res.ok){
+            const errorMsg = await res.text();
+            throw new Error(errorMsg);
+        }
+
+         window.location.href = '/login.html';
+    }catch(err){
+        console.log(err);
+    }
+    }
+
 
 function openMenuPopup() {
     let popup = document.getElementById('dropdown-content');

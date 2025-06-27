@@ -26,13 +26,14 @@ async function initializeDatabase() {
  try {
     await client.query( `
 
-CREATE TABLE IF NOT EXISTS users(
-    id SERIAL PRIMARY KEY ,
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
-	email VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
     password VARCHAR(50) NOT NULL,
+    role VARCHAR(20) DEFAULT 'user' CHECK (role IN ('user', 'admin')),
     UNIQUE(name),
-	UNIQUE(email)
+    UNIQUE(email)
 );
 CREATE TABLE IF NOT EXISTS categories (
     id SERIAL PRIMARY KEY ,
@@ -86,16 +87,123 @@ CREATE TABLE IF NOT EXISTS item_dates(
 CREATE TABLE IF NOT EXISTS audit_log (
   id SERIAL PRIMARY KEY,
   user_id INT,
-  action TEXT NOT NULL,
-  table_name TEXT NOT NULL,
-  record_id INT NOT NULL,
+  action TEXT NOT NULL,           
+  table_name TEXT NOT NULL,      
+  record_id INT NOT NULL,        
   action_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_user_audit FOREIGN KEY (user_id)
-    REFERENCES users(id)
-    ON DELETE SET NULL
+      REFERENCES users(id)
+      ON DELETE SET NULL
 );
 
+CREATE OR REPLACE FUNCTION log_insert_category()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO audit_log (user_id, action, table_name, record_id)
+  VALUES (NEW.user_id, 'INSERT', 'categories', NEW.id);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE TRIGGER trg_log_insert_category
+AFTER INSERT ON categories
+FOR EACH ROW
+EXECUTE FUNCTION log_insert_category();
+
+
+CREATE OR REPLACE FUNCTION log_update_category()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO audit_log (user_id, action, table_name, record_id)
+  VALUES (NEW.user_id, 'UPDATE', 'categories', NEW.id);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER trg_log_update_category
+AFTER UPDATE ON categories
+FOR EACH ROW
+EXECUTE FUNCTION log_update_category();
+
+CREATE OR REPLACE FUNCTION log_delete_category()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM users WHERE id = OLD.user_id) THEN
+    INSERT INTO audit_log (user_id, action, table_name, record_id)
+    VALUES (OLD.user_id, 'DELETE', 'categories', OLD.id);
+  ELSE
+    INSERT INTO audit_log (user_id, action, table_name, record_id)
+    VALUES (NULL, 'DELETE', 'categories', OLD.id);
+  END IF;
+  RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER trg_log_delete_category
+AFTER DELETE ON categories
+FOR EACH ROW
+EXECUTE FUNCTION log_delete_category();
+
+CREATE OR REPLACE FUNCTION log_insert_item()
+RETURNS TRIGGER AS $$
+DECLARE
+  cat_user_id INT;
+BEGIN
+  SELECT user_id INTO cat_user_id FROM categories WHERE id = NEW.category_id;
+
+  INSERT INTO audit_log (user_id, action, table_name, record_id)
+  VALUES (cat_user_id, 'INSERT', 'items', NEW.id);
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER trg_log_insert_item
+AFTER INSERT ON items
+FOR EACH ROW
+EXECUTE FUNCTION log_insert_item();
+
+
+-- UPDATE
+CREATE OR REPLACE FUNCTION log_update_item()
+RETURNS TRIGGER AS $$
+DECLARE
+  cat_user_id INT;
+BEGIN
+  SELECT user_id INTO cat_user_id FROM categories WHERE id = NEW.category_id;
+
+  INSERT INTO audit_log (user_id, action, table_name, record_id)
+  VALUES (cat_user_id, 'UPDATE', 'items', NEW.id);
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER trg_log_update_item
+AFTER UPDATE ON items
+FOR EACH ROW
+EXECUTE FUNCTION log_update_item();
+
+
+-- DELETE
+CREATE OR REPLACE FUNCTION log_delete_item()
+RETURNS TRIGGER AS $$
+DECLARE
+  cat_user_id INT;
+BEGIN
+  SELECT user_id INTO cat_user_id FROM categories WHERE id = OLD.category_id;
+
+  INSERT INTO audit_log (user_id, action, table_name, record_id)
+  VALUES (cat_user_id, 'DELETE', 'items', OLD.id);
+
+  RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER trg_log_delete_item
+AFTER DELETE ON items
+FOR EACH ROW
+EXECUTE FUNCTION log_delete_item();
 
 
 
@@ -189,8 +297,6 @@ END;
 $$ LANGUAGE plpgsql; 
 
 
-
-
         `);
 
     console.log('✅ Tabelele au fost create sau existau deja.');
@@ -215,7 +321,6 @@ function parseCookies(req){
     for(let i = 1; i<cookiesArray.length;i+=2){
         list[cookiesArray[i-1]] = cookiesArray[i];
     }
-
     return list;
 
 }
@@ -231,6 +336,7 @@ client.connect()
 let pendingCodes={};
 const server = http.createServer((req, res) => {
     const cookies = parseCookies(req);
+    console.log(cookies);
     let file = '';
     file =req.url.split('?')[0];
     const userID = parseInt(cookies.userId);
@@ -254,11 +360,68 @@ const server = http.createServer((req, res) => {
         res.end();
         return;
     }
-    if(req.url == '/')
-    {
+    if(req.url == '/' )
+        if(cookies.role == 'user')
+        {
        res.writeHead(302, {Location : '/index.html'});
         res.end();
         return; 
+        }
+    else{
+        res.writeHead(302, {Location : '/admin.html'});
+        res.end();
+        return;
+    }
+    if(req.url == '/admin.html' && cookies.role == 'user'){
+        res.writeHead(403);
+        res.end("Acces Denied. Admins Only!")
+        return;
+    }
+    if(req.method === `GET` && req.url === '/api/admin/users'){
+        client.query('SELECT * from users',(err,content)=>{
+            if(err){
+                res.setHeader(500);
+                res.end("Server Error");
+                return;
+            }
+            let parsed = JSON.stringify({users : content.rows});
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(parsed);
+        });
+        return;
+    }
+    if(req.method === 'DELETE' && req.url=== '/api/admin/users')
+    {
+        let body='';
+        req.on('data', chunk =>{body+=chunk});
+        req.on('end', ()=>{
+            const deletedUser = JSON.parse(body);
+            client.query('DELETE FROM users WHERE id=$1',[deletedUser.id],(err,content)=>{
+            
+            if (err) {
+                console.log(err);
+                res.writeHead(500);
+                res.end('Eroare server');
+                return;
+            }
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end("Deleted User!");
+            })
+        });
+        return;
+    }
+    if(req.method === `GET` && req.url === '/api/admin/auditlog'){
+        client.query('SELECT * from audit_log ORDER BY action_time DESC',(err,content)=>{
+            if(err){
+                res.setHeader(500);
+                res.end("Server Error");
+                return;
+            }
+            let parsed = JSON.stringify({logs : content.rows});
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(parsed);
+        });
+        return;
     }
     if(req.method === `POST` && req.url === '/api/register'){
         let body = '';
@@ -286,7 +449,8 @@ const server = http.createServer((req, res) => {
                                         'Content-Type' : 'application/json',
                                         'Set-Cookie' : [
                                             `userId = ${id}; Max-Age=604800;HttpOnly;Path=/`,
-                                            `auth = true;  Max-Age=604800;HttpOnly;Path=/`
+                                            `auth = true;  Max-Age=604800;HttpOnly;Path=/`,
+                                            `role = user;  Max-Age=604800;HttpOnly;Path=/`
                                         ]
                     });
                 res.end("Registered new User!");
@@ -379,19 +543,51 @@ const server = http.createServer((req, res) => {
                     }
                     let foundUser = JSON.stringify(content2.rows);
                     parsed = JSON.parse(foundUser);
-                    res.writeHead(302,{Location : '/index.html',
+                    if((user.email == 'admin1@admin.com' && user.password == 'parola123') 
+                         || (user.email == 'admin2@admin.com' && user.password == 'parola456')){
+                        res.writeHead(302,{Location : '/admin.html',
                                         'Content-Type' : 'application/json',
                                         'Set-Cookie' : [
                                             `userId = ${[parsed[0].id]}; Max-Age=604800;HttpOnly;Path=/`,
-                                            `auth = true;  Max-Age=604800;HttpOnly;Path=/`
+                                            `auth = true;  Max-Age=604800;HttpOnly;Path=/`,
+                                            `role = admin;  Max-Age=604800;HttpOnly;Path=/`
                                         ]
-                    })
-                    res.end("Authenitcated User!");
+                         })
+                        res.end("Authenitcated Admin!");
+                        return; 
+                     }
+                    else{
+                        res.writeHead(302,{Location : '/index.html',
+                                        'Content-Type' : 'application/json',
+                                        'Set-Cookie' : [
+                                            `userId = ${[parsed[0].id]}; Max-Age=604800;HttpOnly;Path=/`,
+                                            `auth = true;  Max-Age=604800;HttpOnly;Path=/`,
+                                            `role = user;  Max-Age=604800;HttpOnly;Path=/`
+                                        ]
+                        })
+                        res.end("Authenitcated User!");
+                    }
+                    
                 })  
             })
         })
         return;
     }
+
+    if(req.method ==='GET'  && req.url == '/api/logout'){
+        res.writeHead(302,{Location : '/login.html',
+                                        'Content-Type' : 'application/json',
+                                        'Set-Cookie' : [
+                                            `userId = ; Max-Age=604800;HttpOnly;Path=/`,
+                                            `auth = false;  Max-Age=604800;HttpOnly;Path=/`,
+                                            `role = ;  Max-Age=604800;HttpOnly;Path=/`
+                                        ]
+                        })
+        res.end("Logged Out User!");
+        return;
+    }
+
+
     if (req.method === 'GET' && req.url === '/api/categories') {
         client.query('SELECT * from categories WHERE user_id =$1 ORDER BY id',[userID],(err,content)=>{
             if (err) {

@@ -17,7 +17,8 @@ async function postLogin(email,password){
             const errorMsg = await res.text();
             throw new Error(errorMsg);
         }
-         window.location.href = '/index.html';
+
+         window.location.href = '/';
     }catch(err){
         console.log(err);
         openErrorPopupLogin(err.message);
@@ -45,7 +46,6 @@ function togglePassword(){
 function addLogin(){
     let email = document.getElementById("loginInput").value;
     let password = document.getElementById("passwordInput").value;
-
     postLogin(email,password);
 }
 

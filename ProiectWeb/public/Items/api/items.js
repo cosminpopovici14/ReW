@@ -98,6 +98,20 @@ function patchFavourite(itemID, itemFavourite) {
     }).then(() => init());
 }
 
+async function logout() {
+    try{
+        let res = await fetch(`/api/logout`);
+        if(!res.ok){
+            const errorMsg = await res.text();
+            throw new Error(errorMsg);
+        }
+
+         window.location.href = '/login.html';
+    }catch(err){
+        console.log(err);
+    }
+    }
+window.logout = logout;
 window.items = items;
 window.category = category;
 window.chartData = chartData;

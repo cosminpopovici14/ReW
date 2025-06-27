@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="admin-body">
+  <div class="admin-header">
+    <h1>Admin Pannel</h1>
+    <button onclick="logout()">Logout</button>
+  </div>
+    <h2>Existing Users</h2>
+    <table id="users-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+      </tbody>
+    </table>
+    <h2>Audit Log</h2>
+    <table id="audit-log">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>User ID</th>
+          <th>Action</th>
+          <th>Table Name</th>
+          <th>Record ID</th>
+          <th>Action Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+      </tbody>
+    </table>
+<script src="Admin/admin.js"></script>
+</body>
+</html>

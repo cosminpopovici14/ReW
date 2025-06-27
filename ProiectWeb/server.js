@@ -37,6 +37,10 @@ CREATE TABLE IF NOT EXISTS users (
     UNIQUE(name),
     UNIQUE(email)
 );
+
+ALTER TABLE users
+ADD COLUMN role VARCHAR(20) DEFAULT 'user' CHECK (role IN ('user', 'admin'));
+
 CREATE TABLE IF NOT EXISTS categories (
     id SERIAL PRIMARY KEY ,
     name VARCHAR(50) NOT NULL,

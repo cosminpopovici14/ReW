@@ -67,6 +67,34 @@ async function DeleteCategory(id) {
     init();
 }
 
+function handleImport(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async function (e) {
+    const content = e.target.result;
+    const ext = file.name.split('.').pop().toLowerCase();
+
+    try {
+      const res = await fetch('/api/categories/import', {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ file: content, type: ext })
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+      alert("Import reușit!");
+      init();
+    } catch (err) {
+      alert("Eroare import: " + err.message);
+    }
+  };
+
+  reader.readAsText(file);
+}
+
+window.handleImport = handleImport;
 window.init = init;
 window.getCategoryItemsExport = getCategoryItemsExport;
 window.PostCategory = PostCategory;

@@ -1,10 +1,21 @@
+function escapeHTML(str) {
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
 function printItems() {
     console.log("cATEGORY",category);
     console.log("CATEGORY NAME: ",category.name);
-    let categoryTitleHTML = `${category[0].name}`;
+    const escapedCategoryName = escapeHTML(category[0].name);
+    let categoryTitleHTML = `${escapedCategoryName}`;
     let viewHTML = '';
     let editHTML = '';
     let itemsHTML = '';
+
     exportButtonHTML=`
             <a href="Downloads/category-${category[0].id}-items.csv" download="category-${category[0].id}-items.csv">
             <button class="export-button">Export CSV</button>
@@ -12,6 +23,10 @@ function printItems() {
             `
     console.log("ITEMS:::",items);
     items.forEach(item =>{
+        const escapedItemName = escapeHTML(item.name);
+        const escapedQuantity = escapeHTML(item.quantity);
+        const escapedDate = escapeHTML(item.date);
+        const escapedLastCheck = escapeHTML(item.lastcheckdate);
         if(item.consumable == true)
         {
             
@@ -29,11 +44,11 @@ function printItems() {
                             <p class="error-text-put-${item.id}">Error : Invalid Input</p>
                         </div>
                         <div id="item-name-div">
-                            <p class="item-inputs-titles" id="item-name-p">Item Name</p> <input class="item-inputs" id="item-name-input-${item.id}" required="required" type="text" value="${item.name}">
+                            <p class="item-inputs-titles" id="item-name-p">Item Name</p> <input class="item-inputs" id="item-name-input-${item.id}" required="required" type="text" value="${escapedItemName}">
                         </div>
                         
                         <div id="item-quantity">
-                            <p class="item-inputs-titles" id="item-quantity-p-${item.id}">Quantity</p> <input class="item-inputs" id="item-quantity-input-${item.id}" required="required" type="text"  value="${item.quantity}">
+                            <p class="item-inputs-titles" id="item-quantity-p-${item.id}">Quantity</p> <input class="item-inputs" id="item-quantity-input-${item.id}" required="required" type="text"  value="${escapedQuantity}">
                         </div>
                         <div id="item-date"> 
                             <p class="item-inputs-titles" id="item-dec-quantity-title-${item.id}">Auto-Decrease Quantity</p> 
@@ -73,7 +88,7 @@ function printItems() {
                             <p class="error-text-put-${item.id}">Error : Invalid Input</p>
                         </div>
                         <div id="item-name-div">
-                            <p class="item-inputs-titles" id="item-name-p">Item Name</p> <input class="item-inputs" id="item-name-input-${item.id}" required="required" type="text" value="${item.name}">
+                            <p class="item-inputs-titles" id="item-name-p">Item Name</p> <input class="item-inputs" id="item-name-input-${item.id}" required="required" type="text" value="${escapedItemName}">
                         </div>
                         
                         <div id="item-date"> 
@@ -103,7 +118,7 @@ function printItems() {
         if(item.consumable == true){
             viewHTML+=`<div class="items-popup" id="view-${item.id}">
                         <div class="item-view-title">
-                            <h1 class="item-view-item-name">${item.name}</h1>
+                            <h1 class="item-view-item-name">${escapedItemName}</h1>
                             <div class="item-view-category">
                                 <div class="item-view-category-title">
                                     Category
@@ -119,7 +134,7 @@ function printItems() {
                                     Quantity
                                 </div>
                                 <div class="quantity-number">
-                                    ${item.quantity}
+                                    ${escapedQuantity}
                                 </div>
                                 <div class="quantity-date">
                                     ${getCurrentDate()}
@@ -169,7 +184,7 @@ function printItems() {
         {
             viewHTML+=`<div class="items-popup" id="view-${item.id}">
                         <div class="item-view-title">
-                            <h1 class="item-view-item-name">${item.name}</h1>
+                            <h1 class="item-view-item-name">${escapedItemName}</h1>
                             <div class="item-view-category">
                                 <div class="item-view-category-title">
                                     Category
@@ -244,11 +259,11 @@ function printItems() {
                                 <img src=${checkFavouriteImage(item.favourite)} alt="Light Bulb" class="item-image" id="item-image-${item.id}">
                             </div>
                             <div class="item-name" id="item-name-${item.id}">
-                                <p id="item-name-name">${item.name}</p>
+                                <p id="item-name-name">${escapedItemName}</p>
                                 <p id="item-name-category">${checkConsumable(item.consumable)}</p>
                             </div>
                             <div class="item-stock" id="item-stock-${item.id}">
-                                <span class="item-number">${item.quantity}</span> in stock
+                                <span class="item-number">${escapedQuantity}</span> in stock
                             </div>
                             <div class="item-alert" id="item-alert-${item.id}">
                                 <div class="item-alert-image" id="item-alert-image-${item.id}">

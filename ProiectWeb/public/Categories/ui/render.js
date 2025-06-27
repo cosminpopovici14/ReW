@@ -1,7 +1,16 @@
+function escapeHTML(str) {
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
 function printCategory() {
     let categoriesHTML = '';
-    let count = 0;
-    categoriesExportButton = `
+    const categoriesExportButton = `
   <div class="export-dropdown">
     <button class="export-button" onclick="toggleExportOptions()">Export</button>
     <div class="export-options" id="export-options">
@@ -12,12 +21,12 @@ function printCategory() {
   </div>
 `;
 
-
     categories.forEach((category) => {
+        const escapedName = escapeHTML(category.name);
         categoriesHTML += `
             <div class="category" id="category-${category.id}">
                 <div class="category-name" id="category-name-${category.id}">
-                    <h1>${category.name}</h1>
+                    <h1>${escapedName}</h1>
                 </div>
                 <div class="delete-text" id="delete-text-${category.id}">
                     <h2> Are you sure you want to delete? </h2>

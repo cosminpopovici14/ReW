@@ -1,125 +1,99 @@
 <!DOCTYPE html>
-
-<html>
-
+<html lang="en">
 <head>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="style_responsive_categories.css">
+    <meta charset="UTF-8" />
+    <title>Smart Inventory - Categories</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style_responsive_categories.css" />
 </head>
-<div id="cursor"> </div>
-
 <body>
+    <div id="cursor"></div>
     <div class="background-container finisher-header"></div>
+
     <header>
         <h1><a href="./index.html">Smart Inventory</a></h1>
-        <section class="dropdown">
+        <div class="dropdown"> 
             <button id="menu-bar" class="menu-bar" onclick="openMenuPopup()">
-                <div class="menu-line">
-                </div>
-                <div class="menu-line">
-                </div>
-                <div class="menu-line">
-                </div>
+                <span class="menu-line"></span>
+                <span class="menu-line"></span>
+                <span class="menu-line"></span>
             </button>
             <div class="dropdown-content" id="dropdown-content">
                 <a href="./index.html">Home</a>
                 <a href="./categories.html">Categories</a>
             </div>
-        </section>
+        </div>
     </header>
 
     <main>
-
         <div id="main-page">
             <div class="popups">
-                <div class=rename-popup-div>
-                    <div class="popup" id="rename-popup">
+                <div class="rename-popup-div">
+                    <div class="popup" id="rename-popup"> 
                         <h2>Rename Category</h2>
-                        <div id="category-name-div">
-                            <p id="category-name-p">Category Name</p> <input id="category-rename-input"
-                                required="required" type="text">
+                        <div class="category-name-div">
+                            <p class="category-name-p">Category Name</p>
+                            <input id="category-rename-input" required type="text" />
                         </div>
-                        <div id="popup-buttons-div">
-                            <div id="popup-buttons-div">
-                                <div class="error-text-div category-error" id="error-text-div-3">
-                                    <p class="error-text-3">Error : Name should not be null! </p>
-                                </div>
-                                <button id="cancel-popup-button" onclick="closePopup('rename-popup')"> Cancel</button>
-                                <button id="add-popup-button" onclick="renameCategory();"> Rename</button>
+                        <div class="popup-buttons">
+                            <div class="error-text-div category-error" id="error-text-div-3">
+                                <p class="error-text-3">Error : Name should not be null!</p>
                             </div>
-                        </div>
-                    </div>
-                    <div class="popup-div">
-                        <div class="popup" id="add-popup">
-                            <h2>Add Category</h2>
-                            <div id="category-name-div">
-                                <p id="category-name-p">Category Name</p> <input id="category-name-input"
-                                    required="required" type="text">
-                            </div>
-                            <div id="popup-buttons-div">
-                                <div class="error-text-div category-error" id="error-text-div-2">
-                                    <p class="error-text-2"> Error : Name should not be null!</p>
-                                </div>
-
-                                <button id="cancel-popup-button" onclick="closePopup('add-popup')"> Cancel</button>
-                                <button id="add-popup-button" onclick="addCategory();"> Add</button>
-                            </div>
+                            <button class="cancel-popup-button" onclick="closePopup('rename-popup')">Cancel</button>
+                            <button class="add-popup-button" onclick="renameCategory();">Rename</button>
                         </div>
                     </div>
                 </div>
-                <div id="above-categories">
-                    <div id="categories-text">
-                        <h1>Categories</h1>
 
-
+                <div class="popup-div">
+                    <div class="popup" id="add-popup"> 
+                        <h2>Add Category</h2>
+                        <div class="category-name-div">
+                            <p class="category-name-p">Category Name</p>
+                            <input id="category-name-input" required type="text" />
+                        </div>
+                        <div class="popup-buttons">
+                            <div class="error-text-div category-error" id="error-text-div-2">
+                                <p class="error-text-2">Error : Name should not be null!</p>
+                            </div>
+                            <button class="cancel-popup-button" onclick="closePopup('add-popup')">Cancel</button>
+                            <button class="add-popup-button" onclick="addCategory();">Add</button>
+                        </div>
                     </div>
                 </div>
-                <div class="js-categories-page" id="categories-page">
+            </div>
 
-
-
+            <div id="above-categories">
+                <div id="categories-text">
+                    <h1>Categories</h1>
                 </div>
-                <div class="under-categories">
-                    <div id="add-category-button">
-                        <button id="btn2" onclick="openPopup('add-popup')"> + Add Category </button>
+            </div>
 
-                    </div>
+            <div class="js-categories-page" id="categories-page"></div>
 
-                    <div id="export-categories-button">
-
-                    </div>
-
-                    <label id="import-categories-button" for="import-file">Import</label>
+            <div class="under-categories">
+                <div id="add-category-button">
+                    <button id="btn2" onclick="openPopup('add-popup')">+ Add Category</button>
+                </div>
+                <div id="export-categories-button"></div>
+                <label id="import-categories-button" for="import-file">Import</label>
                     <input type="file" id="import-file" accept=".csv,.json,.xml" style="display: none"
                         onchange="handleImport(event)">
-
-
-                </div>
-
+            </div>
+        </div>
     </main>
 
     <footer>
         <p>&copy; 2025 Smart Inventory. All rights reserved.</p>
     </footer>
-    <script src="Script/finisher-header.es5.min.js" type="text/javascript"></script>
+
+    <script src="Script/finisher-header.es5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-    <!-- 📁 UTILS (opțional, dacă ai funcții reutilizabile) -->
-
-
-    <!-- 📁 API logic pentru categorii -->
     <script src="Categories/api/categories.js"></script>
-
-    <!-- 📁 UI: generare categorii, adăugare, redenumire -->
     <script src="Categories/ui/render.js"></script>
-
-    <!-- 📁 UI: popup-uri, confirmări, erori -->
     <script src="Categories/ui/popups.js"></script>
-
-    <!-- 📁 MAIN: cursor + FinisherHeader + init() -->
     <script src="Categories/main.js"></script>
 </body>
-
 </html>

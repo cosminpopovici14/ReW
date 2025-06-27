@@ -252,7 +252,7 @@ input[type="text"]
   justify-content: flex-end;
   margin-top: 15px;
 }
-#cancel-popup-button{
+.cancel-popup-button{
 
   margin-right: 10px;
   border-style: solid;
@@ -261,7 +261,7 @@ input[type="text"]
   border-radius: 5px;
   padding: 5px;
 }
-#add-popup-button{
+.add-popup-button{
 
   margin-right: 10px;
   border-style: solid;
@@ -1088,7 +1088,3 @@ input[type="checkbox"] {
   cursor: pointer;
 }
 
-#import-categories-button #import-file {
-  cursor: pointer;
-  pointer-events: none;
-}

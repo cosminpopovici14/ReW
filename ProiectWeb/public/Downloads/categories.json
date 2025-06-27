@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "id": "23",
+    "name": "Imbracaminte",
+    "item_id": "24",
+    "item_name": "Chiloti",
+    "quantity": 2,
+    "consumable": true,
+    "alert": true,
+    "alertdeqtime": "1y",
+    "favourite": false,
+    "date": "2025-06-27T13:05:49.046Z",
+    "lastcheckdate": "NoDate"
+  }
+]

@@ -1,63 +1,55 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Smart Inventory - Welcome</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="background-container finisher-header"></div>
 
-<html>
-    <head>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <header>
+        <h1><a href="./index.html">Smart Inventory</a></h1>
 
-        <link rel="stylesheet" href="style.css">
-        
-    </head>
-    <body>
-        <div class="background-container finisher-header"></div>
-        <header>
-            <h1><a href ="./index.html">Smart Inventory</a></h1>
-            
-                <section class="dropdown"> 
-                        
-                        <button id="menu-bar" class="menu-bar" onclick="openMenuPopup()">
-                            <div class="menu-line">
-                            </div>
-                            <div class="menu-line">
-                            </div>
-                            <div class="menu-line">  
-                            </div>
-                        </button>
-                        <div class="dropdown-content" id="dropdown-content">
-                            <a href="./index.html">Home</a>
-                            <a href="./categories.html">Categories</a>
-                        </div>
-                </section>
+        <div class="dropdown"> 
+            <button id="menu-bar" class="menu-bar" onclick="openMenuPopup()">
+                <span class="menu-line"></span>
+                <span class="menu-line"></span>
+                <span class="menu-line"></span>
+            </button>
+            <div class="dropdown-content" id="dropdown-content">
+                <a href="./index.html">Home</a>
+                <a href="./categories.html">Categories</a>
+            </div>
+        </div>
+    </header>
 
-            
-        </header>
-
-        <main>
-            
-            <div id="main-page">
-                
-                <div id="welcome-page">
-                    <h2>Welcome to Smart Inventory</h2>
-                    <p>Your one-stop solution for managing your inventory efficiently.</p>
-                    <div id="nu-stiu">
-                        <div id="welcome-button">
-                            <a href="./categories.html">Browse Categories </a>
-                        </div>
+    <main>
+        <div id="main-page">
+            <div id="welcome-page">
+                <h2>Welcome to Smart Inventory</h2>
+                <p>Your one-stop solution for managing your inventory efficiently.</p>
+                <div id="nu-stiu">
+                    <div id="welcome-button">
+                        <a href="./categories.html">Browse Categories</a>
                     </div>
                 </div>
-                <div id="welcome-page-statistics-block">
-                   
-                </div>
             </div>
-        
-        </main>
 
-        <footer>
-            <p>&copy; 2025 Smart Inventory. All rights reserved.</p>
-        </footer>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-        <script src="Script/finisher-header.es5.min.js" type="text/javascript"></script>
-        <script src="Home/home.js"></script>
-    </body>
+            <div id="welcome-page-statistics-block">
 
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Smart Inventory. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script src="Script/finisher-header.es5.min.js"></script>
+    <script src="Home/home.js"></script>
+</body>
 </html>

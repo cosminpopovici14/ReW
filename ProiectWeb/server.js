@@ -1341,9 +1341,67 @@ if (req.method === 'GET' && /^\/api\/categories\/export\/xml$/.test(req.url)) {
   return;
 }
 
+if (req.method === 'POST' && req.url === '/api/categories/import') {
+  let body = '';
+  req.on('data', chunk => body += chunk);
+  req.on('end', async () => {
+    try {
+      const parsed = JSON.parse(body);
+      const { file, type } = parsed;
 
+      if (!file || !type) {
+        res.writeHead(400);
+        res.end('Lipsește fișierul sau tipul lui.');
+        return;
+      }
 
+      let categoriesToImport = [];
 
+      if (type === 'json') {
+        categoriesToImport = JSON.parse(file); 
+      } else if (type === 'csv') {
+        const lines = file.split('\n').filter(l => l.trim() !== '');
+        const headers = lines[0].split(',').map(h => h.trim());
+        for (let i = 1; i < lines.length; i++) {
+          const row = lines[i].split(',').map(x => x.trim());
+          const obj = {};
+          headers.forEach((h, j) => obj[h] = row[j]);
+          categoriesToImport.push(obj);
+        }
+      } else {
+        res.writeHead(400);
+        res.end('Format necunoscut. Acceptat: json, csv');
+        return;
+      }
+
+      const imported = [];
+
+      for (const cat of categoriesToImport) {
+        const name = cat.name || cat.category_name;
+        if (!name) continue;
+
+        try {
+          const insert = await client.query(
+            `INSERT INTO categories (name, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING RETURNING id`,
+            [name, userID]
+          );
+          if (insert.rows.length > 0) imported.push(name);
+        } catch (err) {
+          console.error("Eroare la inserare categorie:", err.message);
+        }
+      }
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ message: `Importate ${imported.length} categorii.` }));
+    } catch (err) {
+      console.error("Eroare import:", err.message);
+      res.writeHead(500);
+      res.end('Eroare server la import');
+    }
+  });
+
+  return;
+}
 
 
     switch (ext) {

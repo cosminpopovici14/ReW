@@ -1,2 +1,16 @@
 <?xml version="1.0"?>
-<categories/>
+<categories>
+  <category>
+    <id>23</id>
+    <name>Imbracaminte</name>
+    <item_id>24</item_id>
+    <item_name>Chiloti</item_name>
+    <quantity>2</quantity>
+    <consumable>true</consumable>
+    <alert>true</alert>
+    <alertdeqtime>1y</alertdeqtime>
+    <favourite>false</favourite>
+    <date>2025-06-27T13:05:49.046Z</date>
+    <lastcheckdate>NoDate</lastcheckdate>
+  </category>
+</categories>

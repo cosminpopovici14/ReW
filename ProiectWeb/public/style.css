@@ -1069,3 +1069,26 @@ input[type="checkbox"] {
 .export-options button:hover {
   background-color: #f0f0f0;
 }
+
+#import-categories-button {
+  margin: 50px;
+  padding: 20px;
+  width: 230px;
+  max-width: 500px;
+  max-height: fit-content;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  transition: all 0.5s;
+  position: relative;
+  background-color: #38d96e;
+  color: white;
+  font-weight: bold;
+  font-size: x-large;
+  cursor: pointer;
+}
+
+#import-categories-button #import-file {
+  cursor: pointer;
+  pointer-events: none;
+}

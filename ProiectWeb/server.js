@@ -298,6 +298,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql; 
 
+INSERT INTO users (name, email, password, role)
+VALUES 
+  ('admin1', 'admin1@admin.com', 'parola123', 'admin'),
+  ('admin2', 'admin2@admin.com', 'parola456', 'admin');
+
 
         `);
 

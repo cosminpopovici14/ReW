@@ -17,12 +17,51 @@
     "name": "ab",
     "item_id": "49",
     "item_name": "cacsjhv",
-    "quantity": 5,
+    "quantity": 0,
     "consumable": true,
     "alert": true,
     "alertdeqtime": "7d",
     "favourite": false,
-    "date": "2025-06-27T22:46:13.129Z",
+    "date": "2025-06-28T07:46:17.483+03:00",
     "lastcheckdate": "NoDate"
+  },
+  {
+    "id": "65",
+    "name": "ab",
+    "item_id": "50",
+    "item_name": "scv",
+    "quantity": 22,
+    "consumable": true,
+    "alert": false,
+    "alertdeqtime": "noalert",
+    "favourite": false,
+    "date": "2025-06-28T04:50:32.395Z",
+    "lastcheckdate": "NoDate"
+  },
+  {
+    "id": "65",
+    "name": "ab",
+    "item_id": "51",
+    "item_name": "db",
+    "quantity": 1,
+    "consumable": false,
+    "alert": false,
+    "alertdeqtime": "off",
+    "favourite": false,
+    "date": "2025-06-28T04:58:19.510Z",
+    "lastcheckdate": "NoDate"
+  },
+  {
+    "id": "66",
+    "name": "ceva",
+    "item_id": null,
+    "item_name": null,
+    "quantity": null,
+    "consumable": null,
+    "alert": null,
+    "alertdeqtime": null,
+    "favourite": null,
+    "date": null,
+    "lastcheckdate": null
   }
 ]

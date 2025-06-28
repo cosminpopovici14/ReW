@@ -1675,7 +1675,6 @@ const server = http.createServer((req, res) => {
             const itemDate = new Date(item.date);
             const lastCheck = item.lastcheckdate ? new Date(item.lastcheckdate) : null;
 
-            // Calculează data următoarei scăderi/verificări
             let decreaseDate = (() => {
                 switch (item.alertdeqtime) {
                     case "7d": return addMinutes(item.date, 7);
@@ -1689,12 +1688,10 @@ const server = http.createServer((req, res) => {
                 }
             })();
 
-            // Dacă nu a trecut perioada sau cantitatea e zero, ieșim
             if (!decreaseDate || decreaseDate > currentDate || item.quantity <= 0) return;
 
             const newQuantity = item.quantity - 1;
 
-            // 🔹 CONSUMABILE
             if (item.consumable) {
                 if (newQuantity < 0) return;
 
@@ -1728,7 +1725,6 @@ const server = http.createServer((req, res) => {
                 });
             }
 
-            // 🔸 NON-CONSUMABILE
             else {
                 const shouldSendEmail =
                     !lastCheck || lastCheck.toDateString() !== currentDate.toDateString();

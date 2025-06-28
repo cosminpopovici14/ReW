@@ -18,12 +18,51 @@
     <name>ab</name>
     <item_id>49</item_id>
     <item_name>cacsjhv</item_name>
-    <quantity>5</quantity>
+    <quantity>0</quantity>
     <consumable>true</consumable>
     <alert>true</alert>
     <alertdeqtime>7d</alertdeqtime>
     <favourite>false</favourite>
-    <date>2025-06-27T22:46:13.129Z</date>
+    <date>2025-06-28T07:46:17.483+03:00</date>
     <lastcheckdate>NoDate</lastcheckdate>
+  </category>
+  <category>
+    <id>65</id>
+    <name>ab</name>
+    <item_id>50</item_id>
+    <item_name>scv</item_name>
+    <quantity>22</quantity>
+    <consumable>true</consumable>
+    <alert>false</alert>
+    <alertdeqtime>noalert</alertdeqtime>
+    <favourite>false</favourite>
+    <date>2025-06-28T04:50:32.395Z</date>
+    <lastcheckdate>NoDate</lastcheckdate>
+  </category>
+  <category>
+    <id>65</id>
+    <name>ab</name>
+    <item_id>51</item_id>
+    <item_name>db</item_name>
+    <quantity>1</quantity>
+    <consumable>false</consumable>
+    <alert>false</alert>
+    <alertdeqtime>off</alertdeqtime>
+    <favourite>false</favourite>
+    <date>2025-06-28T04:58:19.510Z</date>
+    <lastcheckdate>NoDate</lastcheckdate>
+  </category>
+  <category>
+    <id>66</id>
+    <name>ceva</name>
+    <item_id/>
+    <item_name/>
+    <quantity/>
+    <consumable/>
+    <alert/>
+    <alertdeqtime/>
+    <favourite/>
+    <date/>
+    <lastcheckdate/>
   </category>
 </categories>

@@ -1709,7 +1709,7 @@ const server = http.createServer((req, res) => {
                         if (shouldSendEmail) {
                             const mailOptions = {
                                 from: 'manmat2004@gmail.com',
-                                to: 'cpopovici56@gmail.com',
+                                to: 'manmat2004@gmail.com',
                                 subject: 'Low Quantity Item!',
                                 text: `The Item ${item.name} has a low quantity of ${newQuantity}`
                             };
@@ -1732,7 +1732,7 @@ const server = http.createServer((req, res) => {
                 if (shouldSendEmail) {
                     const mailOptions = {
                         from: 'manmat2004@gmail.com',
-                        to: 'cpopovici56@gmail.com',
+                        to: 'manmat2004@gmail.com',
                         subject: 'Item Check Reminder',
                         text: `The Item ${item.name} needs to be checked.`
                     };

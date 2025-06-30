@@ -60,10 +60,3 @@ Proiectul este licențiat sub MIT License. Vezi fișierul `LICENSE`.
 
 ---
 
-## 📬 Contact
-
-Pentru sugestii sau colaborări:
-
-- Email:
-- [cpopovici56@gmail.com](mailto:cpopovici56@gmail.com)
-- [manmat2004@gmail.com](mailto:manmat2004@gmail.com)

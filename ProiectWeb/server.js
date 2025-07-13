@@ -19,7 +19,7 @@ const client = new Client({
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'manmat2004@gmail.com',
+        user: 'user@example.com',
         pass: 'qwwt hgry kqtk bbmk'
     }
 });
@@ -499,7 +499,7 @@ const server = http.createServer((req, res) => {
                 let randomCode = makeid(5);
                 pendingCodes[user.email] = randomCode;
                 var mailOptions = {
-                    from: 'manmat2004@gmail.com',
+                    from: 'user@example.com',
                     to: user.email,
                     subject: 'Your Confirmation Code!',
                     text: `Your Confirmation Code is: ${randomCode}`
